@@ -1,8 +1,16 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import {
+  ClerkProvider,
+  SignInButton,
+  SignedIn,
+  SignedOut,
+} from "@clerk/nextjs";
+import { IBM_Plex_Mono } from "next/font/google";
 import "./globals.css";
+import { Toaster } from "@/components/ui/sonner";
+import Link from "next/link";
 
-const inter = Inter({ subsets: ["latin"] });
+const font = IBM_Plex_Mono({ weight: "400", subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -15,8 +23,27 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body className={inter.className}>{children}</body>
-    </html>
+    <ClerkProvider>
+      <html lang="en">
+        <body className={font.className}>
+          <main className="flex h-screen w-full">
+            <div className="flex-1 overflow-auto p-6 space-y-4">
+              <SignedOut>
+                <div className="w-full h-full flex justify-center items-center">
+                  <SignInButton />
+                </div>
+              </SignedOut>
+              <SignedIn>
+                <div>
+                  <Link href={"/random-link"}>Random Link</Link>
+                  {children}
+                </div>
+              </SignedIn>
+            </div>
+            <Toaster />
+          </main>
+        </body>
+      </html>
+    </ClerkProvider>
   );
 }
