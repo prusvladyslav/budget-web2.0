@@ -4,7 +4,6 @@ import MainTableHeader from "../MainTableHeader";
 import { SelectCycle, SelectUser } from "@/db/schema";
 import { useDebouncedUserUpdate, useCycleState } from "./useMainTable";
 import CycleTab from "../CycleTab";
-import { Suspense } from "react";
 
 export default function MainTable({
   cycles,
@@ -35,9 +34,10 @@ export default function MainTable({
           cycles={cycles}
         />
       </TabsList>
-      {cycles?.map((cycle) => (
-        <CycleTab user={user} cycle={cycle} />
-      ))}
+      <CycleTab
+        user={user}
+        cycle={cycles?.find((cycle) => cycle.id === selectedCycle) || undefined}
+      />
     </Tabs>
   );
 }

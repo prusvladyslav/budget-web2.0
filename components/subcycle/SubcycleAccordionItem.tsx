@@ -1,10 +1,7 @@
-import {
-  SelectCategory,
-  SelectCategoryWithCurrentAmount,
-  SelectSubcycle,
-} from "@/db/schema";
+import { SelectSubcycle } from "@/db/schema";
 import { AccordionItem, AccordionTrigger } from "../ui/accordion";
 import SubcycleAccordionContent from "./SubcycleAccordionContent";
+import { CategoryWithCurrentAmount } from "../main/CycleTab/CycleTab";
 
 export default function SubcycleAccordionItem({
   subcycle,
@@ -13,7 +10,7 @@ export default function SubcycleAccordionItem({
 }: {
   subcycle: SelectSubcycle;
   selectedSubcycle: string;
-  categories: SelectCategoryWithCurrentAmount[];
+  categories: CategoryWithCurrentAmount;
 }) {
   return (
     <AccordionItem value={subcycle.id}>
@@ -21,10 +18,7 @@ export default function SubcycleAccordionItem({
         {subcycle.title}
       </AccordionTrigger>
       {selectedSubcycle === subcycle.id && (
-        <SubcycleAccordionContent
-          categories={categories}
-          subcycleId={subcycle.id}
-        />
+        <SubcycleAccordionContent categories={categories} />
       )}
     </AccordionItem>
   );

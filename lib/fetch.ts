@@ -2,7 +2,7 @@ import useSWR, { Fetcher } from "swr";
 import axios, { AxiosResponse } from "axios";
 
 export const URLS = {
-  subCycles: "/api/subcycles",
+  subCyclesTable: "/api/subcycles-table",
   categories: "/api/categories",
   // expenses: "/api/expenses",
 };

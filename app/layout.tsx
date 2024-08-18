@@ -33,12 +33,7 @@ export default function RootLayout({
                   <SignInButton />
                 </div>
               </SignedOut>
-              <SignedIn>
-                <div>
-                  <Link href={"/random-link"}>Random Link</Link>
-                  {children}
-                </div>
-              </SignedIn>
+              <SignedIn>{children}</SignedIn>
             </div>
             <Toaster />
           </main>

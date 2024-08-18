@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-export function useSubcycleState(
+export function useCycleTab(
   initialSubcycleId: string,
   debouncedUpdateUserSubcycle: (value: string) => void
 ) {

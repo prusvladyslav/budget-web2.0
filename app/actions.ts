@@ -279,3 +279,17 @@ export const getCategories = cache(
     });
   }
 );
+
+export const getExpensesByCategoryIds = cache(async (categoryIds: string[]) => {
+  const { userId } = auth();
+
+  if (!userId) return null;
+
+  if (!categoryIds) return null;
+
+  const expenses = await db.query.expenseTable.findMany({
+    where: inArray(expenseTable.categoryId, categoryIds),
+  });
+
+  return expenses;
+});

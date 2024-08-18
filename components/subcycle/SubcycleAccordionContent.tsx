@@ -1,8 +1,3 @@
-import {
-  SelectCategory,
-  SelectCategoryWithCurrentAmount,
-  SelectExpense,
-} from "@/db/schema";
 import { AccordionContent } from "../ui/accordion";
 import {
   Table,
@@ -12,12 +7,12 @@ import {
   TableHeader,
   TableRow,
 } from "../ui/table";
+import { CategoryWithCurrentAmount } from "../main/CycleTab/CycleTab";
+
 export default function SubcycleAccordionContent({
   categories,
-  subcycleId,
 }: {
-  categories: SelectCategoryWithCurrentAmount[];
-  subcycleId: string;
+  categories: CategoryWithCurrentAmount;
 }) {
   return (
     <AccordionContent className="p-4">
