@@ -8,7 +8,7 @@ import {
 import { IBM_Plex_Mono } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "@/components/ui/sonner";
-import Link from "next/link";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 
 const font = IBM_Plex_Mono({ weight: "400", subsets: ["latin"] });
 
@@ -33,7 +33,10 @@ export default function RootLayout({
                   <SignInButton />
                 </div>
               </SignedOut>
-              <SignedIn>{children}</SignedIn>
+              <SignedIn>
+                {children}
+                <SpeedInsights />
+              </SignedIn>
             </div>
             <Toaster />
           </main>
