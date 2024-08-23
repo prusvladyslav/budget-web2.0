@@ -8,10 +8,9 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "../ui/dialog";
-import { Label } from "../ui/label";
 import { ScrollArea } from "../ui/scroll-area";
 import { Button } from "../ui/button";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import DatePicker from "../common/DatePicker";
@@ -25,7 +24,14 @@ import { useSWRConfig } from "swr";
 import AddExpenseButton from "../common/AddExpenseButton";
 import { useCycleContext } from "../main/MainTable";
 import { expensesActions } from "@/app/actions";
-import { Form, FormControl, FormField, FormItem, FormLabel } from "../ui/form";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "../ui/form";
 
 type Props = {
   cycles: SelectCycle[] | null;
@@ -65,14 +71,7 @@ export default function AddNewExpense({ cycles, categoryId }: Props) {
     defaultValues,
   });
 
-  const {
-    reset,
-    control,
-    handleSubmit,
-    formState: { errors },
-    watch,
-    setFocus,
-  } = form;
+  const { reset, control, handleSubmit, watch, setFocus } = form;
 
   const cycledId = watch("cycleId");
 
@@ -87,7 +86,6 @@ export default function AddNewExpense({ cycles, categoryId }: Props) {
   );
 
   const subcycles = data?.data.subcycles;
-
   const categories = data?.data.categories;
 
   const { mutate } = useSWRConfig();
@@ -130,31 +128,31 @@ export default function AddNewExpense({ cycles, categoryId }: Props) {
                 <DialogTitle>Adding new Expense</DialogTitle>
               </DialogHeader>
               <div className="space-y-4">
-                <>
-                  <div className="grid grid-cols-[1fr_3fr] items-center">
-                    <Label>Date:</Label>
-                    <FormField
-                      name="date"
-                      control={control}
-                      render={({ field }) => (
+                <FormField
+                  name="date"
+                  control={control}
+                  render={({ field }) => (
+                    <FormItem className="grid grid-cols-[1fr_3fr] items-center md:flex md:flex-col md:items-start">
+                      <FormLabel>Date:</FormLabel>
+                      <FormControl>
                         <DatePicker
+                          className="md:w-full"
                           date={field.value}
                           setDate={(newDate) => field.onChange(newDate)}
                         />
-                      )}
-                    />
-                  </div>
-                  {errors.date && (
-                    <p className="text-red-500">{errors.date.message}</p>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
                   )}
-                </>
-                <>
-                  <div className="items-center grid grid-cols-[1fr_3fr]">
-                    <Label>Cycle:</Label>
-                    <FormField
-                      name="cycleId"
-                      control={control}
-                      render={({ field }) => (
+                />
+
+                <FormField
+                  name="cycleId"
+                  control={control}
+                  render={({ field }) => (
+                    <FormItem className="grid grid-cols-[1fr_3fr] items-center md:block">
+                      <FormLabel>Cycle:</FormLabel>
+                      <FormControl>
                         <SelectBasic
                           className="w-full"
                           placeholder="Select cycle"
@@ -166,20 +164,19 @@ export default function AddNewExpense({ cycles, categoryId }: Props) {
                             value: cycle.id,
                           }))}
                         />
-                      )}
-                    />
-                  </div>
-                  {errors.cycleId && (
-                    <p className="text-red-500">{errors.cycleId.message}</p>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
                   )}
-                </>
-                <>
-                  <div className="grid grid-cols-[1fr_3fr] items-center">
-                    <Label>Subcycle:</Label>
-                    <FormField
-                      name="subcycleId"
-                      control={control}
-                      render={({ field }) => (
+                />
+
+                <FormField
+                  name="subcycleId"
+                  control={control}
+                  render={({ field }) => (
+                    <FormItem className="grid grid-cols-[1fr_3fr] items-center md:block">
+                      <FormLabel>Subcycle:</FormLabel>
+                      <FormControl>
                         <SelectBasic
                           className="w-full"
                           placeholder="Select subcycle"
@@ -195,81 +192,74 @@ export default function AddNewExpense({ cycles, categoryId }: Props) {
                                 }))
                           }
                         />
-                      )}
-                    />
-                  </div>
-                  {errors.subcycleId && (
-                    <p className="text-red-500">{errors.subcycleId.message}</p>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
                   )}
-                </>
-                <>
-                  <div className="items-center grid grid-cols-[1fr_3fr]">
-                    <Label>Category:</Label>
-                    <FormField
-                      name="categoryId"
-                      control={control}
-                      render={({ field }) => (
-                        <FormItem>
-                          {/* <FormLabel>Category:</FormLabel> */}
-                          <FormControl>
-                            <SelectBasic
-                              className="w-full"
-                              placeholder="Select category"
-                              disabled={isLoading}
-                              defaultValue={field.value}
-                              setValue={(value) => field.onChange(value)}
-                              options={
-                                isLoading
-                                  ? []
-                                  : categories?.map((category) => ({
-                                      label: category.title,
-                                      value: category.id,
-                                    }))
-                              }
-                            />
-                          </FormControl>
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-                  {errors.categoryId && (
-                    <p className="text-red-500">{errors.categoryId.message}</p>
+                />
+
+                <FormField
+                  name="categoryId"
+                  control={control}
+                  render={({ field }) => (
+                    <FormItem className="grid grid-cols-[1fr_3fr] items-center md:block">
+                      <FormLabel>Category:</FormLabel>
+                      <FormControl>
+                        <SelectBasic
+                          className="w-full"
+                          placeholder="Select category"
+                          disabled={isLoading}
+                          defaultValue={field.value}
+                          setValue={(value) => field.onChange(value)}
+                          options={
+                            isLoading
+                              ? []
+                              : categories?.map((category) => ({
+                                  label: category.title,
+                                  value: category.id,
+                                }))
+                          }
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
                   )}
-                </>
-                <>
-                  <div className="items-center grid grid-cols-[1fr_3fr]">
-                    <Label>Amount:</Label>
-                    <FormField
-                      name="amount"
-                      control={control}
-                      render={({ field }) => (
+                />
+
+                <FormField
+                  name="amount"
+                  control={control}
+                  render={({ field }) => (
+                    <FormItem className="grid grid-cols-[1fr_3fr] items-center md:block">
+                      <FormLabel>Amount:</FormLabel>
+                      <FormControl>
                         <Input
                           {...field}
                           className="w-full"
                           placeholder="Expense amount"
                           disabled={isLoading}
                           defaultValue={field.value}
-                          onChange={(value) => field.onChange(value)}
+                          onChange={(e) => field.onChange(e.target.value)}
                         />
-                      )}
-                    />
-                  </div>
-                  {errors.amount && (
-                    <p className="text-red-500">{errors.amount.message}</p>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
                   )}
-                </>
-              </div>
-              <div className="space-y-2 flex flex-col mt-6">
-                <Label>Comment (optional):</Label>
+                />
+
                 <FormField
                   name="comment"
                   control={control}
                   render={({ field }) => (
-                    <Textarea
-                      onChange={field.onChange}
-                      value={field.value}
-                      placeholder="Comment for this expense"
-                    />
+                    <FormItem>
+                      <FormLabel>Comment (optional):</FormLabel>
+                      <FormControl>
+                        <Textarea
+                          {...field}
+                          placeholder="Comment for this expense"
+                        />
+                      </FormControl>
+                    </FormItem>
                   )}
                 />
               </div>
