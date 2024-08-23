@@ -1,0 +1,1 @@
+ALTER TABLE `users` ADD `debug` integer DEFAULT false;

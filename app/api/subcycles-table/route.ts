@@ -1,7 +1,7 @@
 import {
-  getCategories,
-  getExpensesByCategoryIds,
-  getSubcycles,
+  categoriesActions,
+  expensesActions,
+  subcyclesActions,
 } from "@/app/actions";
 import { SelectCategory, SelectExpense } from "@/db/schema";
 import { NextRequest } from "next/server";
@@ -12,9 +12,9 @@ export async function GET(request: NextRequest) {
 
   if (!cycleId) return new Response("No cycleId provided", { status: 400 });
 
-  const subcycles = await getSubcycles(cycleId);
+  const subcycles = await subcyclesActions.getSubcyclesByCycleId(cycleId);
 
-  const allCaregories = await getCategories({
+  const allCaregories = await categoriesActions.getCategoriesByCycleId({
     cycleId,
     categoryType: "all",
   });
@@ -49,8 +49,12 @@ export async function GET(request: NextRequest) {
   const monthlyCategories = categoriesByType(allCaregories, false);
 
   const [monthlyExpenses, weeklyExpenses] = await Promise.all([
-    getExpensesByCategoryIds(monthlyCategories.map((category) => category.id)),
-    getExpensesByCategoryIds(weeklyCategories.map((category) => category.id)),
+    expensesActions.getExpensesByCategoryIds(
+      monthlyCategories.map((category) => category.id)
+    ),
+    expensesActions.getExpensesByCategoryIds(
+      weeklyCategories.map((category) => category.id)
+    ),
   ]);
 
   const result = {

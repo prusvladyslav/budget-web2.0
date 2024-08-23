@@ -15,6 +15,9 @@ export function formatDateRange(dateRange: DateRange): string {
 
   return `${fromFormatted} - ${toFormatted}`;
 }
+export function formatDate(date: Date, withYear = true): string {
+  return format(date, withYear ? "dd.MM.yyyy" : "dd.MM");
+}
 
 export function parseDateRange(dateRangeStr: string): DateRange | null {
   const [fromFormatted, toFormatted] = dateRangeStr.split(" - ");

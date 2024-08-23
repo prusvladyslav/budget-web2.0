@@ -3,11 +3,10 @@ import { usersTable } from "@/db/schema";
 import { currentUser } from "@clerk/nextjs/server";
 import { eq } from "drizzle-orm";
 
-import { createUser, getCycles } from "./actions";
 import MainTable from "@/components/main/MainTable";
 import UserProfileDialog from "@/components/common/UserProfileDialog";
-import { SWRConfig } from "swr";
 import { SWRProvider } from "@/components/common/SWRprovider";
+import { cyclesActions, usersActions } from "./actions";
 
 export default async function Home() {
   const clerUser = await currentUser();
@@ -19,7 +18,7 @@ export default async function Home() {
   });
 
   if (!user) {
-    const newUser = await createUser(
+    const newUser = await usersActions.createUser(
       clerUser.fullName || "no name provided",
       clerUser.id
     );
@@ -30,16 +29,17 @@ export default async function Home() {
       ...newUser[0],
       lastOpenedCycleId: null,
       lastOpenedSubcycleId: null,
+      debug: false,
     };
     return (
-      <>
+      <SWRProvider>
         <UserProfileDialog user={newUserWithCycles} />
         <MainTable cycles={[]} user={newUserWithCycles} />
-      </>
+      </SWRProvider>
     );
   }
 
-  const cycles = await getCycles();
+  const cycles = await cyclesActions.getCycles();
 
   return (
     <SWRProvider>

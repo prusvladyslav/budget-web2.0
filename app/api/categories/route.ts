@@ -1,4 +1,4 @@
-import { type CategoryType, getCategories } from "@/app/actions";
+import { categoriesActions } from "@/app/actions";
 import { NextRequest } from "next/server";
 
 export async function GET(request: NextRequest) {
@@ -17,9 +17,9 @@ export async function GET(request: NextRequest) {
   }
 
   if (withAmount !== "true") {
-    const subcycles = await getCategories({
+    const subcycles = await categoriesActions.getCategoriesByCycleId({
       cycleId,
-      categoryType: categoryType as CategoryType,
+      categoryType: categoryType as categoriesActions.CategoryType,
     });
 
     return new Response(JSON.stringify(subcycles));

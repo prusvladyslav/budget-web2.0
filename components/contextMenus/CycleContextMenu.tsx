@@ -1,9 +1,7 @@
 "use client";
 import { SelectCycle } from "@/db/schema";
-import { deleteCycle } from "@/app/actions";
 import { toast } from "sonner";
-import { Dialog, DialogTrigger } from "../ui/dialog";
-import RenameCycle from "../modals/RenameCycle";
+import { Dialog } from "../ui/dialog";
 
 import {
   DropdownMenu,
@@ -11,6 +9,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { cyclesActions } from "@/app/actions";
 
 export default function CycleContextMenu({
   children,
@@ -24,19 +23,11 @@ export default function CycleContextMenu({
       <DropdownMenu>
         <DropdownMenuTrigger asChild>{children}</DropdownMenuTrigger>
         <DropdownMenuContent className="w-64">
-          {/* <DropdownMenuItem className="block">
-            <DialogTrigger asChild>
-              <p>
-                Rename <span className="underline">{cycle.title}</span> cycle
-              </p>
-            </DialogTrigger>
-          </DropdownMenuItem> */}
-
           <DropdownMenuItem className="block">
             {" "}
             <form
               action={async () => {
-                await deleteCycle(cycle.id);
+                await cyclesActions.deleteCycle(cycle.id);
                 toast.success("Cycle deleted successfully");
               }}
             >
@@ -47,7 +38,6 @@ export default function CycleContextMenu({
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
-      <RenameCycle cycle={cycle} />
     </Dialog>
   );
 }

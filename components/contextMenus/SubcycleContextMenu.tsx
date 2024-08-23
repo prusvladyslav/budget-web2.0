@@ -6,9 +6,9 @@ import {
   ContextMenuTrigger,
 } from "@/components/ui/context-menu";
 import { SelectSubcycle } from "@/db/schema";
-import { deleteSubcycle } from "@/app/actions";
 import { toast } from "sonner";
 import { Dialog } from "../ui/dialog";
+import { subcyclesActions } from "@/app/actions";
 
 export default function SubcycleContextMenu({
   children,
@@ -22,20 +22,11 @@ export default function SubcycleContextMenu({
       <ContextMenu>
         <ContextMenuTrigger>{children}</ContextMenuTrigger>
         <ContextMenuContent className="w-64">
-          {/* <ContextMenuItem className="block">
-            <DialogTrigger asChild>
-              <p>
-                Rename <span className="underline">{subcycle.title}</span>{" "}
-                subcycle
-              </p>
-            </DialogTrigger>
-          </ContextMenuItem> */}
-
           <ContextMenuItem className="block">
             {" "}
             <form
               action={async () => {
-                await deleteSubcycle(subcycle.id);
+                await subcyclesActions.deleteSubcycle(subcycle.id);
                 toast.success("subcycle deleted successfully");
               }}
             >
@@ -47,7 +38,6 @@ export default function SubcycleContextMenu({
           </ContextMenuItem>
         </ContextMenuContent>
       </ContextMenu>
-      {/* <RenameCycle cycle={subcycle} /> */}
     </Dialog>
   );
 }

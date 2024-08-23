@@ -6,17 +6,17 @@ import {
   SelectUser,
 } from "@/db/schema";
 import { TabsContent } from "../../ui/tabs";
-import { useDebouncedUserUpdate } from "../MainTable/useMainTable";
 import { URLS, useGet } from "@/lib/fetch";
-import { useCycleTab } from "./useCycleTab";
-import { Accordion } from "../../ui/accordion";
+import { Accordion, AccordionItem } from "../../ui/accordion";
 import SubcycleAccordionItem from "../../subcycle/SubcycleAccordionItem";
+import { Skeleton } from "@/components/ui/skeleton";
+import { useCycleContext } from "../MainTable";
 
 export type CategoryWithCurrentAmount = Array<
   SelectCategory & { currentAmount: number }
 >;
 
-export type getSubcyclesResponse = {
+export type getSubcyclesByCycleIdResponse = {
   subcycles: Array<
     SelectSubcycle & {
       allCategories: {
@@ -28,30 +28,26 @@ export type getSubcyclesResponse = {
 };
 
 export default function CycleTab({
-  cycle,
-  user,
+  cycles,
 }: {
-  cycle?: SelectCycle;
-  user: SelectUser;
+  cycles?: SelectCycle[] | null;
 }) {
+  const { selectedSubcycle, updateSubcycle, selectedCycle } = useCycleContext();
+
+  if (!cycles) return null;
+
+  const cycle = cycles.find((c) => c.id === selectedCycle);
+
   if (!cycle) return null;
 
-  const debouncedUpdateUserSubcycle = useDebouncedUserUpdate(
-    "lastOpenedSubcycleId"
+  const { data, isLoading } = useGet<getSubcyclesByCycleIdResponse>(
+    URLS.subCyclesTable + "?cycleId=" + cycle.id,
+    "subcyclesTable"
   );
 
-  const { selectedSubcycle, updateSelectedSubcycleValue } = useCycleTab(
-    user.lastOpenedSubcycleId || "",
-    debouncedUpdateUserSubcycle
-  );
-
-  const { data, isLoading } = useGet<getSubcyclesResponse>(
-    URLS.subCyclesTable + "?cycleId=" + cycle.id
-  );
+  if (isLoading) return <CycleTabSkeleton />;
 
   const subcyclesTable = data?.data;
-
-  if (isLoading) return "Loading...";
 
   if (!subcyclesTable) return null;
 
@@ -63,15 +59,15 @@ export default function CycleTab({
         type="single"
         collapsible
         value={selectedSubcycle}
-        onValueChange={updateSelectedSubcycleValue}
+        onValueChange={updateSubcycle}
       >
         {subcycles.map((subcycle) => {
           return (
             <SubcycleAccordionItem
-              selectedSubcycle={selectedSubcycle}
               categories={subcycle.allCategories.weeklyCategories}
               key={subcycle.id}
               subcycle={subcycle}
+              cycles={cycles}
             />
           );
         })}
@@ -79,3 +75,19 @@ export default function CycleTab({
     </TabsContent>
   );
 }
+
+const CycleTabSkeleton = () => {
+  return (
+    <Accordion type="single" collapsible value={""}>
+      {Array(5)
+        .fill(null)
+        .map((_, index) => (
+          <AccordionItem value={""} key={index}>
+            <Skeleton className="h-[56px] w-full flex items-center justify-between">
+              <Skeleton className="ml-[16px] h-[32px] w-[250px] bg-gray-300" />
+            </Skeleton>
+          </AccordionItem>
+        ))}
+    </Accordion>
+  );
+};

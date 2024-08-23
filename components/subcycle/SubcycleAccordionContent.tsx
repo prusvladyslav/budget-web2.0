@@ -8,11 +8,15 @@ import {
   TableRow,
 } from "../ui/table";
 import { CategoryWithCurrentAmount } from "../main/CycleTab/CycleTab";
+import AddNewExpense from "../modals/AddNewExpense";
+import { SelectCycle } from "@/db/schema";
 
 export default function SubcycleAccordionContent({
   categories,
+  cycles,
 }: {
   categories: CategoryWithCurrentAmount;
+  cycles: SelectCycle[];
 }) {
   return (
     <AccordionContent className="p-4">
@@ -22,6 +26,7 @@ export default function SubcycleAccordionContent({
             <TableHead>Title</TableHead>
             <TableHead>Initial Amount</TableHead>
             <TableHead>Current Amount</TableHead>
+            <TableHead></TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -30,6 +35,9 @@ export default function SubcycleAccordionContent({
               <TableCell>{category.title}</TableCell>
               <TableCell>{category.initialAmount}</TableCell>
               <TableCell>{category.currentAmount}</TableCell>
+              <TableCell className="text-right">
+                <AddNewExpense cycles={cycles} categoryId={category.id} />
+              </TableCell>
             </TableRow>
           ))}
         </TableBody>

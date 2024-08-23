@@ -21,9 +21,9 @@ import { RadioGroup, RadioGroupItem } from "../ui/radio-group";
 import { useForm, useFieldArray, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { Category, createCycle } from "@/app/actions";
 import { useState } from "react";
 import { createWeeksArray } from "@/lib/utils";
+import { cyclesActions } from "@/app/actions";
 
 type Props = {
   triggerElement: React.ReactNode;
@@ -47,7 +47,7 @@ const formSchema = z.object({
 
 type FormData = z.infer<typeof formSchema>;
 
-export default function AddNewCycleOrSubcycle({ triggerElement }: Props) {
+export default function AddNewCycle({ triggerElement }: Props) {
   const [open, setOpen] = useState(false);
   const {
     reset,
@@ -73,7 +73,7 @@ export default function AddNewCycleOrSubcycle({ triggerElement }: Props) {
 
   const onSubmit = async (data: FormData) => {
     try {
-      await createCycle(data);
+      await cyclesActions.createCycle(data);
       toast.success(`Cycle created successfully`);
     } catch (error) {
       console.error(error);
@@ -140,7 +140,7 @@ export default function AddNewCycleOrSubcycle({ triggerElement }: Props) {
 
 type CategoriesProps = {
   fields: Record<"id", string>[];
-  append: (value: Category) => void;
+  append: (value: Omit<cyclesActions.Category, "userId">) => void;
   remove: (index: number) => void;
   control: any;
   errors: any;

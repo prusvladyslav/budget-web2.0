@@ -19,11 +19,14 @@ CREATE TABLE `cycles` (
 --> statement-breakpoint
 CREATE TABLE `expenses` (
 	`id` text PRIMARY KEY NOT NULL,
+	`cycle_id` text NOT NULL,
 	`subcycle_id` text NOT NULL,
 	`category_id` text NOT NULL,
 	`amount` integer NOT NULL,
+	`date` text NOT NULL,
 	`created_at` text DEFAULT (CURRENT_TIMESTAMP) NOT NULL,
 	`comment` text,
+	FOREIGN KEY (`cycle_id`) REFERENCES `cycles`(`id`) ON UPDATE no action ON DELETE cascade,
 	FOREIGN KEY (`subcycle_id`) REFERENCES `subsycles`(`id`) ON UPDATE no action ON DELETE cascade,
 	FOREIGN KEY (`category_id`) REFERENCES `categories`(`id`) ON UPDATE no action ON DELETE cascade
 );
