@@ -9,6 +9,7 @@ import { IBM_Plex_Mono } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "@/components/ui/sonner";
 import { SpeedInsights } from "@vercel/speed-insights/next";
+import { BurgerMenu } from "@/components/common/BurgerMenu";
 
 const font = IBM_Plex_Mono({ weight: "400", subsets: ["latin"] });
 

@@ -8,6 +8,7 @@ import UserProfileDialog from "@/components/common/UserProfileDialog";
 import { SWRProvider } from "@/components/common/SWRprovider";
 import { cyclesActions, usersActions } from "./actions";
 import type { Metadata } from "next";
+import { BurgerMenu } from "@/components/common/BurgerMenu";
 
 export default async function Home() {
   const clerUser = await currentUser();
@@ -34,7 +35,6 @@ export default async function Home() {
     };
     return (
       <SWRProvider>
-        <UserProfileDialog user={newUserWithCycles} />
         <MainTable cycles={[]} user={newUserWithCycles} />
       </SWRProvider>
     );
@@ -44,7 +44,6 @@ export default async function Home() {
 
   return (
     <SWRProvider>
-      <UserProfileDialog user={user} />
       <MainTable cycles={cycles} user={user} />
     </SWRProvider>
   );
