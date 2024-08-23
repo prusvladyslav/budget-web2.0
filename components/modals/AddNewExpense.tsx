@@ -132,10 +132,11 @@ export default function AddNewExpense({ cycles, categoryId }: Props) {
                   name="date"
                   control={control}
                   render={({ field }) => (
-                    <FormItem className="flex flex-col">
+                    <FormItem className="grid grid-cols-[1fr_3fr] items-center md:flex md:flex-col md:items-start">
                       <FormLabel>Date:</FormLabel>
                       <FormControl>
                         <DatePicker
+                          className="md:w-full"
                           date={field.value}
                           setDate={(newDate) => field.onChange(newDate)}
                         />
@@ -149,7 +150,7 @@ export default function AddNewExpense({ cycles, categoryId }: Props) {
                   name="cycleId"
                   control={control}
                   render={({ field }) => (
-                    <FormItem>
+                    <FormItem className="grid grid-cols-[1fr_3fr] items-center md:block">
                       <FormLabel>Cycle:</FormLabel>
                       <FormControl>
                         <SelectBasic
@@ -173,7 +174,7 @@ export default function AddNewExpense({ cycles, categoryId }: Props) {
                   name="subcycleId"
                   control={control}
                   render={({ field }) => (
-                    <FormItem>
+                    <FormItem className="grid grid-cols-[1fr_3fr] items-center md:block">
                       <FormLabel>Subcycle:</FormLabel>
                       <FormControl>
                         <SelectBasic
@@ -201,7 +202,7 @@ export default function AddNewExpense({ cycles, categoryId }: Props) {
                   name="categoryId"
                   control={control}
                   render={({ field }) => (
-                    <FormItem>
+                    <FormItem className="grid grid-cols-[1fr_3fr] items-center md:block">
                       <FormLabel>Category:</FormLabel>
                       <FormControl>
                         <SelectBasic
@@ -229,7 +230,7 @@ export default function AddNewExpense({ cycles, categoryId }: Props) {
                   name="amount"
                   control={control}
                   render={({ field }) => (
-                    <FormItem>
+                    <FormItem className="grid grid-cols-[1fr_3fr] items-center md:block">
                       <FormLabel>Amount:</FormLabel>
                       <FormControl>
                         <Input
