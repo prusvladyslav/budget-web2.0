@@ -1,5 +1,5 @@
 "use client";
-import { useForm, Controller } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import {
   Dialog,
   DialogContent,
@@ -25,6 +25,7 @@ import { useSWRConfig } from "swr";
 import AddExpenseButton from "../common/AddExpenseButton";
 import { useCycleContext } from "../main/MainTable";
 import { expensesActions } from "@/app/actions";
+import { Form, FormControl, FormField, FormItem, FormLabel } from "../ui/form";
 
 type Props = {
   cycles: SelectCycle[] | null;
@@ -59,16 +60,19 @@ export default function AddNewExpense({ cycles, categoryId }: Props) {
     comment: "",
   };
 
+  const form = useForm<FormData>({
+    resolver: zodResolver(formSchema),
+    defaultValues,
+  });
+
   const {
     reset,
     control,
     handleSubmit,
     formState: { errors },
     watch,
-  } = useForm<FormData>({
-    resolver: zodResolver(formSchema),
-    defaultValues,
-  });
+    setFocus,
+  } = form;
 
   const cycledId = watch("cycleId");
 
@@ -109,6 +113,10 @@ export default function AddNewExpense({ cycles, categoryId }: Props) {
     reset(defaultValues);
   }, [categoryId, selectedSubcycle, selectedCycle]);
 
+  useEffect(() => {
+    setFocus("amount", { shouldSelect: true });
+  }, [setFocus]);
+
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger>
@@ -116,152 +124,160 @@ export default function AddNewExpense({ cycles, categoryId }: Props) {
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px] p-0">
         <ScrollArea className="max-h-[calc(100vh-20px)] p-8">
-          <form onSubmit={handleSubmit(onSubmit)} className="px-2">
-            <DialogHeader className="mb-4">
-              <DialogTitle>Adding new Expense</DialogTitle>
-            </DialogHeader>
-            <div className="space-y-4">
-              <>
-                <div className="grid grid-cols-[1fr_3fr] items-center">
-                  <Label>Date:</Label>
-                  <Controller
-                    name="date"
-                    control={control}
-                    render={({ field }) => (
-                      <DatePicker
-                        date={field.value}
-                        setDate={(newDate) => field.onChange(newDate)}
-                      />
-                    )}
-                  />
-                </div>
-                {errors.date && (
-                  <p className="text-red-500">{errors.date.message}</p>
-                )}
-              </>
-              <>
-                <div className="items-center grid grid-cols-[1fr_3fr]">
-                  <Label>Cycle:</Label>
-                  <Controller
-                    name="cycleId"
-                    control={control}
-                    render={({ field }) => (
-                      <SelectBasic
-                        className="w-full"
-                        placeholder="Select cycle"
-                        defaultValue={field.value}
-                        disabled={isLoading}
-                        setValue={(value) => field.onChange(value)}
-                        options={cycles?.map((cycle) => ({
-                          label: cycle.title,
-                          value: cycle.id,
-                        }))}
-                      />
-                    )}
-                  />
-                </div>
-                {errors.cycleId && (
-                  <p className="text-red-500">{errors.cycleId.message}</p>
-                )}
-              </>
-              <>
-                <div className="grid grid-cols-[1fr_3fr] items-center">
-                  <Label>Subcycle:</Label>
-                  <Controller
-                    name="subcycleId"
-                    control={control}
-                    render={({ field }) => (
-                      <SelectBasic
-                        className="w-full"
-                        placeholder="Select subcycle"
-                        disabled={isLoading}
-                        defaultValue={field.value}
-                        setValue={(value) => field.onChange(value)}
-                        options={
-                          isLoading
-                            ? []
-                            : subcycles?.map((subcycle) => ({
-                                label: subcycle.title,
-                                value: subcycle.id,
-                              }))
-                        }
-                      />
-                    )}
-                  />
-                </div>
-                {errors.subcycleId && (
-                  <p className="text-red-500">{errors.subcycleId.message}</p>
-                )}
-              </>
-              <>
-                <div className="items-center grid grid-cols-[1fr_3fr]">
-                  <Label>Category:</Label>
-                  <Controller
-                    name="categoryId"
-                    control={control}
-                    render={({ field }) => (
-                      <SelectBasic
-                        className="w-full"
-                        placeholder="Select category"
-                        disabled={isLoading}
-                        defaultValue={field.value}
-                        setValue={(value) => field.onChange(value)}
-                        options={
-                          isLoading
-                            ? []
-                            : categories?.map((category) => ({
-                                label: category.title,
-                                value: category.id,
-                              }))
-                        }
-                      />
-                    )}
-                  />
-                </div>
-                {errors.categoryId && (
-                  <p className="text-red-500">{errors.categoryId.message}</p>
-                )}
-              </>
-              <>
-                <div className="items-center grid grid-cols-[1fr_3fr]">
-                  <Label>Amount:</Label>
-                  <Controller
-                    name="amount"
-                    control={control}
-                    render={({ field }) => (
-                      <Input
-                        className="w-full"
-                        placeholder="Expense amount"
-                        disabled={isLoading}
-                        defaultValue={field.value}
-                        onChange={(value) => field.onChange(value)}
-                      />
-                    )}
-                  />
-                </div>
-                {errors.amount && (
-                  <p className="text-red-500">{errors.amount.message}</p>
-                )}
-              </>
-            </div>
-            <div className="space-y-2 flex flex-col mt-6">
-              <Label>Comment (optional):</Label>
-              <Controller
-                name="comment"
-                control={control}
-                render={({ field }) => (
-                  <Textarea
-                    onChange={field.onChange}
-                    value={field.value}
-                    placeholder="Comment for this expense"
-                  />
-                )}
-              />
-            </div>
-            <DialogFooter className="mt-4">
-              <Button type="submit">Save</Button>
-            </DialogFooter>
-          </form>
+          <Form {...form}>
+            <form onSubmit={handleSubmit(onSubmit)} className="px-2">
+              <DialogHeader className="mb-4">
+                <DialogTitle>Adding new Expense</DialogTitle>
+              </DialogHeader>
+              <div className="space-y-4">
+                <>
+                  <div className="grid grid-cols-[1fr_3fr] items-center">
+                    <Label>Date:</Label>
+                    <FormField
+                      name="date"
+                      control={control}
+                      render={({ field }) => (
+                        <DatePicker
+                          date={field.value}
+                          setDate={(newDate) => field.onChange(newDate)}
+                        />
+                      )}
+                    />
+                  </div>
+                  {errors.date && (
+                    <p className="text-red-500">{errors.date.message}</p>
+                  )}
+                </>
+                <>
+                  <div className="items-center grid grid-cols-[1fr_3fr]">
+                    <Label>Cycle:</Label>
+                    <FormField
+                      name="cycleId"
+                      control={control}
+                      render={({ field }) => (
+                        <SelectBasic
+                          className="w-full"
+                          placeholder="Select cycle"
+                          defaultValue={field.value}
+                          disabled={isLoading}
+                          setValue={(value) => field.onChange(value)}
+                          options={cycles?.map((cycle) => ({
+                            label: cycle.title,
+                            value: cycle.id,
+                          }))}
+                        />
+                      )}
+                    />
+                  </div>
+                  {errors.cycleId && (
+                    <p className="text-red-500">{errors.cycleId.message}</p>
+                  )}
+                </>
+                <>
+                  <div className="grid grid-cols-[1fr_3fr] items-center">
+                    <Label>Subcycle:</Label>
+                    <FormField
+                      name="subcycleId"
+                      control={control}
+                      render={({ field }) => (
+                        <SelectBasic
+                          className="w-full"
+                          placeholder="Select subcycle"
+                          disabled={isLoading}
+                          defaultValue={field.value}
+                          setValue={(value) => field.onChange(value)}
+                          options={
+                            isLoading
+                              ? []
+                              : subcycles?.map((subcycle) => ({
+                                  label: subcycle.title,
+                                  value: subcycle.id,
+                                }))
+                          }
+                        />
+                      )}
+                    />
+                  </div>
+                  {errors.subcycleId && (
+                    <p className="text-red-500">{errors.subcycleId.message}</p>
+                  )}
+                </>
+                <>
+                  <div className="items-center grid grid-cols-[1fr_3fr]">
+                    <Label>Category:</Label>
+                    <FormField
+                      name="categoryId"
+                      control={control}
+                      render={({ field }) => (
+                        <FormItem>
+                          {/* <FormLabel>Category:</FormLabel> */}
+                          <FormControl>
+                            <SelectBasic
+                              className="w-full"
+                              placeholder="Select category"
+                              disabled={isLoading}
+                              defaultValue={field.value}
+                              setValue={(value) => field.onChange(value)}
+                              options={
+                                isLoading
+                                  ? []
+                                  : categories?.map((category) => ({
+                                      label: category.title,
+                                      value: category.id,
+                                    }))
+                              }
+                            />
+                          </FormControl>
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                  {errors.categoryId && (
+                    <p className="text-red-500">{errors.categoryId.message}</p>
+                  )}
+                </>
+                <>
+                  <div className="items-center grid grid-cols-[1fr_3fr]">
+                    <Label>Amount:</Label>
+                    <FormField
+                      name="amount"
+                      control={control}
+                      render={({ field }) => (
+                        <Input
+                          {...field}
+                          className="w-full"
+                          placeholder="Expense amount"
+                          disabled={isLoading}
+                          defaultValue={field.value}
+                          onChange={(value) => field.onChange(value)}
+                        />
+                      )}
+                    />
+                  </div>
+                  {errors.amount && (
+                    <p className="text-red-500">{errors.amount.message}</p>
+                  )}
+                </>
+              </div>
+              <div className="space-y-2 flex flex-col mt-6">
+                <Label>Comment (optional):</Label>
+                <FormField
+                  name="comment"
+                  control={control}
+                  render={({ field }) => (
+                    <Textarea
+                      onChange={field.onChange}
+                      value={field.value}
+                      placeholder="Comment for this expense"
+                    />
+                  )}
+                />
+              </div>
+              <DialogFooter className="mt-4">
+                <Button type="submit">Save</Button>
+              </DialogFooter>
+            </form>
+          </Form>
         </ScrollArea>
       </DialogContent>
     </Dialog>

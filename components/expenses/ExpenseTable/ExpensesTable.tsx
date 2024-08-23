@@ -82,33 +82,15 @@ export function ExpensesTable<TData, TValue>({
     table.resetRowSelection();
   };
 
+  const filterCycleIdValue = table
+    .getColumn("cycleId")
+    ?.getFilterValue() as string;
+
   return (
     <div className="flex flex-col space-y-4">
       <div className="rounded-md border p-4 flex flex-col md:flex-row gap-5 md:gap-10">
         <SelectBasic
-          disabled={false}
-          value={
-            categories.find(
-              (category) =>
-                category.title ===
-                (table.getColumn("category")?.getFilterValue() as string)
-            )?.id || ""
-          }
-          setValue={(value) =>
-            table
-              .getColumn("category")
-              ?.setFilterValue(
-                categories.find((category) => category.id === value)?.title
-              )
-          }
-          placeholder="Category"
-          options={categories?.map((category) => ({
-            value: category.id,
-            label: category.title,
-          }))}
-        />
-        <SelectBasic
-          value={(table.getColumn("cycleId")?.getFilterValue() as string) ?? ""}
+          value={filterCycleIdValue ?? ""}
           setValue={(value) =>
             table.getColumn("cycleId")?.setFilterValue(value)
           }
@@ -127,17 +109,13 @@ export function ExpensesTable<TData, TValue>({
             table.getColumn("subcycleId")?.setFilterValue(value)
           }
           placeholder={
-            (table.getColumn("cycleId")?.getFilterValue() as string)
-              ? "Subcycle"
-              : "Subcycle (fill the cycle first)"
+            filterCycleIdValue ? "Subcycle" : "Subcycle (fill the cycle first)"
           }
           options={
-            (table.getColumn("cycleId")?.getFilterValue() as string)
+            filterCycleIdValue
               ? subcycles
                   ?.filter(
-                    (subcycles) =>
-                      subcycles.cycleId ===
-                      table.getColumn("cycleId")?.getFilterValue()
+                    (subcycles) => subcycles.cycleId === filterCycleIdValue
                   )
                   .map((subcycle) => ({
                     value: subcycle.id,
@@ -146,6 +124,36 @@ export function ExpensesTable<TData, TValue>({
               : []
           }
           disabled={false}
+        />
+        <SelectBasic
+          disabled={false}
+          value={
+            categories.find(
+              (category) =>
+                category.title ===
+                (table.getColumn("category")?.getFilterValue() as string)
+            )?.id || ""
+          }
+          setValue={(value) =>
+            table
+              .getColumn("category")
+              ?.setFilterValue(
+                categories.find((category) => category.id === value)?.title
+              )
+          }
+          placeholder={
+            filterCycleIdValue ? "Category" : "Category (fill the cycle first)"
+          }
+          options={
+            filterCycleIdValue
+              ? categories
+                  .filter((category) => category.cycleId === filterCycleIdValue)
+                  .map((category) => ({
+                    value: category.id,
+                    label: category.title,
+                  }))
+              : []
+          }
         />
         <div className="flex gap-5">
           <Button

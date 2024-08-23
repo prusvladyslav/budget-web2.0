@@ -7,6 +7,12 @@ import {
   subcyclesActions,
   cyclesActions,
 } from "../actions";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Expenses history",
+  description: "Expenses tracking app. Expenses history page",
+};
 
 export default async function Page() {
   const [expenses, categories, cycles, subcycles] = await Promise.all([

@@ -29,8 +29,6 @@ function SelectBasic({
   disabled,
   value,
 }: Props) {
-  console.log(value);
-
   return (
     <Select
       value={value ?? undefined}

@@ -18,12 +18,13 @@ import { TrashIcon, PlusIcon } from "lucide-react";
 import { Separator } from "../ui/separator";
 import { ScrollArea } from "../ui/scroll-area";
 import { RadioGroup, RadioGroupItem } from "../ui/radio-group";
-import { useForm, useFieldArray, Controller } from "react-hook-form";
+import { useForm, useFieldArray } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { useState } from "react";
 import { createWeeksArray } from "@/lib/utils";
 import { cyclesActions } from "@/app/actions";
+import { FormField } from "../ui/form";
 
 type Props = {
   triggerElement: React.ReactNode;
@@ -104,7 +105,7 @@ export default function AddNewCycle({ triggerElement }: Props) {
             <div className="space-y-4">
               <div className="space-y-2">
                 <Label>Date From and To:</Label>
-                <Controller
+                <FormField
                   name="date"
                   control={control}
                   render={({ field }) => (
@@ -191,7 +192,7 @@ const Categories = ({
                   <TrashIcon className="w-4 h-4" />
                 </Button>
               </div>
-              <Controller
+              <FormField
                 name={`categories.${index}.title`}
                 control={control}
                 render={({ field }) => (
@@ -203,7 +204,7 @@ const Categories = ({
                   {errors.categories[index].title.message}
                 </p>
               )}
-              <Controller
+              <FormField
                 name={`categories.${index}.initialAmount`}
                 control={control}
                 defaultValue={undefined}
@@ -224,7 +225,7 @@ const Categories = ({
               )}
               <div>
                 <Label>Monthly category or weekly?</Label>
-                <Controller
+                <FormField
                   name={`categories.${index}.weekly`}
                   control={control}
                   render={({ field }) => (
