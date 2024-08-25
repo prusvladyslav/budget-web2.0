@@ -10,7 +10,7 @@ type ExpensesTable = {
   date: string;
   comment: string | null;
   cycleId: string;
-  subcycleId: string;
+  subcycleId: string | null;
   id: string;
 };
 
