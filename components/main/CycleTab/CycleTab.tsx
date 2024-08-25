@@ -1,16 +1,12 @@
 "use client";
-import {
-  SelectCategory,
-  SelectCycle,
-  SelectSubcycle,
-  SelectUser,
-} from "@/db/schema";
+import { SelectCategory, SelectCycle, SelectSubcycle } from "@/db/schema";
 import { TabsContent } from "../../ui/tabs";
 import { URLS, useGet } from "@/lib/fetch";
 import { Accordion, AccordionItem } from "../../ui/accordion";
 import SubcycleAccordionItem from "../../subcycle/SubcycleAccordionItem";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useCycleContext } from "../MainTable";
+import MonthlyAccordionItem from "@/components/subcycle/MonthlyAccordionItem";
 
 export type CategoryWithCurrentAmount = Array<
   SelectCategory & { currentAmount: number }
@@ -21,10 +17,10 @@ export type getSubcyclesByCycleIdResponse = {
     SelectSubcycle & {
       allCategories: {
         weeklyCategories: CategoryWithCurrentAmount;
-        monthlyCategories: CategoryWithCurrentAmount;
       };
     }
   >;
+  monthlyCategories: CategoryWithCurrentAmount;
 };
 
 export default function CycleTab({
@@ -51,7 +47,22 @@ export default function CycleTab({
 
   if (!subcyclesTable) return null;
 
-  const { subcycles } = subcyclesTable;
+  const { subcycles, monthlyCategories } = subcyclesTable;
+
+  const leftInWeeklyCategories = subcycles.reduce(
+    (acc, subcycle) =>
+      acc +
+      subcycle.allCategories.weeklyCategories.reduce(
+        (acc, category) => acc + category.currentAmount,
+        0
+      ),
+    0
+  );
+
+  const leftInMonthyCategories = monthlyCategories.reduce(
+    (acc, category) => acc + category.currentAmount,
+    0
+  );
 
   return (
     <TabsContent value={cycle.id} key={cycle.id}>
@@ -71,6 +82,13 @@ export default function CycleTab({
             />
           );
         })}
+        <MonthlyAccordionItem categories={monthlyCategories} cycles={cycles} />
+        <div className="h-[56px] p-4 font-semibold text-lg border-1 bg-muted/40">
+          Total:{" "}
+          <span className="font-black">
+            {Math.trunc(leftInWeeklyCategories + leftInMonthyCategories)}
+          </span>
+        </div>
       </Accordion>
     </TabsContent>
   );

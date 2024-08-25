@@ -10,7 +10,7 @@ import {
 } from "../ui/dialog";
 import { ScrollArea } from "../ui/scroll-area";
 import { Button } from "../ui/button";
-import { useEffect, useState } from "react";
+import { use, useEffect, useRef, useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import DatePicker from "../common/DatePicker";
@@ -36,9 +36,10 @@ import {
 type Props = {
   cycles: SelectCycle[] | null;
   categoryId?: string;
+  monthly?: boolean;
 };
 
-const formSchema = z.object({
+const formSchemaWeekly = z.object({
   date: z.date(),
   cycleId: z.string().min(1, "Please select a cycle"),
   subcycleId: z.string().min(1, "Please select a subcycle"),
@@ -50,9 +51,24 @@ const formSchema = z.object({
   ),
 });
 
-type FormData = z.infer<typeof formSchema>;
+const formSchemaMonthly = z.object({
+  date: z.date(),
+  cycleId: z.string().min(1, "Please select a cycle"),
+  categoryId: z.string().min(1, "Please select a category"),
+  comment: z.string().optional(),
+  amount: z.preprocess(
+    (val) => Number(val),
+    z.number().min(1, "Expense amount must be greater than 0")
+  ),
+});
 
-export default function AddNewExpense({ cycles, categoryId }: Props) {
+type FormData = z.infer<typeof formSchemaWeekly>;
+
+export default function AddNewExpense({
+  cycles,
+  categoryId,
+  monthly = false,
+}: Props) {
   const [open, setOpen] = useState(false);
 
   const { selectedCycle, selectedSubcycle } = useCycleContext();
@@ -67,7 +83,7 @@ export default function AddNewExpense({ cycles, categoryId }: Props) {
   };
 
   const form = useForm<FormData>({
-    resolver: zodResolver(formSchema),
+    resolver: zodResolver(formSchemaWeekly),
     defaultValues,
   });
 
@@ -106,14 +122,6 @@ export default function AddNewExpense({ cycles, categoryId }: Props) {
       setOpen(false);
     }
   };
-
-  useEffect(() => {
-    reset(defaultValues);
-  }, [categoryId, selectedSubcycle, selectedCycle]);
-
-  useEffect(() => {
-    setFocus("amount", { shouldSelect: true });
-  }, [setFocus]);
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -236,6 +244,7 @@ export default function AddNewExpense({ cycles, categoryId }: Props) {
                         <Input
                           {...field}
                           className="w-full"
+                          type="number"
                           placeholder="Expense amount"
                           disabled={isLoading}
                           defaultValue={field.value}

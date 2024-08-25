@@ -77,9 +77,9 @@ export const expenseTable = sqliteTable("expenses", {
   cycleId: text("cycle_id")
     .notNull()
     .references(() => cycleTable.id, { onDelete: "cascade" }),
-  subcycleId: text("subcycle_id")
-    .notNull()
-    .references(() => subsycleTable.id, { onDelete: "cascade" }),
+  subcycleId: text("subcycle_id").references(() => subsycleTable.id, {
+    onDelete: "cascade",
+  }),
   userId: text("user_id")
     .notNull()
     .references(() => usersTable.id, { onDelete: "cascade" }),

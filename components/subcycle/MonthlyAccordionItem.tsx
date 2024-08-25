@@ -13,18 +13,16 @@ import {
 } from "../ui/table";
 
 export default function SubcycleAccordionItem({
-  subcycle,
   categories,
   cycles,
 }: {
-  subcycle: SelectSubcycle;
   categories: CategoryWithCurrentAmount;
   cycles: SelectCycle[];
 }) {
   return (
-    <AccordionItem value={subcycle.id}>
+    <AccordionItem value={"1"}>
       <AccordionTrigger className="bg-muted p-4 group">
-        {subcycle.title}
+        Monthly
       </AccordionTrigger>
       <AccordionContent className="p-4">
         <Table>

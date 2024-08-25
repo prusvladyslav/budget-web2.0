@@ -25,7 +25,7 @@ export async function GET(request: NextRequest) {
   const categoriesByType = (categories: SelectCategory[], isWeekly: boolean) =>
     categories.filter((category) => category.weekly === isWeekly);
 
-  const calculateCurrentAmount = (
+  const calculateCurrentAmountWeekly = (
     categories: SelectCategory[],
     expenses: SelectExpense[] | null,
     subcycleId: string
@@ -40,6 +40,26 @@ export async function GET(request: NextRequest) {
                 (expense) =>
                   expense.categoryId === category.id &&
                   expense.subcycleId === subcycleId
+              )
+              .reduce((acc, curr) => acc + curr.amount, 0)
+          : category.initialAmount,
+    }));
+
+  const calculateCurrentAmountMonthly = (
+    categories: SelectCategory[],
+    expenses: SelectExpense[] | null,
+    cycleId: string
+  ) =>
+    categories.map((category) => ({
+      ...category,
+      currentAmount:
+        expenses && expenses.length > 0
+          ? category.initialAmount -
+            expenses
+              .filter(
+                (expense) =>
+                  expense.categoryId === category.id &&
+                  expense.cycleId === cycleId
               )
               .reduce((acc, curr) => acc + curr.amount, 0)
           : category.initialAmount,
@@ -62,19 +82,19 @@ export async function GET(request: NextRequest) {
       return {
         ...subcycle,
         allCategories: {
-          weeklyCategories: calculateCurrentAmount(
+          weeklyCategories: calculateCurrentAmountWeekly(
             weeklyCategories,
             weeklyExpenses,
-            subcycle.id
-          ),
-          monthlyCategories: calculateCurrentAmount(
-            monthlyCategories,
-            monthlyExpenses,
             subcycle.id
           ),
         },
       };
     }),
+    monthlyCategories: calculateCurrentAmountWeekly(
+      monthlyCategories,
+      monthlyExpenses,
+      cycleId
+    ),
   };
 
   return new Response(JSON.stringify(result));
