@@ -6,6 +6,7 @@ import CycleTab from "../CycleTab";
 import { CycleContext, useCycleContext } from "./useCycleContext";
 import { BurgerMenu } from "@/components/common/BurgerMenu";
 import QuickMenu from "../QuickMenu/QuickMenu";
+import CycleChart from "../CycleChart/CycleChart";
 
 function MainTableContent({
   cycles,
@@ -22,15 +23,16 @@ function MainTableContent({
       onValueChange={updateCycleId}
       className="w-full space-y-4"
     >
-      <div className="flex items-center space-x-4">
+      <div className="flex items-center gap-4">
         <BurgerMenu user={user} />
-        <TabsList className="border-b w-full justify-start px-4 overflow-x-auto overflow-y-hidden space-x-2">
-          <MainTableHeader />
-        </TabsList>
+        <QuickMenu user={user} />
       </div>
+      <TabsList className="border-b w-full justify-start px-2 overflow-x-auto overflow-y-hidden space-x-2">
+        <MainTableHeader />
+      </TabsList>
 
       <CycleTab />
-      {/* <QuickMenu /> */}
+      <CycleChart />
     </Tabs>
   );
 }

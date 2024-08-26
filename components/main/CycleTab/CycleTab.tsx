@@ -80,8 +80,10 @@ export default function CycleTab() {
             />
           );
         })}
-        <MonthlyAccordionItem categories={monthlyCategories} />
-        <div className="h-[56px] p-4 font-semibold text-lg border-1 bg-muted/40">
+        {monthlyCategories.length > 0 && (
+          <MonthlyAccordionItem categories={monthlyCategories} />
+        )}
+        <div className="h-[56px] p-4 font-semibold text-lg border-1 bg-muted/60">
           Total:{" "}
           <span className="font-black">
             {Math.trunc(leftInWeeklyCategories + leftInMonthyCategories)}

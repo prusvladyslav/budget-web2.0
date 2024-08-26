@@ -43,13 +43,14 @@ export default function MainTableHeader() {
 
   return (
     <>
-      <AddNewCycle triggerElement={<PlusButton className="" />} />
       {cycles?.map((cycle) => (
         <TabsTrigger key={cycle.id} value={cycle.id} className="space-x-2">
-          <span onClick={(e) => e.preventDefault()}>{cycle.title}</span>
-          <CycleContextMenu key={cycle.id} cycle={cycle}>
-            <ChevronDown className="h-4 w-4 shrink-0 transition-transform duration-200" />
-          </CycleContextMenu>
+          <>
+            <span onClick={(e) => e.preventDefault()}>{cycle.title}</span>
+            <CycleContextMenu key={cycle.id} cycle={cycle}>
+              <ChevronDown className="h-4 w-4 shrink-0 transition-transform duration-200" />
+            </CycleContextMenu>
+          </>
         </TabsTrigger>
       ))}
     </>

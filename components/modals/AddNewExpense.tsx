@@ -10,7 +10,7 @@ import {
 } from "../ui/dialog";
 import { ScrollArea } from "../ui/scroll-area";
 import { Button } from "../ui/button";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import DatePicker from "../common/DatePicker";
@@ -36,6 +36,7 @@ import {
 type Props = {
   categoryId?: string;
   monthly?: boolean;
+  triggerElement?: React.ReactNode;
 };
 
 const formSchemaWeekly = z.object({
@@ -63,7 +64,11 @@ const formSchemaMonthly = z.object({
 
 type FormData = z.infer<typeof formSchemaWeekly | typeof formSchemaMonthly>;
 
-export default function AddNewExpense({ categoryId, monthly = false }: Props) {
+export default function AddNewExpense({
+  categoryId,
+  monthly = false,
+  triggerElement = <AddExpenseButton />,
+}: Props) {
   const [open, setOpen] = useState(false);
 
   const { selectedCycleId, selectedSubcycleId, cycles } = useCycleContext();
@@ -118,11 +123,13 @@ export default function AddNewExpense({ categoryId, monthly = false }: Props) {
     }
   };
 
+  useEffect(() => {
+    reset(defaultValues);
+  }, [reset, open]);
+
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger>
-        <AddExpenseButton />
-      </DialogTrigger>
+      <DialogTrigger asChild>{triggerElement}</DialogTrigger>
       <DialogContent className="sm:max-w-[425px] p-0">
         <ScrollArea className="max-h-[calc(100vh-20px)] p-8">
           <Form {...form}>

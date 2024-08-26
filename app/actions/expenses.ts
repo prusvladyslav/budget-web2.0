@@ -3,7 +3,7 @@ import { db } from "@/db";
 import { expenseTable, InsertExpense } from "@/db/schema";
 import { formatDate } from "@/lib/utils";
 import { auth } from "@clerk/nextjs/server";
-import { desc, eq, inArray } from "drizzle-orm";
+import { and, desc, eq, inArray } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { cache } from "react";
 import * as z from "zod";
@@ -62,13 +62,15 @@ export const getAllExpenses = cache(async () => {
   return expenses;
 });
 
-export const getAllExpensesTable = cache(async () => {
+export const getAllExpensesTable = cache(async (cycleId?: string) => {
   const { userId } = auth();
 
   if (!userId) return null;
 
   const expenses = await db.query.expenseTable.findMany({
-    where: eq(expenseTable.userId, userId),
+    where: cycleId
+      ? and(eq(expenseTable.userId, userId), eq(expenseTable.cycleId, cycleId))
+      : eq(expenseTable.userId, userId),
     orderBy: [desc(expenseTable.date)],
   });
 
