@@ -4,13 +4,17 @@ import { Button } from "@/components/ui/button";
 
 import { Separator } from "@/components/ui/separator";
 import { SelectUser } from "@/db/schema";
+import { useCycleContext } from "../MainTable";
 
 export default function QuickMenu({ user }: { user: SelectUser }) {
+  const { cycles } = useCycleContext();
   return (
     <div className="flex h-10 items-center rounded-md border bg-background">
-      <AddNewExpense
-        triggerElement={<Button variant="ghost">Add new expense</Button>}
-      />
+      {cycles && cycles?.length > 0 && (
+        <AddNewExpense
+          triggerElement={<Button variant="ghost">Add new expense</Button>}
+        />
+      )}
       <Separator orientation="vertical" className="m-0" />
       <AddNewCycle
         triggerElement={<Button variant={"ghost"}>Add new cycle</Button>}

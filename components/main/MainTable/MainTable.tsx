@@ -9,14 +9,14 @@ import QuickMenu from "../QuickMenu/QuickMenu";
 import CycleChart from "../CycleChart/CycleChart";
 
 function MainTableContent({
-  cycles,
   user,
+  cycles,
 }: {
-  cycles: SelectCycle[] | null;
   user: SelectUser;
+  cycles: SelectCycle[] | null;
 }) {
   const { selectedCycleId, updateCycleId } = useCycleContext();
-
+  const hasCycles = cycles && cycles.length > 0;
   return (
     <Tabs
       value={selectedCycleId}
@@ -27,12 +27,18 @@ function MainTableContent({
         <BurgerMenu user={user} />
         <QuickMenu user={user} />
       </div>
-      <TabsList className="border-b w-full justify-start px-2 overflow-x-auto overflow-y-hidden space-x-2">
-        <MainTableHeader />
-      </TabsList>
+      {hasCycles && (
+        <TabsList className="border-b w-full justify-start px-2 overflow-x-auto overflow-y-hidden space-x-2">
+          <MainTableHeader />
+        </TabsList>
+      )}
 
-      <CycleTab />
-      <CycleChart />
+      {hasCycles && (
+        <>
+          <CycleTab />
+          <CycleChart />
+        </>
+      )}
     </Tabs>
   );
 }
