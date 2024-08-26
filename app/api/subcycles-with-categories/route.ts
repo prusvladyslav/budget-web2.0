@@ -17,7 +17,10 @@ export async function GET(request: NextRequest) {
 
   const result = {
     subcycles,
-    categories,
+    categories: {
+      weekly: categories?.filter((category) => category.weekly === true),
+      monthly: categories?.filter((category) => category.weekly === false),
+    },
   };
 
   return new Response(JSON.stringify(result));

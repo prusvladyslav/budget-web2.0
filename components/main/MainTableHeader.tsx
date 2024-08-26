@@ -9,41 +9,37 @@ import { ChevronDown } from "lucide-react";
 import { PlusButton } from "../common/PlusButton";
 import { useCycleContext } from "./MainTable";
 
-export default function MainTableHeader({
-  cycles,
-}: {
-  cycles: SelectCycle[] | null;
-}) {
-  const { selectedCycle, updateCycle } = useCycleContext();
+export default function MainTableHeader() {
+  const { selectedCycleId, updateCycleId, cycles } = useCycleContext();
 
   useHotkeys(["meta+arrowright", "ctrl+arrowright"], (evt) => {
     if (!cycles) return;
 
-    const currentIndex = cycles.findIndex((c) => c.id === selectedCycle);
+    const currentIndex = cycles.findIndex((c) => c.id === selectedCycleId);
 
     const nextIndex = currentIndex + 1 >= cycles.length ? 0 : currentIndex + 1;
-    return updateCycle(cycles[nextIndex].id);
+    return updateCycleId(cycles[nextIndex].id);
   });
 
   useHotkeys(["meta+arrowleft", "ctrl+arrowleft"], (evt) => {
     if (!cycles) return;
 
-    const currentIndex = cycles.findIndex((c) => c.id === selectedCycle);
+    const currentIndex = cycles.findIndex((c) => c.id === selectedCycleId);
     const prevIndex =
       currentIndex - 1 < 0 ? cycles.length - 1 : currentIndex - 1;
-    return updateCycle(cycles[prevIndex].id);
+    return updateCycleId(cycles[prevIndex].id);
   });
 
   useEffect(() => {
     if (!cycles) return;
 
     const selectedCycleExists = cycles.some(
-      (cycle) => cycle.id === selectedCycle
+      (cycle) => cycle.id === selectedCycleId
     );
     if (!selectedCycleExists && cycles.length > 0) {
-      updateCycle(cycles[0].id);
+      updateCycleId(cycles[0].id);
     }
-  }, [cycles, selectedCycle]);
+  }, [cycles, selectedCycleId]);
 
   return (
     <>

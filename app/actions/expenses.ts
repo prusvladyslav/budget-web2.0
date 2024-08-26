@@ -38,7 +38,9 @@ export const addExpense = cache(async (data: Omit<InsertExpense, "userId">) => {
 
   if (!userId) return null;
 
-  const result = ExpenseSchema.omit({ id: true }).safeParse(data);
+  const result = ExpenseSchema.omit({ id: true, subcycleId: true }).safeParse(
+    data
+  );
 
   if (!result.success) {
     return console.error(result.error.issues);

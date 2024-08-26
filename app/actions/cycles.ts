@@ -102,7 +102,7 @@ export const createCycle = cache(
   }
 );
 
-export const updateCycle = cache(async (cycleId: string, title: string) => {
+export const updateCycleId = cache(async (cycleId: string, title: string) => {
   const { userId } = auth();
 
   if (!userId) return null;

@@ -1,6 +1,3 @@
-import { ExpensesTable } from "@/components/expenses/ExpenseTable/ExpensesTable";
-import { columns } from "@/components/expenses/ExpenseTable/columns";
-import GeneralLink from "@/components/common/GeneralLink";
 import {
   expensesActions,
   categoriesActions,
@@ -8,6 +5,9 @@ import {
   cyclesActions,
 } from "../actions";
 import type { Metadata } from "next";
+import { ExpensesTable } from "@/components/expenses/ExpenseTable/ExpensesTable";
+import GeneralLink from "@/components/common/GeneralLink";
+import { columns } from "@/components/expenses/ExpenseTable/columns";
 
 export const metadata: Metadata = {
   title: "Expenses history",
@@ -25,8 +25,11 @@ export default async function Page() {
   if (!expenses || !categories || !cycles || !subcycles) return null;
 
   return (
-    <div className="space-y-4">
+    <>
       <GeneralLink href="/">Go back</GeneralLink>
+      <div className="flex justify-between">
+        <h2 className="text-lg font-bold">Expenses history</h2>
+      </div>
       <ExpensesTable
         cycles={cycles}
         subcycles={subcycles}
@@ -34,6 +37,6 @@ export default async function Page() {
         data={expenses}
         categories={categories}
       />
-    </div>
+    </>
   );
 }

@@ -24,14 +24,14 @@ export function useCycleState(initialCycle: string, initialSubcycle: string) {
     debouncedUpdateUser(state);
   }, [state, debouncedUpdateUser]);
 
-  const updateCycle = useCallback((newCycle: string) => {
+  const updateCycleId = useCallback((newCycle: string) => {
     setState((prev) => ({
       lastOpenedCycleId: newCycle,
       lastOpenedSubcycleId: "",
     }));
   }, []);
 
-  const updateSubcycle = useCallback((newSubcycle: string) => {
+  const updateSubcycleId = useCallback((newSubcycle: string) => {
     setState((prev) => ({
       ...prev,
       lastOpenedSubcycleId: newSubcycle,
@@ -39,9 +39,9 @@ export function useCycleState(initialCycle: string, initialSubcycle: string) {
   }, []);
 
   return {
-    selectedCycle: state.lastOpenedCycleId,
-    selectedSubcycle: state.lastOpenedSubcycleId,
-    updateCycle,
-    updateSubcycle,
+    selectedCycleId: state.lastOpenedCycleId,
+    selectedSubcycleId: state.lastOpenedSubcycleId,
+    updateCycleId,
+    updateSubcycleId,
   };
 }

@@ -10,7 +10,7 @@ import {
 } from "../ui/dialog";
 import { ScrollArea } from "../ui/scroll-area";
 import { Button } from "../ui/button";
-import { use, useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import DatePicker from "../common/DatePicker";
@@ -34,7 +34,6 @@ import {
 } from "../ui/form";
 
 type Props = {
-  cycles: SelectCycle[] | null;
   categoryId?: string;
   monthly?: boolean;
 };
@@ -62,28 +61,24 @@ const formSchemaMonthly = z.object({
   ),
 });
 
-type FormData = z.infer<typeof formSchemaWeekly>;
+type FormData = z.infer<typeof formSchemaWeekly | typeof formSchemaMonthly>;
 
-export default function AddNewExpense({
-  cycles,
-  categoryId,
-  monthly = false,
-}: Props) {
+export default function AddNewExpense({ categoryId, monthly = false }: Props) {
   const [open, setOpen] = useState(false);
 
-  const { selectedCycle, selectedSubcycle } = useCycleContext();
+  const { selectedCycleId, selectedSubcycleId, cycles } = useCycleContext();
 
   const defaultValues = {
     date: new Date(),
-    cycleId: selectedCycle || "",
-    subcycleId: selectedSubcycle || "",
+    cycleId: selectedCycleId || "",
+    ...(!monthly && { subcycleId: selectedSubcycleId || "" }),
     categoryId: categoryId || "",
     amount: 0,
     comment: "",
   };
 
   const form = useForm<FormData>({
-    resolver: zodResolver(formSchemaWeekly),
+    resolver: zodResolver(monthly ? formSchemaMonthly : formSchemaWeekly),
     defaultValues,
   });
 
@@ -93,7 +88,7 @@ export default function AddNewExpense({
 
   type getSubcyclesByCycleIdWithCategories = {
     subcycles: SelectSubcycle[];
-    categories: SelectCategory[];
+    categories: { weekly: SelectCategory[]; monthly: SelectCategory[] };
   };
 
   const { data, isLoading } = useGet<getSubcyclesByCycleIdWithCategories>(
@@ -102,7 +97,7 @@ export default function AddNewExpense({
   );
 
   const subcycles = data?.data.subcycles;
-  const categories = data?.data.categories;
+  const categories = data?.data.categories[monthly ? "monthly" : "weekly"];
 
   const { mutate } = useSWRConfig();
 
@@ -178,33 +173,35 @@ export default function AddNewExpense({
                   )}
                 />
 
-                <FormField
-                  name="subcycleId"
-                  control={control}
-                  render={({ field }) => (
-                    <FormItem className="grid grid-cols-[1fr_3fr] items-center md:block">
-                      <FormLabel>Subcycle:</FormLabel>
-                      <FormControl>
-                        <SelectBasic
-                          className="w-full"
-                          placeholder="Select subcycle"
-                          disabled={isLoading}
-                          defaultValue={field.value}
-                          setValue={(value) => field.onChange(value)}
-                          options={
-                            isLoading
-                              ? []
-                              : subcycles?.map((subcycle) => ({
-                                  label: subcycle.title,
-                                  value: subcycle.id,
-                                }))
-                          }
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                {!monthly && (
+                  <FormField
+                    name="subcycleId"
+                    control={control}
+                    render={({ field }) => (
+                      <FormItem className="grid grid-cols-[1fr_3fr] items-center md:block">
+                        <FormLabel>Subcycle:</FormLabel>
+                        <FormControl>
+                          <SelectBasic
+                            className="w-full"
+                            placeholder="Select subcycle"
+                            disabled={isLoading}
+                            defaultValue={field.value}
+                            setValue={(value) => field.onChange(value)}
+                            options={
+                              isLoading
+                                ? []
+                                : subcycles?.map((subcycle) => ({
+                                    label: subcycle.title,
+                                    value: subcycle.id,
+                                  }))
+                            }
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                )}
 
                 <FormField
                   name="categoryId"

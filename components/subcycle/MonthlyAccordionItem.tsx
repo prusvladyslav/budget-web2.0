@@ -14,17 +14,15 @@ import {
 
 export default function SubcycleAccordionItem({
   categories,
-  cycles,
 }: {
   categories: CategoryWithCurrentAmount;
-  cycles: SelectCycle[];
 }) {
   return (
     <AccordionItem value={"1"}>
       <AccordionTrigger className="bg-muted p-4 group">
         Monthly
       </AccordionTrigger>
-      <AccordionContent className="p-4">
+      <AccordionContent className="">
         <Table>
           <TableHeader>
             <TableRow>
@@ -41,7 +39,7 @@ export default function SubcycleAccordionItem({
                 <TableCell>{category.initialAmount}</TableCell>
                 <TableCell>{category.currentAmount}</TableCell>
                 <TableCell className="text-right">
-                  <AddNewExpense cycles={cycles} categoryId={category.id} />
+                  <AddNewExpense categoryId={category.id} monthly={true} />
                 </TableCell>
               </TableRow>
             ))}

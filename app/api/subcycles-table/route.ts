@@ -90,7 +90,7 @@ export async function GET(request: NextRequest) {
         },
       };
     }),
-    monthlyCategories: calculateCurrentAmountWeekly(
+    monthlyCategories: calculateCurrentAmountMonthly(
       monthlyCategories,
       monthlyExpenses,
       cycleId

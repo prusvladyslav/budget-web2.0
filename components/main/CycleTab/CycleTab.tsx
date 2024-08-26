@@ -23,16 +23,15 @@ export type getSubcyclesByCycleIdResponse = {
   monthlyCategories: CategoryWithCurrentAmount;
 };
 
-export default function CycleTab({
-  cycles,
-}: {
-  cycles?: SelectCycle[] | null;
-}) {
-  const { selectedSubcycle, updateSubcycle, selectedCycle } = useCycleContext();
+export default function CycleTab() {
+  const {
+    selectedSubcycleId,
+    updateSubcycleId,
+    cycles,
+    selectedCycle: cycle,
+  } = useCycleContext();
 
   if (!cycles) return null;
-
-  const cycle = cycles.find((c) => c.id === selectedCycle);
 
   if (!cycle) return null;
 
@@ -69,8 +68,8 @@ export default function CycleTab({
       <Accordion
         type="single"
         collapsible
-        value={selectedSubcycle}
-        onValueChange={updateSubcycle}
+        value={selectedSubcycleId}
+        onValueChange={updateSubcycleId}
       >
         {subcycles.map((subcycle) => {
           return (
@@ -78,11 +77,10 @@ export default function CycleTab({
               categories={subcycle.allCategories.weeklyCategories}
               key={subcycle.id}
               subcycle={subcycle}
-              cycles={cycles}
             />
           );
         })}
-        <MonthlyAccordionItem categories={monthlyCategories} cycles={cycles} />
+        <MonthlyAccordionItem categories={monthlyCategories} />
         <div className="h-[56px] p-4 font-semibold text-lg border-1 bg-muted/40">
           Total:{" "}
           <span className="font-black">
