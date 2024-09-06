@@ -96,3 +96,22 @@ export const expenseTable = sqliteTable("expenses", {
 
 export type SelectExpense = typeof expenseTable.$inferSelect;
 export type InsertExpense = typeof expenseTable.$inferInsert;
+
+export const vaultTable = sqliteTable("vault", {
+  id: text("id")
+    .primaryKey()
+    .$defaultFn(() => randomUUID()),
+  userId: text("user_id")
+    .notNull()
+    .references(() => usersTable.id, { onDelete: "cascade" }),
+  name: text("name").notNull(),
+  createdAt: text("created_at")
+    .default(sql`(CURRENT_TIMESTAMP)`)
+    .notNull(),
+  amount: integer("amount").notNull(),
+  isMain: integer("is_main", { mode: "boolean" }).notNull(),
+  currency: text("currency").notNull(),
+});
+
+export type SelectVault = typeof vaultTable.$inferSelect;
+export type InsertVault = typeof vaultTable.$inferInsert;

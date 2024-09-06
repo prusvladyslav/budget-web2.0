@@ -1,8 +1,8 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "8f4a93dd-3dc5-4ecf-833a-13d15734bef4",
-  "prevId": "00000000-0000-0000-0000-000000000000",
+  "id": "c70439ce-6640-47ae-8378-523ae1823b52",
+  "prevId": "8f4a93dd-3dc5-4ecf-833a-13d15734bef4",
   "tables": {
     "categories": {
       "name": "categories",
@@ -434,6 +434,13 @@
         "is_main": {
           "name": "is_main",
           "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "curreny": {
+          "name": "curreny",
+          "type": "text",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false

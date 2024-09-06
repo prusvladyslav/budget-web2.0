@@ -52,3 +52,13 @@ CREATE TABLE `users` (
 	`last_opened_subcycle_id` text,
 	`debug` integer DEFAULT false
 );
+--> statement-breakpoint
+CREATE TABLE `vault` (
+	`id` text PRIMARY KEY NOT NULL,
+	`user_id` text NOT NULL,
+	`name` text NOT NULL,
+	`created_at` text DEFAULT (CURRENT_TIMESTAMP) NOT NULL,
+	`amount` integer NOT NULL,
+	`is_main` integer NOT NULL,
+	FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON UPDATE no action ON DELETE cascade
+);

@@ -4,11 +4,8 @@ import { currentUser } from "@clerk/nextjs/server";
 import { eq } from "drizzle-orm";
 
 import MainTable from "@/components/main/MainTable";
-import UserProfileDialog from "@/components/common/UserProfileDialog";
 import { SWRProvider } from "@/components/common/SWRprovider";
 import { cyclesActions, usersActions } from "./actions";
-import type { Metadata } from "next";
-import { BurgerMenu } from "@/components/common/BurgerMenu";
 
 export default async function Home() {
   const clerUser = await currentUser();

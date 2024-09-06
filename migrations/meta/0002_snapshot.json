@@ -1,8 +1,8 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "8f4a93dd-3dc5-4ecf-833a-13d15734bef4",
-  "prevId": "00000000-0000-0000-0000-000000000000",
+  "id": "d4e5f9d8-f66c-4ee6-8f18-e879dcc754d2",
+  "prevId": "c70439ce-6640-47ae-8378-523ae1823b52",
   "tables": {
     "categories": {
       "name": "categories",
@@ -437,6 +437,13 @@
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
+        },
+        "currency": {
+          "name": "currency",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
         }
       },
       "indexes": {},
@@ -463,7 +470,9 @@
   "_meta": {
     "schemas": {},
     "tables": {},
-    "columns": {}
+    "columns": {
+      "\"vault\".\"curreny\"": "\"vault\".\"currency\""
+    }
   },
   "internal": {
     "indexes": {}

@@ -40,6 +40,7 @@ export function BurgerMenu({ user }: { user: SelectUser }) {
           <div>
             <h2>Links:</h2>
             <div className="flex flex-col mt-2">
+              <GeneralLink href="/">Main page</GeneralLink>
               <GeneralLink href="/settings">User Settings</GeneralLink>
               <GeneralLink href="/expenses">Expenses History</GeneralLink>
               <GeneralLink href="/vault">Vault</GeneralLink>

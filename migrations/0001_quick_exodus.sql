@@ -1,0 +1,1 @@
+ALTER TABLE `vault` ADD `curreny` text NOT NULL;

@@ -33,74 +33,70 @@ export const getCycles = cache(async () => {
 
 export type Category = Omit<InsertCategory, "cycleId">;
 
-export const createCycle = cache(
-  async ({
-    date,
-    categories,
-  }: {
-    date: DateRange;
-    categories: Array<Omit<Category, "userId">>;
-  }) => {
-    const { userId } = auth();
+type CreateCycle = {
+  date: DateRange;
+  categories: Array<Omit<Category, "userId">>;
+};
+export const createCycle = cache(async ({ date, categories }: CreateCycle) => {
+  const { userId } = auth();
 
-    if (!userId) return null;
+  if (!userId) return null;
 
-    if (!date || !date.from || !date.to) return null;
+  if (!date || !date.from || !date.to) return null;
 
-    const cycleTitle = formatDateRange(date);
+  const cycleTitle = formatDateRange(date);
 
-    const cycleValidationResult = CycleSchema.pick({ title: true }).safeParse({
-      title: cycleTitle,
-    });
+  const cycleValidationResult = CycleSchema.pick({ title: true }).safeParse({
+    title: cycleTitle,
+  });
 
-    if (!cycleValidationResult.success) {
-      return console.error(cycleValidationResult.error.issues);
-    }
-
-    const existingCycle = await db.query.cycleTable.findFirst({
-      where: and(
-        eq(cycleTable.title, cycleTitle),
-        eq(cycleTable.userId, userId)
-      ),
-    });
-
-    if (existingCycle) {
-      throw new Error("A cycle with this title already exists.");
-    }
-
-    const newCycle = await db
-      .insert(cycleTable)
-      .values({
-        userId,
-        title: cycleTitle,
-      })
-      .returning({ id: cycleTable.id });
-
-    const newCycleId = newCycle[0].id;
-
-    if (newCycleId) {
-      // Create subcycles for the new cycle
-      const weeksArr = createWeeksArray({ dateRange: date });
-
-      const subcyclesArray = weeksArr.map((week) => ({
-        title: formatDateRange(week),
-        cycleId: newCycleId,
-        userId,
-      }));
-
-      await db.insert(subsycleTable).values(subcyclesArray);
-
-      // create categories for the new cycle
-      const categoriesArray = categories.map((category) => ({
-        ...category,
-        cycleId: newCycleId,
-        userId,
-      }));
-      await db.insert(categoryTable).values(categoriesArray);
-    }
-    revalidatePath("/");
+  if (!cycleValidationResult.success) {
+    return console.error(cycleValidationResult.error.issues);
   }
-);
+
+  const existingCycle = await db.query.cycleTable.findFirst({
+    where: and(eq(cycleTable.title, cycleTitle), eq(cycleTable.userId, userId)),
+  });
+
+  if (existingCycle) {
+    throw new Error("A cycle with this title already exists.");
+  }
+
+  const newCycle = await db
+    .insert(cycleTable)
+    .values({
+      userId,
+      title: cycleTitle,
+    })
+    .returning({ id: cycleTable.id });
+
+  const newCycleId = newCycle[0].id;
+
+  if (newCycleId) {
+    // Create subcycles for the new cycle
+    const weeksArr = createWeeksArray({ dateRange: date });
+
+    const subcyclesArray = weeksArr.map((week) => ({
+      title: formatDateRange(week),
+      cycleId: newCycleId,
+      userId,
+    }));
+
+    const newSubcyclesIds = await db
+      .insert(subsycleTable)
+      .values(subcyclesArray)
+      .returning({ id: subsycleTable.id });
+
+    // create categories for the new cycle
+    const categoriesArray = categories.map((category) => ({
+      ...category,
+      cycleId: newCycleId,
+      userId,
+    }));
+    await db.insert(categoryTable).values(categoriesArray);
+  }
+  revalidatePath("/");
+});
 
 export const updateCycleId = cache(async (cycleId: string, title: string) => {
   const { userId } = auth();
