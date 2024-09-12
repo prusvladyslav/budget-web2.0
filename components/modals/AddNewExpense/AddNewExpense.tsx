@@ -63,7 +63,7 @@ export default function AddNewExpense({
   const subcycledId = watch("subcycleId");
 
   const { data, isLoading } = useGet<getSubcyclesByCycleIdWithCategories>(
-    open ? URLS.subCyclesWithCategories + "?cycleId=" + cycledId : null,
+    URLS.subCyclesWithCategories + "?cycleId=" + cycledId,
     "subcyclesWithCategories"
   );
 
