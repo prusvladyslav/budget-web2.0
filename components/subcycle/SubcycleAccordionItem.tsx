@@ -1,7 +1,7 @@
-import { SelectCycle, SelectSubcycle, SelectUser } from "@/db/schema";
+"use client";
+import { SelectSubcycle } from "@/db/schema";
 import { AccordionItem, AccordionTrigger } from "../ui/accordion";
 import { CategoryWithCurrentAmount } from "../main/CycleTab/CycleTab";
-import AddNewExpense from "../modals/AddNewExpense";
 import { AccordionContent } from "../ui/accordion";
 import {
   Table,
@@ -11,14 +11,18 @@ import {
   TableHeader,
   TableRow,
 } from "../ui/table";
+import { Menu } from "../common/Menu";
+import { useRouter } from "next/navigation";
+import { memo } from "react";
 
-export default function SubcycleAccordionItem({
+function SubcycleAccordionItem({
   subcycle,
   categories,
 }: {
   subcycle: SelectSubcycle;
   categories: CategoryWithCurrentAmount;
 }) {
+  const router = useRouter();
   return (
     <AccordionItem value={subcycle.id}>
       <AccordionTrigger className="bg-muted p-4 group">
@@ -40,8 +44,32 @@ export default function SubcycleAccordionItem({
                 <TableCell>{category.title}</TableCell>
                 <TableCell>{category.initialAmount}</TableCell>
                 <TableCell>{category.currentAmount}</TableCell>
-                <TableCell className="text-right">
-                  <AddNewExpense categoryId={category.id} />
+                <TableCell className="flex justify-end">
+                  <Menu
+                    items={[
+                      {
+                        id: 1,
+                        name: "Add expense",
+                        onClick: () =>
+                          router.push(
+                            `/?expensesModal=active&categoryId=${category.id}`
+                          ),
+                      },
+                      {
+                        id: 2,
+                        name: "Move budget",
+                        onClick: () =>
+                          router.push(
+                            `/?moveBudget=active&categoryId=${category.id}`
+                          ),
+                      },
+                      {
+                        id: 2,
+                        name: "Expenses history",
+                        onClick: () => router.push(`/expenses`),
+                      },
+                    ]}
+                  />
                 </TableCell>
               </TableRow>
             ))}
@@ -67,3 +95,5 @@ export default function SubcycleAccordionItem({
     </AccordionItem>
   );
 }
+
+export default memo(SubcycleAccordionItem);

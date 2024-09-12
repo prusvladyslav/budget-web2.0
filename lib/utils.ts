@@ -68,12 +68,16 @@ export function calculateAmountByDays({
   dateRange,
   amount,
 }: {
-  dateRange: DateRange;
+  dateRange: DateRange | null;
   amount: number;
 }) {
+  if (!dateRange) return 0;
+
   const { from, to } = dateRange;
-  const result = differenceInCalendarDays(
-    new Date(2012, 6, 2, 0, 0),
-    new Date(2011, 6, 2, 23, 0)
-  );
+
+  if (!from || !to) return 0;
+
+  const difference = differenceInCalendarDays(to, from) + 1;
+
+  return Math.trunc((amount / 7) * difference);
 }

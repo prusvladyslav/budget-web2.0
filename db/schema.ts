@@ -1,5 +1,5 @@
 import { randomUUID } from "crypto";
-import { sql } from "drizzle-orm";
+import { relations, sql } from "drizzle-orm";
 import { integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
 
 export const usersTable = sqliteTable("users", {
@@ -11,6 +11,10 @@ export const usersTable = sqliteTable("users", {
 });
 
 export type SelectUser = typeof usersTable.$inferSelect;
+
+export const usersRelations = relations(usersTable, ({ many }) => ({
+  cycles: many(cycleTable),
+}));
 
 export const cycleTable = sqliteTable("cycles", {
   id: text("id")
@@ -24,6 +28,16 @@ export const cycleTable = sqliteTable("cycles", {
     .default(sql`(CURRENT_TIMESTAMP)`)
     .notNull(),
 });
+
+export const cycleRelations = relations(cycleTable, ({ one, many }) => ({
+  user: one(usersTable, {
+    fields: [cycleTable.userId],
+    references: [usersTable.id],
+  }),
+  categories: many(categoryTable),
+  subcycles: many(subsycleTable),
+  expenses: many(expenseTable),
+}));
 
 export type InsertCycle = typeof cycleTable.$inferInsert;
 export type SelectCycle = typeof cycleTable.$inferSelect;
@@ -44,6 +58,14 @@ export const subsycleTable = sqliteTable("subsycles", {
     .notNull(),
 });
 
+export const subcyclesRalations = relations(subsycleTable, ({ one, many }) => ({
+  categories: many(categoryTable),
+  cycle: one(cycleTable, {
+    fields: [subsycleTable.cycleId],
+    references: [cycleTable.id],
+  }),
+}));
+
 export type SelectSubcycle = typeof subsycleTable.$inferSelect;
 
 export const categoryTable = sqliteTable("categories", {
@@ -53,6 +75,9 @@ export const categoryTable = sqliteTable("categories", {
   cycleId: text("cycle_id")
     .notNull()
     .references(() => cycleTable.id, { onDelete: "cascade" }),
+  subcycleId: text("subcycle_id").references(() => subsycleTable.id, {
+    onDelete: "cascade",
+  }),
   title: text("title").notNull(),
   userId: text("user_id")
     .notNull()
@@ -64,6 +89,21 @@ export const categoryTable = sqliteTable("categories", {
     .default(sql`(CURRENT_TIMESTAMP)`)
     .notNull(),
 });
+
+export const categoriesRelations = relations(
+  categoryTable,
+  ({ one, many }) => ({
+    subcycle: one(subsycleTable, {
+      fields: [categoryTable.subcycleId],
+      references: [subsycleTable.id],
+    }),
+    expenses: many(expenseTable),
+    cycles: one(cycleTable, {
+      fields: [categoryTable.cycleId],
+      references: [cycleTable.id],
+    }),
+  })
+);
 
 export type SelectCategory = typeof categoryTable.$inferSelect;
 export type SelectCategoryWithCurrentAmount =
@@ -93,6 +133,17 @@ export const expenseTable = sqliteTable("expenses", {
     .notNull(),
   comment: text("comment"),
 });
+
+export const expensesRelations = relations(expenseTable, ({ one }) => ({
+  category: one(categoryTable, {
+    fields: [expenseTable.categoryId],
+    references: [categoryTable.id],
+  }),
+  cycles: one(cycleTable, {
+    fields: [expenseTable.cycleId],
+    references: [cycleTable.id],
+  }),
+}));
 
 export type SelectExpense = typeof expenseTable.$inferSelect;
 export type InsertExpense = typeof expenseTable.$inferInsert;

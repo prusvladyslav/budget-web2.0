@@ -16,7 +16,7 @@ export default function CycleContextMenu({
   cycle,
 }: {
   children: React.ReactNode;
-  cycle: SelectCycle;
+  cycle: { id: string; title: string };
 }) {
   return (
     <Dialog>

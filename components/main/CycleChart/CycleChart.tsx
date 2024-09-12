@@ -5,9 +5,10 @@ import { URLS, useGet } from "@/lib/fetch";
 import { useCycleContext } from "../MainTable";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
-import { useState } from "react";
-import ChartByCategory from "./ChartByCategory";
+import { lazy, useState } from "react";
 import ChartByAmount from "./ChartByAmount";
+
+const ChartByCategoryLazy = lazy(() => import("./ChartByCategory"));
 
 export type ExpensesBySubcycle = {
   byCategory: Array<{ title: string } & Record<string, number>>;
@@ -24,7 +25,7 @@ export interface CategoryConfig {
 }
 
 export default function CycleChart() {
-  const [chartType, setChartType] = useState<string>("categories");
+  const [chartType, setChartType] = useState<string>("amount");
 
   const { selectedCycleId } = useCycleContext();
 
@@ -58,7 +59,7 @@ export default function CycleChart() {
       {!isLoading && chartData && (
         <CardContent className="pt-2">
           {chartType === "categories" ? (
-            <ChartByCategory data={chartDataByCategory} />
+            <ChartByCategoryLazy data={chartDataByCategory} />
           ) : (
             <ChartByAmount data={chartDataByAmount} />
           )}

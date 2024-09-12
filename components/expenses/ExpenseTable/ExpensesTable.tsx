@@ -64,6 +64,7 @@ export function ExpensesTable<TData, TValue>({
         subcycleId: false,
         cycleId: false,
         id: false,
+        categoryId: false,
       },
     },
   });
@@ -86,14 +87,20 @@ export function ExpensesTable<TData, TValue>({
     .getColumn("cycleId")
     ?.getFilterValue() as string;
 
+  const filterSubcycleIdValue = table
+    .getColumn("subcycleId")
+    ?.getFilterValue() as string;
+
   return (
     <div className="flex flex-col space-y-4">
       <div className="rounded-md border p-4 flex flex-col md:flex-row gap-5 md:gap-10">
         <SelectBasic
           value={filterCycleIdValue ?? ""}
-          setValue={(value) =>
-            table.getColumn("cycleId")?.setFilterValue(value)
-          }
+          setValue={(value) => {
+            table.getColumn("cycleId")?.setFilterValue(value);
+            table.getColumn("subcycleId")?.setFilterValue("");
+            table.getColumn("categoryId")?.setFilterValue("");
+          }}
           placeholder="Cycle"
           options={cycles?.map((cycle) => ({
             value: cycle.id,
@@ -128,26 +135,22 @@ export function ExpensesTable<TData, TValue>({
         <SelectBasic
           disabled={false}
           value={
-            categories.find(
-              (category) =>
-                category.title ===
-                (table.getColumn("category")?.getFilterValue() as string)
-            )?.id || ""
+            (table.getColumn("categoryId")?.getFilterValue() as string) || ""
           }
           setValue={(value) =>
-            table
-              .getColumn("category")
-              ?.setFilterValue(
-                categories.find((category) => category.id === value)?.title
-              )
+            table.getColumn("categoryId")?.setFilterValue(value)
           }
           placeholder={
-            filterCycleIdValue ? "Category" : "Category (fill the cycle first)"
+            filterSubcycleIdValue
+              ? "Category"
+              : "Category (fill the subcycle first)"
           }
           options={
             filterCycleIdValue
               ? categories
-                  .filter((category) => category.cycleId === filterCycleIdValue)
+                  .filter(
+                    (category) => category.subcycleId === filterSubcycleIdValue
+                  )
                   .map((category) => ({
                     value: category.id,
                     label: category.title,

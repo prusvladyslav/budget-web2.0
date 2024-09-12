@@ -6,23 +6,19 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
-} from "../ui/dialog";
-import { ScrollArea } from "../ui/scroll-area";
-import { Button } from "../ui/button";
-import { useEffect, useState } from "react";
+} from "../../ui/dialog";
+import { ScrollArea } from "../../ui/scroll-area";
+import { Button } from "../../ui/button";
+import { useEffect, useRef } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
-import DatePicker from "../common/DatePicker";
-import SelectBasic from "../common/SelectBasic";
-import { SelectCategory, SelectCycle, SelectSubcycle } from "@/db/schema";
+import DatePicker from "../../common/DatePicker";
+import SelectBasic from "../../common/SelectBasic";
 import { URLS, useGet } from "@/lib/fetch";
-import { Textarea } from "../ui/textarea";
+import { Textarea } from "../../ui/textarea";
 import { toast } from "sonner";
-import { Input } from "../ui/input";
+import { Input } from "../../ui/input";
 import { useSWRConfig } from "swr";
-import AddExpenseButton from "../common/AddExpenseButton";
-import { useCycleContext } from "../main/MainTable";
+import { useCycleContext } from "../../main/MainTable";
 import { expensesActions } from "@/app/actions";
 import {
   Form,
@@ -31,45 +27,19 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "../ui/form";
-
-type Props = {
-  categoryId?: string;
-  monthly?: boolean;
-  triggerElement?: React.ReactNode;
-};
-
-const formSchemaWeekly = z.object({
-  date: z.date(),
-  cycleId: z.string().min(1, "Please select a cycle"),
-  subcycleId: z.string().min(1, "Please select a subcycle"),
-  categoryId: z.string().min(1, "Please select a category"),
-  comment: z.string().optional(),
-  amount: z.preprocess(
-    (val) => Number(val),
-    z.number().min(1, "Expense amount must be greater than 0")
-  ),
-});
-
-const formSchemaMonthly = z.object({
-  date: z.date(),
-  cycleId: z.string().min(1, "Please select a cycle"),
-  categoryId: z.string().min(1, "Please select a category"),
-  comment: z.string().optional(),
-  amount: z.preprocess(
-    (val) => Number(val),
-    z.number().min(1, "Expense amount must be greater than 0")
-  ),
-});
-
-type FormData = z.infer<typeof formSchemaWeekly | typeof formSchemaMonthly>;
+} from "../../ui/form";
+import { getSubcyclesByCycleIdWithCategories, Props } from "./types";
+import { formSchemaMonthly, formSchemaWeekly, FormData } from "./schemas";
+import { useRouter } from "next/navigation";
 
 export default function AddNewExpense({
   categoryId,
   monthly = false,
-  triggerElement = <AddExpenseButton />,
+  open,
 }: Props) {
-  const [open, setOpen] = useState(false);
+  const router = useRouter();
+
+  const handleClose = () => router.push("/");
 
   const { selectedCycleId, selectedSubcycleId, cycles } = useCycleContext();
 
@@ -87,14 +57,10 @@ export default function AddNewExpense({
     defaultValues,
   });
 
-  const { reset, control, handleSubmit, watch, setFocus } = form;
+  const { reset, control, handleSubmit, watch } = form;
 
   const cycledId = watch("cycleId");
-
-  type getSubcyclesByCycleIdWithCategories = {
-    subcycles: SelectSubcycle[];
-    categories: { weekly: SelectCategory[]; monthly: SelectCategory[] };
-  };
+  const subcycledId = watch("subcycleId");
 
   const { data, isLoading } = useGet<getSubcyclesByCycleIdWithCategories>(
     open ? URLS.subCyclesWithCategories + "?cycleId=" + cycledId : null,
@@ -102,7 +68,12 @@ export default function AddNewExpense({
   );
 
   const subcycles = data?.data.subcycles;
-  const categories = data?.data.categories[monthly ? "monthly" : "weekly"];
+
+  const categoriesData = data?.data.categories[monthly ? "monthly" : "weekly"];
+
+  const categories = monthly
+    ? categoriesData
+    : categoriesData?.filter((category) => category.subcycleId === subcycledId);
 
   const { mutate } = useSWRConfig();
 
@@ -119,17 +90,26 @@ export default function AddNewExpense({
       toast.error(`Error adding expense`);
     } finally {
       reset();
-      setOpen(false);
+      handleClose();
     }
   };
 
+  const amountInputRef = useRef<HTMLInputElement>(null);
+
   useEffect(() => {
     reset(defaultValues);
+    if (open) {
+      requestAnimationFrame(() => {
+        setTimeout(
+          () => amountInputRef.current && amountInputRef.current?.focus(),
+          0
+        );
+      });
+    }
   }, [reset, open]);
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>{triggerElement}</DialogTrigger>
+    <Dialog open={open} onOpenChange={(open) => !open && handleClose()}>
       <DialogContent className="sm:max-w-[425px] p-0">
         <ScrollArea className="max-h-[calc(100vh-20px)] p-8">
           <Form {...form}>
@@ -247,6 +227,7 @@ export default function AddNewExpense({
                       <FormControl>
                         <Input
                           {...field}
+                          ref={amountInputRef}
                           className="w-full"
                           type="number"
                           placeholder="Expense amount"

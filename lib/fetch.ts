@@ -1,11 +1,11 @@
-import useSWR, { Fetcher } from "swr";
-import axios, { AxiosResponse } from "axios";
+import useSWR, { type Fetcher } from "swr";
+import axios, { type AxiosResponse } from "axios";
 
 export const URLS = {
   subCyclesTable: "/api/subcycles-table",
   categories: "/api/categories",
   subCyclesWithCategories: "/api/subcycles-with-categories",
-  expensesBySubcycle: "/api/expenses-by-subcycle",
+  expensesBySubcycle: "/api/expenses-by-subcycle", // refactor
 };
 
 export const useGet = <T>(url: string | null, key: string) => {

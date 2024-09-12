@@ -7,7 +7,12 @@ import {
   InsertCategory,
   subsycleTable,
 } from "@/db/schema";
-import { createWeeksArray, formatDateRange } from "@/lib/utils";
+import {
+  calculateAmountByDays,
+  createWeeksArray,
+  formatDateRange,
+  parseDateRange,
+} from "@/lib/utils";
 import { auth } from "@clerk/nextjs/server";
 import { and, eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
@@ -82,18 +87,43 @@ export const createCycle = cache(async ({ date, categories }: CreateCycle) => {
       userId,
     }));
 
-    const newSubcyclesIds = await db
+    const newSubcycles = await db
       .insert(subsycleTable)
       .values(subcyclesArray)
-      .returning({ id: subsycleTable.id });
+      .returning({ id: subsycleTable.id, title: subsycleTable.title });
 
     // create categories for the new cycle
-    const categoriesArray = categories.map((category) => ({
-      ...category,
-      cycleId: newCycleId,
-      userId,
-    }));
-    await db.insert(categoryTable).values(categoriesArray);
+    const weeklyCategories = newSubcycles
+      .map((newSubcycle) => {
+        const weeklyCategories = categories.filter(
+          (category) => category.weekly === true
+        );
+        return weeklyCategories.map((category) => ({
+          ...category,
+          initialAmount: calculateAmountByDays({
+            dateRange: parseDateRange(newSubcycle.title),
+            amount: category.initialAmount,
+          }),
+          cycleId: newCycleId,
+          userId,
+          subcycleId: newSubcycle.id,
+        }));
+      })
+      .flat();
+
+    const monthlyCategories = categories
+      .filter((category) => category.weekly === false)
+      .map((category) => {
+        return {
+          ...category,
+          cycleId: newCycleId,
+          userId,
+        };
+      });
+
+    await db
+      .insert(categoryTable)
+      .values([...weeklyCategories, ...monthlyCategories]);
   }
   revalidatePath("/");
 });

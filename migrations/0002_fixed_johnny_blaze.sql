@@ -1,1 +1,0 @@
-ALTER TABLE `vault` RENAME COLUMN `curreny` TO `currency`;

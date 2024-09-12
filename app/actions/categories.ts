@@ -45,3 +45,46 @@ export const getAllCategories = cache(async () => {
 
   return categories;
 });
+type TMoveBudget = {
+  categoryFromId: string;
+  categoryToId: string;
+  amount: number;
+};
+export const moveBudget = cache(async (data: TMoveBudget) => {
+  const { userId } = auth();
+
+  if (!userId) return null;
+
+  if (
+    Object.keys(data as Record<string, unknown>).some(
+      (key) => !(data as Record<string, unknown>)[key]
+    )
+  )
+    return console.error("Some data is missing");
+
+  const [categoryFrom, categoryTo] = await Promise.all([
+    db.query.categoryTable.findFirst({
+      where: eq(categoryTable.id, data.categoryFromId),
+    }),
+    db.query.categoryTable.findFirst({
+      where: eq(categoryTable.id, data.categoryToId),
+    }),
+  ]);
+
+  if (!categoryFrom || !categoryTo) return null;
+
+  await Promise.all([
+    db
+      .update(categoryTable)
+      .set({
+        initialAmount: categoryFrom.initialAmount - data.amount,
+      })
+      .where(eq(categoryTable.id, data.categoryFromId)),
+    db
+      .update(categoryTable)
+      .set({
+        initialAmount: categoryTo.initialAmount + data.amount,
+      })
+      .where(eq(categoryTable.id, data.categoryToId)),
+  ]);
+});

@@ -1,6 +1,7 @@
 CREATE TABLE `categories` (
 	`id` text PRIMARY KEY NOT NULL,
 	`cycle_id` text NOT NULL,
+	`subcycle_id` text,
 	`title` text NOT NULL,
 	`user_id` text NOT NULL,
 	`icon` text,
@@ -8,6 +9,7 @@ CREATE TABLE `categories` (
 	`weekly` integer NOT NULL,
 	`created_at` text DEFAULT (CURRENT_TIMESTAMP) NOT NULL,
 	FOREIGN KEY (`cycle_id`) REFERENCES `cycles`(`id`) ON UPDATE no action ON DELETE cascade,
+	FOREIGN KEY (`subcycle_id`) REFERENCES `subsycles`(`id`) ON UPDATE no action ON DELETE cascade,
 	FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON UPDATE no action ON DELETE cascade
 );
 --> statement-breakpoint
@@ -60,5 +62,6 @@ CREATE TABLE `vault` (
 	`created_at` text DEFAULT (CURRENT_TIMESTAMP) NOT NULL,
 	`amount` integer NOT NULL,
 	`is_main` integer NOT NULL,
+	`currency` text NOT NULL,
 	FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON UPDATE no action ON DELETE cascade
 );

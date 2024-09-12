@@ -1,4 +1,6 @@
-import { categoriesActions, subcyclesActions } from "@/app/actions";
+import { db } from "@/db";
+import { cycleTable } from "@/db/schema";
+import { eq } from "drizzle-orm";
 import { NextRequest } from "next/server";
 
 export async function GET(request: NextRequest) {
@@ -8,12 +10,32 @@ export async function GET(request: NextRequest) {
 
   if (!cycleId) return new Response("No cycleId provided", { status: 400 });
 
-  const categories = await categoriesActions.getCategoriesByCycleId({
-    cycleId,
-    categoryType: "all",
+  const cycle = await db.query.cycleTable.findFirst({
+    columns: {},
+    where: eq(cycleTable.id, cycleId),
+    with: {
+      subcycles: {
+        columns: {
+          id: true,
+          title: true,
+        },
+      },
+      categories: {
+        columns: {
+          id: true,
+          title: true,
+          weekly: true,
+          subcycleId: true,
+        },
+      },
+    },
   });
 
-  const subcycles = await subcyclesActions.getSubcyclesByCycleId(cycleId);
+  if (!cycle) return new Response("No cycle found", { status: 400 });
+
+  const categories = cycle.categories;
+
+  const subcycles = cycle.subcycles;
 
   const result = {
     subcycles,

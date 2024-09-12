@@ -14,8 +14,18 @@ interface MainTableContextType {
   selectedSubcycleId: string;
   updateCycleId: (cycleId: string) => void;
   updateSubcycleId: (subcycleId: string) => void;
-  cycles: SelectCycle[] | null;
-  selectedCycle: SelectCycle | undefined;
+  cycles:
+    | {
+        id: string;
+        title: string;
+      }[]
+    | null;
+  selectedCycle:
+    | {
+        id: string;
+        title: string;
+      }
+    | undefined;
 }
 
 const MainTableContext = createContext<MainTableContextType | undefined>(
@@ -29,7 +39,12 @@ export function CycleContext({
 }: {
   children: ReactNode;
   user: SelectUser;
-  cycles: SelectCycle[] | null;
+  cycles:
+    | {
+        id: string;
+        title: string;
+      }[]
+    | null;
 }) {
   const {
     selectedCycleId,
@@ -44,17 +59,28 @@ export function CycleContext({
     () => cycles?.find((c) => c.id === selectedCycleId),
     [selectedCycleId, cycles]
   );
+
+  const contextValue = useMemo(
+    () => ({
+      selectedCycleId,
+      selectedSubcycleId,
+      updateCycleId,
+      updateSubcycleId,
+      cycles,
+      selectedCycle,
+    }),
+    [
+      selectedCycleId,
+      selectedSubcycleId,
+      updateCycleId,
+      updateSubcycleId,
+      cycles,
+      selectedCycle,
+    ]
+  );
+
   return (
-    <MainTableContext.Provider
-      value={{
-        selectedCycleId,
-        selectedSubcycleId,
-        updateCycleId,
-        updateSubcycleId,
-        cycles,
-        selectedCycle,
-      }}
-    >
+    <MainTableContext.Provider value={contextValue}>
       {children}
     </MainTableContext.Provider>
   );

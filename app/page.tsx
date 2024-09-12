@@ -5,7 +5,7 @@ import { eq } from "drizzle-orm";
 
 import MainTable from "@/components/main/MainTable";
 import { SWRProvider } from "@/components/common/SWRprovider";
-import { cyclesActions, usersActions } from "./actions";
+import { usersActions } from "./actions";
 
 export default async function Home() {
   const clerUser = await currentUser();
@@ -14,7 +14,16 @@ export default async function Home() {
 
   const user = await db.query.usersTable.findFirst({
     where: eq(usersTable.id, clerUser.id),
+    with: {
+      cycles: {
+        columns: {
+          id: true,
+          title: true,
+        },
+      },
+    },
   });
+  const cycles = user?.cycles || [];
 
   if (!user) {
     const newUser = await usersActions.createUser(
@@ -36,8 +45,6 @@ export default async function Home() {
       </SWRProvider>
     );
   }
-
-  const cycles = await cyclesActions.getCycles();
 
   return (
     <SWRProvider>

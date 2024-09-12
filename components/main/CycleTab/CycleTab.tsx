@@ -15,9 +15,7 @@ export type CategoryWithCurrentAmount = Array<
 export type getSubcyclesByCycleIdResponse = {
   subcycles: Array<
     SelectSubcycle & {
-      allCategories: {
-        weeklyCategories: CategoryWithCurrentAmount;
-      };
+      categories: CategoryWithCurrentAmount;
     }
   >;
   monthlyCategories: CategoryWithCurrentAmount;
@@ -51,7 +49,7 @@ export default function CycleTab() {
   const leftInWeeklyCategories = subcycles.reduce(
     (acc, subcycle) =>
       acc +
-      subcycle.allCategories.weeklyCategories.reduce(
+      subcycle.categories.reduce(
         (acc, category) => acc + category.currentAmount,
         0
       ),
@@ -74,7 +72,7 @@ export default function CycleTab() {
         {subcycles.map((subcycle) => {
           return (
             <SubcycleAccordionItem
-              categories={subcycle.allCategories.weeklyCategories}
+              categories={subcycle.categories}
               key={subcycle.id}
               subcycle={subcycle}
             />

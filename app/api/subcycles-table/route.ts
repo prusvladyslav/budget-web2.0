@@ -1,9 +1,6 @@
-import {
-  categoriesActions,
-  expensesActions,
-  subcyclesActions,
-} from "@/app/actions";
-import { SelectCategory, SelectExpense } from "@/db/schema";
+import { db } from "@/db";
+import { categoryTable, expenseTable, subsycleTable } from "@/db/schema";
+import { and, eq, isNull, sql } from "drizzle-orm";
 import { NextRequest } from "next/server";
 
 export async function GET(request: NextRequest) {
@@ -12,89 +9,86 @@ export async function GET(request: NextRequest) {
 
   if (!cycleId) return new Response("No cycleId provided", { status: 400 });
 
-  const subcycles = await subcyclesActions.getSubcyclesByCycleId(cycleId);
+  const preparedSubcycles = db.query.subsycleTable
+    .findMany({
+      where: eq(subsycleTable.cycleId, sql.placeholder("cycleId")),
+      columns: {
+        id: true,
+        title: true,
+      },
+      with: {
+        categories: {
+          columns: {
+            id: true,
+            initialAmount: true,
+            title: true,
+          },
+          with: {
+            expenses: {
+              columns: {
+                amount: true,
+              },
+            },
+          },
+        },
+      },
+    })
+    .prepare();
 
-  const allCaregories = await categoriesActions.getCategoriesByCycleId({
-    cycleId,
-    categoryType: "all",
+  const subcycles = await preparedSubcycles.execute({ cycleId: cycleId });
+
+  const mappedSubcycles = subcycles.map((subcycle) => {
+    return {
+      ...subcycle,
+      categories: subcycle.categories.map((category) => {
+        return {
+          ...category,
+          currentAmount:
+            category.initialAmount -
+            category.expenses.reduce((acc, item) => acc + item.amount, 0),
+        };
+      }),
+    };
   });
 
-  if (!allCaregories)
-    return new Response("No categories found", { status: 400 });
+  const preparedMonthlyCategories = db.query.categoryTable
+    .findMany({
+      where: and(
+        eq(categoryTable.cycleId, sql.placeholder("cycleId")),
+        eq(categoryTable.weekly, false)
+      ),
+      columns: {
+        id: true,
+        initialAmount: true,
+        title: true,
+      },
+      with: {
+        expenses: {
+          where: isNull(expenseTable.subcycleId),
+          columns: {
+            amount: true,
+          },
+        },
+      },
+    })
+    .prepare();
 
-  const categoriesByType = (categories: SelectCategory[], isWeekly: boolean) =>
-    categories.filter((category) => category.weekly === isWeekly);
+  const monthlyCategories = await preparedMonthlyCategories.execute({
+    cycleId: cycleId,
+  });
 
-  const calculateCurrentAmountWeekly = (
-    categories: SelectCategory[],
-    expenses: SelectExpense[] | null,
-    subcycleId: string
-  ) =>
-    categories.map((category) => ({
+  const mappedMonthyCategories = monthlyCategories.map((category) => {
+    return {
       ...category,
       currentAmount:
-        expenses && expenses.length > 0
-          ? category.initialAmount -
-            expenses
-              .filter(
-                (expense) =>
-                  expense.categoryId === category.id &&
-                  expense.subcycleId === subcycleId
-              )
-              .reduce((acc, curr) => acc + curr.amount, 0)
-          : category.initialAmount,
-    }));
-
-  const calculateCurrentAmountMonthly = (
-    categories: SelectCategory[],
-    expenses: SelectExpense[] | null,
-    cycleId: string
-  ) =>
-    categories.map((category) => ({
-      ...category,
-      currentAmount:
-        expenses && expenses.length > 0
-          ? category.initialAmount -
-            expenses
-              .filter(
-                (expense) =>
-                  expense.categoryId === category.id &&
-                  expense.cycleId === cycleId
-              )
-              .reduce((acc, curr) => acc + curr.amount, 0)
-          : category.initialAmount,
-    }));
-
-  const weeklyCategories = categoriesByType(allCaregories, true);
-  const monthlyCategories = categoriesByType(allCaregories, false);
-
-  const [monthlyExpenses, weeklyExpenses] = await Promise.all([
-    expensesActions.getExpensesByCategoryIds(
-      monthlyCategories.map((category) => category.id)
-    ),
-    expensesActions.getExpensesByCategoryIds(
-      weeklyCategories.map((category) => category.id)
-    ),
-  ]);
+        category.initialAmount -
+        category.expenses.reduce((acc, item) => acc + item.amount, 0),
+    };
+  });
 
   const result = {
-    subcycles: subcycles?.map((subcycle) => {
-      return {
-        ...subcycle,
-        allCategories: {
-          weeklyCategories: calculateCurrentAmountWeekly(
-            weeklyCategories,
-            weeklyExpenses,
-            subcycle.id
-          ),
-        },
-      };
-    }),
-    monthlyCategories: calculateCurrentAmountMonthly(
-      monthlyCategories,
-      monthlyExpenses,
-      cycleId
-    ),
+    subcycles: mappedSubcycles,
+    monthlyCategories: mappedMonthyCategories,
   };
 
   return new Response(JSON.stringify(result));

@@ -1,7 +1,7 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "8f4a93dd-3dc5-4ecf-833a-13d15734bef4",
+  "id": "bdd783e8-97d5-46fd-8760-68beec05bc99",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "categories": {
@@ -19,6 +19,13 @@
           "type": "text",
           "primaryKey": false,
           "notNull": true,
+          "autoincrement": false
+        },
+        "subcycle_id": {
+          "name": "subcycle_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
           "autoincrement": false
         },
         "title": {
@@ -73,6 +80,19 @@
           "tableTo": "cycles",
           "columnsFrom": [
             "cycle_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "categories_subcycle_id_subsycles_id_fk": {
+          "name": "categories_subcycle_id_subsycles_id_fk",
+          "tableFrom": "categories",
+          "tableTo": "subsycles",
+          "columnsFrom": [
+            "subcycle_id"
           ],
           "columnsTo": [
             "id"
@@ -434,6 +454,13 @@
         "is_main": {
           "name": "is_main",
           "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "currency": {
+          "name": "currency",
+          "type": "text",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false

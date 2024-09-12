@@ -3,6 +3,14 @@ import {
   expensesActions,
   subcyclesActions,
 } from "@/app/actions";
+import { db } from "@/db";
+import {
+  categoryTable,
+  cycleTable,
+  expenseTable,
+  subsycleTable,
+} from "@/db/schema";
+import { eq, sql } from "drizzle-orm";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(request: NextRequest): Promise<NextResponse> {
@@ -13,28 +21,55 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
   if (!cycleId) return new NextResponse("No cycleId provided", { status: 400 });
 
   try {
-    const expenses = await expensesActions.getAllExpensesTable(cycleId);
-    const subcycles = await subcyclesActions.getSubcyclesByCycleId(cycleId);
+    const preparedCycle = db.query.cycleTable
+      .findFirst({
+        columns: {},
+        where: eq(cycleTable.id, sql.placeholder("cycleId")),
+        with: {
+          categories: {
+            where: eq(categoryTable.cycleId, sql.placeholder("cycleId")),
+            columns: {
+              initialAmount: true,
+            },
+          },
+          expenses: {
+            where: eq(expenseTable.cycleId, sql.placeholder("cycleId")),
+            columns: {
+              subcycleId: true,
+              amount: true,
+            },
+          },
+          subcycles: {
+            where: eq(subsycleTable.cycleId, sql.placeholder("cycleId")),
+            columns: {
+              title: true,
+              id: true,
+            },
+          },
+        },
+      })
+      .prepare();
 
-    const byCategory = subcycles?.map((subcycle) => {
-      const thisSubcycleExpenses = expenses?.filter(
-        (expense) => expense.subcycleId === subcycle.id
-      );
-      const subcycleObj: Record<string, string | number> = {
-        title: subcycle.title,
-      };
-      if (thisSubcycleExpenses && thisSubcycleExpenses.length > 0) {
-        for (const expense of thisSubcycleExpenses) {
-          subcycleObj[expense.category] = expense.amount;
-        }
-      }
-      return subcycleObj;
-    });
+    const cycle = await preparedCycle.execute({ cycleId: cycleId });
 
-    const categories = await categoriesActions.getCategoriesByCycleId({
-      cycleId,
-      categoryType: "weekly",
-    });
+    if (!cycle) return new NextResponse("No cycle found", { status: 400 });
+
+    const { subcycles, categories, expenses } = cycle;
+
+    // const byCategory = subcycles?.map((subcycle) => {
+    //   const thisSubcycleExpenses = expenses?.filter(
+    //     (expense) => expense.subcycleId === subcycle.id
+    //   );
+    //   const subcycleObj: Record<string, string | number> = {
+    //     title: subcycle.title,
+    //   };
+    //   if (thisSubcycleExpenses && thisSubcycleExpenses.length > 0) {
+    //     for (const expense of thisSubcycleExpenses) {
+    //       subcycleObj[expense.category] = expense.amount;
+    //     }
+    //   }
+    //   return subcycleObj;
+    // });
 
     const byAmount = subcycles?.map((subcycle) => {
       const initialAmount =
@@ -52,8 +87,9 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
             .reduce((acc, expense) => acc + expense.amount, 0) || 0),
       };
     });
+
     const result = {
-      byCategory,
+      byCategory: [],
       byAmount,
     };
 

@@ -5,22 +5,8 @@
     {
       "idx": 0,
       "version": "6",
-      "when": 1725547353187,
-      "tag": "0000_wide_maestro",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "6",
-      "when": 1725568555869,
-      "tag": "0001_quick_exodus",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "6",
-      "when": 1725568876858,
-      "tag": "0002_fixed_johnny_blaze",
+      "when": 1725625819758,
+      "tag": "0000_thick_vivisector",
       "breakpoints": true
     }
   ]
