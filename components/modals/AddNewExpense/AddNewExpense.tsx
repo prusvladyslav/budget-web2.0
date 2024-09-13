@@ -233,7 +233,7 @@ export default function AddNewExpense({
                         <Input
                           {...field}
                           ref={amountInputRef}
-                          className="w-full text-xs sm:text-sm h-8 sm:h-9"
+                          className="w-full h-8 sm:h-9"
                           type="number"
                           placeholder="Expense amount"
                           disabled={isLoading}
