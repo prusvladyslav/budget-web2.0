@@ -110,8 +110,8 @@ export default function AddNewExpense({
 
   return (
     <Dialog open={open} onOpenChange={(open) => !open && handleClose()}>
-      <DialogContent className="sm:max-w-[425px] p-0">
-        <ScrollArea className="max-h-[calc(100vh-20px)] p-8">
+      <DialogContent className="max-w-[90vw] p-0">
+        <ScrollArea className="max-h-[80vh] p-8">
           <Form {...form}>
             <form onSubmit={handleSubmit(onSubmit)} className="px-2">
               <DialogHeader className="mb-4">
