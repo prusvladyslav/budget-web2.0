@@ -92,8 +92,8 @@ export default function AddNewCycle({ triggerElement }: Props) {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>{triggerElement}</DialogTrigger>
-      <DialogContent className="max-w-[90vw] md:max-w-xl p-0">
-        <ScrollArea className="max-h-[80vh]">
+      <DialogContent className="max-w-[90vw] md:max-w-xl md:max-w-xl p-0">
+        <ScrollArea className="max-h-[95vh]">
           <form
             onSubmit={handleSubmit(onSubmit)}
             className="space-y-3 p-3 md:p-6 sm:p-4"

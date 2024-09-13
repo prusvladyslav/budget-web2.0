@@ -1,25 +1,22 @@
 "use client";
+
 import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useEffect, useRef } from "react";
+import { toast } from "sonner";
+import { useSWRConfig } from "swr";
+import { useRouter } from "next/navigation";
+
 import {
   Dialog,
   DialogContent,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "../../ui/dialog";
-import { ScrollArea } from "../../ui/scroll-area";
-import { Button } from "../../ui/button";
-import { useEffect, useRef } from "react";
-import { zodResolver } from "@hookform/resolvers/zod";
-import DatePicker from "../../common/DatePicker";
-import SelectBasic from "../../common/SelectBasic";
-import { URLS, useGet } from "@/lib/fetch";
-import { Textarea } from "../../ui/textarea";
-import { toast } from "sonner";
-import { Input } from "../../ui/input";
-import { useSWRConfig } from "swr";
-import { useCycleContext } from "../../main/MainTable";
-import { expensesActions } from "@/app/actions";
+} from "@/components/ui/dialog";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
+import { Input } from "@/components/ui/input";
 import {
   Form,
   FormControl,
@@ -27,10 +24,15 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "../../ui/form";
+} from "@/components/ui/form";
+
+import DatePicker from "@/components/common/DatePicker";
+import SelectBasic from "@/components/common/SelectBasic";
+import { URLS, useGet } from "@/lib/fetch";
+import { useCycleContext } from "@/components/main/MainTable";
+import { expensesActions } from "@/app/actions";
 import { getSubcyclesByCycleIdWithCategories, Props } from "./types";
 import { formSchemaMonthly, formSchemaWeekly, FormData } from "./schemas";
-import { useRouter } from "next/navigation";
 
 export default function AddNewExpense({
   categoryId,
@@ -38,9 +40,7 @@ export default function AddNewExpense({
   open,
 }: Props) {
   const router = useRouter();
-
   const handleClose = () => router.push("/");
-
   const { selectedCycleId, selectedSubcycleId, cycles } = useCycleContext();
 
   const defaultValues = {
@@ -59,21 +59,19 @@ export default function AddNewExpense({
 
   const { reset, control, handleSubmit, watch } = form;
 
-  const cycledId = watch("cycleId");
-  const subcycledId = watch("subcycleId");
+  const cycleId = watch("cycleId");
+  const subcycleId = watch("subcycleId");
 
   const { data, isLoading } = useGet<getSubcyclesByCycleIdWithCategories>(
-    URLS.subCyclesWithCategories + "?cycleId=" + cycledId,
+    URLS.subCyclesWithCategories + "?cycleId=" + cycleId,
     "subcyclesWithCategories"
   );
 
   const subcycles = data?.data.subcycles;
-
   const categoriesData = data?.data.categories[monthly ? "monthly" : "weekly"];
-
   const categories = monthly
     ? categoriesData
-    : categoriesData?.filter((category) => category.subcycleId === subcycledId);
+    : categoriesData?.filter((category) => category.subcycleId === subcycleId);
 
   const { mutate } = useSWRConfig();
 
@@ -84,10 +82,10 @@ export default function AddNewExpense({
         date: data.date.toISOString(),
       });
       mutate(() => true);
-      toast.success(`Expense added successfully`);
+      toast.success("Expense added successfully");
     } catch (error) {
       console.error(error);
-      toast.error(`Error adding expense`);
+      toast.error("Error adding expense");
     } finally {
       reset();
       handleClose();
@@ -100,38 +98,37 @@ export default function AddNewExpense({
     reset(defaultValues);
     if (open) {
       requestAnimationFrame(() => {
-        setTimeout(
-          () => amountInputRef.current && amountInputRef.current?.focus(),
-          0
-        );
+        setTimeout(() => amountInputRef.current?.focus(), 0);
       });
     }
   }, [reset, open]);
 
   return (
     <Dialog open={open} onOpenChange={(open) => !open && handleClose()}>
-      <DialogContent className="max-w-[90vw] p-0">
-        <ScrollArea className="max-h-[80vh] p-8">
-          <Form {...form}>
-            <form onSubmit={handleSubmit(onSubmit)} className="px-2">
-              <DialogHeader className="mb-4">
-                <DialogTitle>Adding new Expense</DialogTitle>
-              </DialogHeader>
-              <div className="space-y-4">
+      <DialogContent className="max-w-[95vw] sm:max-w-lg p-0">
+        <ScrollArea className="max-h-[80vh]">
+          <div className="p-4 sm:p-6">
+            <DialogHeader className="mb-4">
+              <DialogTitle className="text-lg sm:text-xl">
+                New Expense
+              </DialogTitle>
+            </DialogHeader>
+            <Form {...form}>
+              <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
                 <FormField
                   name="date"
                   control={control}
                   render={({ field }) => (
-                    <FormItem className="grid grid-cols-[1fr_3fr] items-center md:flex md:flex-col md:items-start">
-                      <FormLabel>Date:</FormLabel>
+                    <FormItem>
+                      <FormLabel className="text-xs sm:text-sm">Date</FormLabel>
                       <FormControl>
                         <DatePicker
-                          className="md:w-full"
+                          className="w-full"
                           date={field.value}
                           setDate={(newDate) => field.onChange(newDate)}
                         />
                       </FormControl>
-                      <FormMessage />
+                      <FormMessage className="text-xs" />
                     </FormItem>
                   )}
                 />
@@ -140,8 +137,10 @@ export default function AddNewExpense({
                   name="cycleId"
                   control={control}
                   render={({ field }) => (
-                    <FormItem className="grid grid-cols-[1fr_3fr] items-center md:block">
-                      <FormLabel>Cycle:</FormLabel>
+                    <FormItem>
+                      <FormLabel className="text-xs sm:text-sm">
+                        Cycle
+                      </FormLabel>
                       <FormControl>
                         <SelectBasic
                           className="w-full"
@@ -155,7 +154,7 @@ export default function AddNewExpense({
                           }))}
                         />
                       </FormControl>
-                      <FormMessage />
+                      <FormMessage className="text-xs" />
                     </FormItem>
                   )}
                 />
@@ -165,8 +164,10 @@ export default function AddNewExpense({
                     name="subcycleId"
                     control={control}
                     render={({ field }) => (
-                      <FormItem className="grid grid-cols-[1fr_3fr] items-center md:block">
-                        <FormLabel>Subcycle:</FormLabel>
+                      <FormItem>
+                        <FormLabel className="text-xs sm:text-sm">
+                          Subcycle
+                        </FormLabel>
                         <FormControl>
                           <SelectBasic
                             className="w-full"
@@ -184,7 +185,7 @@ export default function AddNewExpense({
                             }
                           />
                         </FormControl>
-                        <FormMessage />
+                        <FormMessage className="text-xs" />
                       </FormItem>
                     )}
                   />
@@ -194,8 +195,10 @@ export default function AddNewExpense({
                   name="categoryId"
                   control={control}
                   render={({ field }) => (
-                    <FormItem className="grid grid-cols-[1fr_3fr] items-center md:block">
-                      <FormLabel>Category:</FormLabel>
+                    <FormItem>
+                      <FormLabel className="text-xs sm:text-sm">
+                        Category
+                      </FormLabel>
                       <FormControl>
                         <SelectBasic
                           className="w-full"
@@ -213,7 +216,7 @@ export default function AddNewExpense({
                           }
                         />
                       </FormControl>
-                      <FormMessage />
+                      <FormMessage className="text-xs" />
                     </FormItem>
                   )}
                 />
@@ -222,21 +225,24 @@ export default function AddNewExpense({
                   name="amount"
                   control={control}
                   render={({ field }) => (
-                    <FormItem className="grid grid-cols-[1fr_3fr] items-center md:block">
-                      <FormLabel>Amount:</FormLabel>
+                    <FormItem>
+                      <FormLabel className="text-xs sm:text-sm">
+                        Amount
+                      </FormLabel>
                       <FormControl>
                         <Input
                           {...field}
                           ref={amountInputRef}
-                          className="w-full"
+                          className="w-full text-xs sm:text-sm h-8 sm:h-9"
                           type="number"
                           placeholder="Expense amount"
                           disabled={isLoading}
-                          defaultValue={field.value}
-                          onChange={(e) => field.onChange(e.target.value)}
+                          onChange={(e) =>
+                            field.onChange(parseFloat(e.target.value))
+                          }
                         />
                       </FormControl>
-                      <FormMessage />
+                      <FormMessage className="text-xs" />
                     </FormItem>
                   )}
                 />
@@ -246,22 +252,30 @@ export default function AddNewExpense({
                   control={control}
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Comment (optional):</FormLabel>
+                      <FormLabel className="text-xs sm:text-sm">
+                        Comment (optional)
+                      </FormLabel>
                       <FormControl>
                         <Textarea
                           {...field}
+                          className="text-xs sm:text-sm h-20 resize-none"
                           placeholder="Comment for this expense"
                         />
                       </FormControl>
+                      <FormMessage className="text-xs" />
                     </FormItem>
                   )}
                 />
-              </div>
-              <DialogFooter className="mt-4">
-                <Button type="submit">Save</Button>
-              </DialogFooter>
-            </form>
-          </Form>
+
+                <Button
+                  type="submit"
+                  className="w-full text-xs sm:text-sm h-8 sm:h-9"
+                >
+                  Save Expense
+                </Button>
+              </form>
+            </Form>
+          </div>
         </ScrollArea>
       </DialogContent>
     </Dialog>
