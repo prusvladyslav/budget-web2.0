@@ -32,6 +32,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { moveBudget } from "@/app/actions/categories";
+import { MultiSelect } from "@/components/ui/multi-select";
 
 export default function MoveBudget({
   categoryId,
@@ -47,10 +48,10 @@ export default function MoveBudget({
   const defaultValues = {
     cycleId: selectedCycleId || "",
     ...(!monthly && { subcycleFromId: selectedSubcycleId || "" }),
-    categoryFromId: categoryId || "",
+    categoryFromId: categoryId ? [categoryId] : [],
     subcycleToId: "",
     categoryToId: "",
-    amount: 0,
+    amount: undefined,
   };
 
   const form = useForm<FormData>({
@@ -118,7 +119,7 @@ export default function MoveBudget({
           <Form {...form}>
             <form onSubmit={handleSubmit(onSubmit)} className="px-2">
               <DialogHeader className="mb-4">
-                <DialogTitle>Adding new Expense</DialogTitle>
+                <DialogTitle>Moving budget</DialogTitle>
               </DialogHeader>
               <div className="space-y-4">
                 <FormField
@@ -184,19 +185,21 @@ export default function MoveBudget({
                     <FormItem className="grid grid-cols-[1fr_3fr] items-center md:block">
                       <FormLabel>Category From:</FormLabel>
                       <FormControl>
-                        <SelectBasic
+                        <MultiSelect
                           className="w-full"
                           placeholder="Select category"
                           disabled={isLoading}
                           defaultValue={field.value}
-                          setValue={(value) => field.onChange(value)}
+                          onValueChange={(value) => field.onChange(value)}
                           options={
                             isLoading
                               ? []
-                              : categoriesFrom?.map((category) => ({
+                              : categoriesFrom
+                              ? categoriesFrom?.map((category) => ({
                                   label: category.title,
                                   value: category.id,
                                 }))
+                              : []
                           }
                         />
                       </FormControl>
@@ -204,6 +207,29 @@ export default function MoveBudget({
                     </FormItem>
                   )}
                 />
+                {categoryFromId.length && (
+                  <div className="flex flex-col gap-2">
+                    <span className="font-bold text-base">
+                      Current categories amounts
+                    </span>
+                    {categoriesData &&
+                      categoriesData
+                        .filter((category) =>
+                          categoryFromId?.includes(category.id)
+                        )
+                        .map((category) => {
+                          return (
+                            <div
+                              className="flex justify-between text-sm"
+                              key={category.id}
+                            >
+                              <div>{category.title}:</div>
+                              <div>{category.initialAmount}</div>
+                            </div>
+                          );
+                        })}
+                  </div>
+                )}
                 <Separator />
                 {!monthly && (
                   <FormField

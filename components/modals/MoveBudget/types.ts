@@ -9,6 +9,7 @@ export type Category = {
   title: string;
   weekly: boolean;
   subcycleId: string | null;
+  initialAmount: number;
 };
 
 export type getSubcyclesByCycleIdWithCategories = {

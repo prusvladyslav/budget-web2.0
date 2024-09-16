@@ -65,7 +65,7 @@ export default function AddNewCycle({ triggerElement }: Props) {
         from: new Date(),
         to: addDays(new Date(), 31),
       },
-      categories: [{ title: "", initialAmount: 0, weekly: true }],
+      categories: [{ title: "", initialAmount: undefined, weekly: true }],
     },
   });
 

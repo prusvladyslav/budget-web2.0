@@ -64,7 +64,7 @@ function SubcycleAccordionItem({
                           ),
                       },
                       {
-                        id: 2,
+                        id: 3,
                         name: "Expenses history",
                         onClick: () => router.push(`/expenses`),
                       },

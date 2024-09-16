@@ -3,7 +3,9 @@ import * as z from "zod";
 export const formSchemaWeekly = z.object({
   cycleId: z.string().min(1, "Please select a cycle"),
   subcycleFromId: z.string().min(1, "Please select a subcycle from"),
-  categoryFromId: z.string().min(1, "Please select a category from"),
+  categoryFromId: z
+    .array(z.string().min(1, "Please select a category from"))
+    .min(1, "At least one category is required"),
   subcycleToId: z.string().min(1, "Please select a subcycle to"),
   categoryToId: z.string().min(1, "Please select a category to"),
   amount: z.preprocess(
@@ -14,7 +16,9 @@ export const formSchemaWeekly = z.object({
 
 export const formSchemaMonthly = z.object({
   cycleId: z.string().min(1, "Please select a cycle"),
-  categoryFromId: z.string().min(1, "Please select a category from"),
+  categoryFromId: z
+    .array(z.string().min(1, "Please select a category from"))
+    .min(1, "At least one category is required"),
   categoryToId: z.string().min(1, "Please select a category to"),
   amount: z.preprocess(
     (val) => Number(val),

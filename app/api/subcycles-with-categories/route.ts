@@ -26,6 +26,7 @@ export async function GET(request: NextRequest) {
           title: true,
           weekly: true,
           subcycleId: true,
+          initialAmount: true,
         },
       },
     },

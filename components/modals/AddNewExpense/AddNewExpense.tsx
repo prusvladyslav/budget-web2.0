@@ -48,7 +48,7 @@ export default function AddNewExpense({
     cycleId: selectedCycleId || "",
     ...(!monthly && { subcycleId: selectedSubcycleId || "" }),
     categoryId: categoryId || "",
-    amount: 0,
+    amount: undefined,
     comment: "",
   };
 
@@ -96,12 +96,12 @@ export default function AddNewExpense({
 
   useEffect(() => {
     reset(defaultValues);
-    if (open) {
+    if (open && categoryId) {
       requestAnimationFrame(() => {
         setTimeout(() => amountInputRef.current?.focus(), 0);
       });
     }
-  }, [reset, open]);
+  }, [reset, open, categoryId]);
 
   return (
     <Dialog open={open} onOpenChange={(open) => !open && handleClose()}>
