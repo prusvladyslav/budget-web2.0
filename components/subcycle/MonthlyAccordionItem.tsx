@@ -29,8 +29,8 @@ function MonthlyAccordionItem({
           <TableHeader>
             <TableRow>
               <TableHead>Title</TableHead>
-              <TableHead>Initial Amount</TableHead>
-              <TableHead>Current Amount</TableHead>
+              <TableHead>Initial</TableHead>
+              <TableHead>Current</TableHead>
               <TableHead></TableHead>
             </TableRow>
           </TableHeader>
@@ -40,7 +40,7 @@ function MonthlyAccordionItem({
                 <TableCell>{category.title}</TableCell>
                 <TableCell>{category.initialAmount}</TableCell>
                 <TableCell>{category.currentAmount}</TableCell>
-                <TableCell className="flex justify-end">
+                <TableCell className="flex justify-end mr-8">
                   <Menu
                     items={[
                       {

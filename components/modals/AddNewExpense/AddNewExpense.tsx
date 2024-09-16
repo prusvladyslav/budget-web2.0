@@ -106,7 +106,7 @@ export default function AddNewExpense({
   return (
     <Dialog open={open} onOpenChange={(open) => !open && handleClose()}>
       <DialogContent className="max-w-[95vw] sm:max-w-lg p-0">
-        <ScrollArea className="max-h-[80vh]">
+        <ScrollArea className="max-h-[90vh]">
           <div className="p-4 sm:p-6">
             <DialogHeader className="mb-4">
               <DialogTitle className="text-lg sm:text-xl">

@@ -6,6 +6,7 @@ import { eq } from "drizzle-orm";
 import MainTable from "@/components/main/MainTable";
 import { SWRProvider } from "@/components/common/SWRprovider";
 import { usersActions } from "./actions";
+import { Suspense } from "react";
 
 export default async function Home() {
   const clerUser = await currentUser();
@@ -47,8 +48,10 @@ export default async function Home() {
   }
 
   return (
-    <SWRProvider>
-      <MainTable cycles={cycles} user={user} />
-    </SWRProvider>
+    <Suspense fallback={<div>Loading...</div>}>
+      <SWRProvider>
+        <MainTable cycles={cycles} user={user} />
+      </SWRProvider>
+    </Suspense>
   );
 }

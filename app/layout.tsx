@@ -27,7 +27,7 @@ export default function RootLayout({
     <ClerkProvider>
       <html lang="en">
         <body className={font.className}>
-          <main className="flex h-screen w-full">
+          <main className="flex w-full">
             <div className="flex-1 overflow-auto p-6 space-y-4">
               <SignedOut>
                 <div className="w-full h-full flex justify-center items-center">

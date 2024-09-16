@@ -32,7 +32,7 @@ export function BurgerMenu({ user }: { user: SelectUser }) {
             <SheetTitle className="text-start">
               Hello, <span className="font-bold">{user?.name}</span>
             </SheetTitle>
-            <SheetDescription>
+            <SheetDescription className="text-left">
               This is the main menu of the app.
             </SheetDescription>
           </SheetHeader>

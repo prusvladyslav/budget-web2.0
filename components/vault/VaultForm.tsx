@@ -110,7 +110,7 @@ export default function VaultForm({
         <CardContent className="space-y-4">
           {fields.map((field, index) => {
             return (
-              <Card key={field.id}>
+              <Card key={field.id} className="">
                 <CardContent className="pt-6">
                   <div className="flex items-center justify-between mb-4">
                     <Controller

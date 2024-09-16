@@ -93,7 +93,7 @@ export default function AddNewCycle({ triggerElement }: Props) {
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>{triggerElement}</DialogTrigger>
       <DialogContent className="max-w-[90vw] md:max-w-xl md:max-w-xl p-0">
-        <ScrollArea className="max-h-[95vh]">
+        <ScrollArea className="max-h-[90vh]">
           <form
             onSubmit={handleSubmit(onSubmit)}
             className="space-y-3 p-3 md:p-6 sm:p-4"
@@ -225,7 +225,7 @@ function Category({ field, index, remove, errors, control }: CategoryProps) {
   return (
     <Card key={field.id} className="overflow-hidden">
       <CardHeader className="flex flex-row items-center justify-between p-2">
-        <CardTitle className="text-xs md:text-base font-medium">
+        <CardTitle className="text-base font-medium">
           Category {index + 1}
         </CardTitle>
         <Button
@@ -233,12 +233,12 @@ function Category({ field, index, remove, errors, control }: CategoryProps) {
           size="sm"
           onClick={() => remove(index)}
           type="button"
-          className="h-6 w-6 p-0"
+          className="h-12 w-12 p-0"
         >
-          <TrashIcon className="h-3 w-3" />
+          <TrashIcon className="h-6 w-6" />
         </Button>
       </CardHeader>
-      <CardContent className="grid gap-2 p-2">
+      <CardContent className="grid gap-2 p-2 px-4">
         <FormField
           name={`categories.${index}.title`}
           control={control}

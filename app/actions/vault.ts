@@ -108,3 +108,43 @@ export const getMainAccount = cache(async () => {
     where: and(eq(vaultTable.userId, userId), eq(vaultTable.isMain, true)),
   });
 });
+
+export const deductFromMainAccount = async (amount: number) => {
+  const { userId } = auth();
+
+  if (!userId) return null;
+
+  const mainAccount = await getMainAccount();
+
+  if (!mainAccount) return null;
+
+  const newAmount = mainAccount.amount - amount;
+
+  if (newAmount < 0) return null;
+
+  await db
+    .update(vaultTable)
+    .set({ amount: newAmount })
+    .where(eq(vaultTable.id, mainAccount.id));
+
+  revalidatePath("/vault");
+};
+
+export const addToMainAccount = async (amount: number) => {
+  const { userId } = auth();
+
+  if (!userId) return null;
+
+  const mainAccount = await getMainAccount();
+
+  if (!mainAccount) return null;
+
+  const newAmount = mainAccount.amount + amount;
+
+  await db
+    .update(vaultTable)
+    .set({ amount: newAmount })
+    .where(eq(vaultTable.id, mainAccount.id));
+
+  revalidatePath("/vault");
+};

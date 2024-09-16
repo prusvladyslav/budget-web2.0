@@ -8,6 +8,7 @@ import { revalidatePath } from "next/cache";
 import { cache } from "react";
 import * as z from "zod";
 import { getAllCategories } from "./categories";
+import { addToMainAccount, deductFromMainAccount } from "./vault";
 
 const ExpenseSchema = z.object({
   id: z.string().min(1, "Invalid ID"),
@@ -47,6 +48,7 @@ export const addExpense = cache(async (data: Omit<InsertExpense, "userId">) => {
   }
 
   await db.insert(expenseTable).values({ ...data, userId });
+  deductFromMainAccount(data.amount);
   revalidatePath("/");
 });
 
@@ -96,10 +98,19 @@ export const deleteExpenses = cache(async (ids: string[]) => {
   if (!ids.some((id) => !!id || typeof id !== "string"))
     return console.error("something went wrong with id deletion", ids);
 
-  await db
+  const expenses = await db
     .delete(expenseTable)
     .where(inArray(expenseTable.id, ids))
-    .returning({ id: expenseTable.id });
+    .returning({ id: expenseTable.id, amount: expenseTable.amount });
+
+  if (!expenses) return null;
+
+  const totalAmount = expenses.reduce(
+    (acc, expense) => acc + expense.amount,
+    0
+  );
+
+  addToMainAccount(totalAmount);
 
   revalidatePath("/expenses");
 });
