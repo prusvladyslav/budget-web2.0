@@ -258,7 +258,7 @@ export default function AddNewExpense({
                       <FormControl>
                         <Textarea
                           {...field}
-                          className="text-xs sm:text-sm h-20 resize-none"
+                          className="h-20 resize-none text-base"
                           placeholder="Comment for this expense"
                         />
                       </FormControl>

@@ -17,9 +17,9 @@ type Props = {
 
 export function Menu({ items }: Props) {
   return (
-    <Menubar>
+    <Menubar className="h-fit w-fit md:h-10 ">
       <MenubarMenu>
-        <MenubarTrigger>
+        <MenubarTrigger className="p-0 md:py-1.5 md:px-3 ">
           <Ellipsis className="h-4 w-4" />
         </MenubarTrigger>
         <MenubarContent className="min-w-[0px]">
