@@ -6,7 +6,6 @@ import { Accordion, AccordionItem } from "../../ui/accordion";
 import SubcycleAccordionItem from "../../subcycle/SubcycleAccordionItem";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useCycleContext } from "../MainTable";
-import MonthlyAccordionItem from "@/components/subcycle/MonthlyAccordionItem";
 
 export type CategoryWithCurrentAmount = Array<
   SelectCategory & { currentAmount: number }
@@ -75,11 +74,15 @@ export default function CycleTab() {
               categories={subcycle.categories}
               key={subcycle.id}
               subcycle={subcycle}
+              monthly={false}
             />
           );
         })}
         {monthlyCategories.length > 0 && (
-          <MonthlyAccordionItem categories={monthlyCategories} />
+          <SubcycleAccordionItem
+            monthly={true}
+            categories={monthlyCategories}
+          />
         )}
         <div className="h-[56px] p-4 font-semibold text-lg border-1 bg-muted/60">
           Total:{" "}

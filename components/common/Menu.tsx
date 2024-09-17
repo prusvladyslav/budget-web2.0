@@ -20,7 +20,7 @@ export function Menu({ items }: Props) {
     <Menubar className="h-fit w-fit md:h-10 ">
       <MenubarMenu>
         <MenubarTrigger className="p-0 md:py-1.5 md:px-3 ">
-          <Ellipsis className="h-6 w-6" />
+          <Ellipsis className="h-5 w-5" />
         </MenubarTrigger>
         <MenubarContent className="min-w-[0px]">
           {items.map((item) => {
