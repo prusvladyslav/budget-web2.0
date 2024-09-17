@@ -137,7 +137,7 @@ function SubcycleAccordionItem({
                     />
                   </div>
                 </CardHeader>
-                <CardContent className="grid grid-cols-2 gap-4">
+                <CardContent className="flex justify-between gap-4">
                   <span>Initial: {category.initialAmount}</span>
                   <span>Current: {category.currentAmount}</span>
                 </CardContent>
@@ -148,15 +148,15 @@ function SubcycleAccordionItem({
             <CardHeader>
               <CardTitle className="text-lg font-extrabold">Total</CardTitle>
             </CardHeader>
-            <CardContent className="grid grid-cols-2 gap-4">
-              <span className="font-black text-base">
+            <CardContent className="flex justify-between">
+              <span className="font-black">
                 Initial:{" "}
                 {categories.reduce(
                   (acc, category) => acc + category.initialAmount,
                   0
                 )}
               </span>
-              <span className="font-black text-base">
+              <span className="font-black">
                 Current:{" "}
                 {categories.reduce(
                   (acc, category) => acc + category.currentAmount,
