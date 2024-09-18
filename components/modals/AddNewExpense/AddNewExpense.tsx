@@ -105,7 +105,7 @@ export default function AddNewExpense({
 
   return (
     <Dialog open={open} onOpenChange={(open) => !open && handleClose()}>
-      <DialogContent className="max-w-[95vw] sm:max-w-lg p-0">
+      <DialogContent className="max-w-[90vw] sm:max-w-lg p-0">
         <ScrollArea className="max-h-[90vh]">
           <div className="p-4 sm:p-6">
             <DialogHeader className="mb-4">
@@ -258,7 +258,7 @@ export default function AddNewExpense({
                       <FormControl>
                         <Textarea
                           {...field}
-                          className="h-20 resize-none text-base"
+                          className="resize-none text-base"
                           placeholder="Comment for this expense"
                         />
                       </FormControl>

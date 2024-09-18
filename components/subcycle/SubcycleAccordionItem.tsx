@@ -186,7 +186,10 @@ function MobileView({
     <div className="md:hidden">
       {categories.map((category, index) => (
         <Card
-          className={cn("rounded-t-none", index === 0 && "rounded-b-none")}
+          className={cn(
+            "rounded-t-none shadow-md",
+            index === 0 && "rounded-b-none border-b-0 border-t-0"
+          )}
           key={category.id}
         >
           <CardHeader className="flex flex-row items-center justify-between">
@@ -209,7 +212,7 @@ function MobileView({
         </Card>
       ))}
       {!monthly && (
-        <Card className={cn("mt-2 bg-gray-50")}>
+        <Card className={cn("mt-2 bg-gray-50 shadow-md")}>
           <CardHeader>
             <CardTitle className="text-lg font-extrabold">Total</CardTitle>
           </CardHeader>
