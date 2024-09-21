@@ -8,6 +8,13 @@
       "when": 1725625819758,
       "tag": "0000_thick_vivisector",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "6",
+      "when": 1726906664985,
+      "tag": "0001_quiet_argent",
+      "breakpoints": true
     }
   ]
 }

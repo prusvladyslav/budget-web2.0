@@ -128,6 +128,7 @@ export const expenseTable = sqliteTable("expenses", {
     .references(() => categoryTable.id, { onDelete: "cascade" }),
   amount: integer("amount").notNull(),
   date: text("date").notNull(),
+  label: text("label"),
   createdAt: text("created_at")
     .default(sql`(CURRENT_TIMESTAMP)`)
     .notNull(),

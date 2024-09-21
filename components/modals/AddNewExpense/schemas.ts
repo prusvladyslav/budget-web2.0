@@ -10,6 +10,7 @@ export const formSchemaWeekly = z.object({
     (val) => Number(val),
     z.number().min(1, "Expense amount must be greater than 0")
   ),
+  label: z.string().optional(),
 });
 
 export const formSchemaMonthly = z.object({
@@ -21,6 +22,7 @@ export const formSchemaMonthly = z.object({
     (val) => Number(val),
     z.number().min(1, "Expense amount must be greater than 0")
   ),
+  label: z.string().optional(),
 });
 
 export type FormData = z.infer<

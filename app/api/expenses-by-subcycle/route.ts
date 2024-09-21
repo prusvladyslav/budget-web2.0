@@ -26,21 +26,26 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
         columns: {},
         where: eq(cycleTable.id, sql.placeholder("cycleId")),
         with: {
-          categories: {
-            where: eq(categoryTable.cycleId, sql.placeholder("cycleId")),
-            columns: {
-              initialAmount: true,
-            },
-          },
-          expenses: {
-            where: eq(expenseTable.cycleId, sql.placeholder("cycleId")),
-            columns: {
-              subcycleId: true,
-              amount: true,
-            },
-          },
           subcycles: {
             where: eq(subsycleTable.cycleId, sql.placeholder("cycleId")),
+            with: {
+              categories: {
+                where: eq(categoryTable.cycleId, sql.placeholder("cycleId")),
+                columns: {
+                  initialAmount: true,
+                  title: true,
+                },
+                with: {
+                  expenses: {
+                    where: eq(expenseTable.cycleId, sql.placeholder("cycleId")),
+                    columns: {
+                      subcycleId: true,
+                      amount: true,
+                    },
+                  },
+                },
+              },
+            },
             columns: {
               title: true,
               id: true,
@@ -54,42 +59,29 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
 
     if (!cycle) return new NextResponse("No cycle found", { status: 400 });
 
-    const { subcycles, categories, expenses } = cycle;
-
-    // const byCategory = subcycles?.map((subcycle) => {
-    //   const thisSubcycleExpenses = expenses?.filter(
-    //     (expense) => expense.subcycleId === subcycle.id
-    //   );
-    //   const subcycleObj: Record<string, string | number> = {
-    //     title: subcycle.title,
-    //   };
-    //   if (thisSubcycleExpenses && thisSubcycleExpenses.length > 0) {
-    //     for (const expense of thisSubcycleExpenses) {
-    //       subcycleObj[expense.category] = expense.amount;
-    //     }
-    //   }
-    //   return subcycleObj;
-    // });
-
-    const byAmount = subcycles?.map((subcycle) => {
-      const initialAmount =
-        categories?.reduce(
-          (acc, category) => acc + category.initialAmount,
-          0
-        ) || 0;
+    const byAmount = cycle.subcycles.map((subcycle) => {
+      const initialAmount = subcycle.categories.reduce(
+        (acc, category) => acc + category.initialAmount,
+        0
+      );
       return {
         title: subcycle.title,
-        initialAmount,
+        initialAmount: initialAmount,
         currentAmount:
           initialAmount -
-          (expenses
-            ?.filter((expense) => expense.subcycleId === subcycle.id)
-            .reduce((acc, expense) => acc + expense.amount, 0) || 0),
+          subcycle.categories.reduce(
+            (acc, category) =>
+              acc +
+              category.expenses.reduce(
+                (acc, expense) => acc + expense.amount,
+                0
+              ),
+            0
+          ),
       };
     });
 
     const result = {
-      byCategory: [],
       byAmount,
     };
 

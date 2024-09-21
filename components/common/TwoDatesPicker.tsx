@@ -29,7 +29,7 @@ export default function TwoDatesPicker({ className, date, setDate }: Props) {
             id="date"
             variant={"outline"}
             className={cn(
-              "w-[300px] justify-start text-left font-normal",
+              "w-[300px] justify-start text-left font-normal text-xs md:text-base",
               !date && "text-muted-foreground"
             )}
           >

@@ -9,6 +9,7 @@ import QuickMenu from "../QuickMenu/QuickMenu";
 import AddNewExpense from "@/components/modals/AddNewExpense/AddNewExpense";
 import { useSearchParams } from "next/navigation";
 import MoveBudget from "@/components/modals/MoveBudget/MoveBudget";
+import CycleChart from "../CycleChart/CycleChart";
 
 function MainTableContent({
   user,
@@ -48,7 +49,7 @@ function MainTableContent({
       {hasCycles && (
         <>
           <CycleTab />
-          {/* <CycleChart /> */}
+          <CycleChart />
         </>
       )}
       <AddNewExpense
