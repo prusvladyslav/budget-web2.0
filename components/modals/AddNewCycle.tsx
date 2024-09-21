@@ -46,9 +46,9 @@ const formSchema = z.object({
 
 type FormData = z.infer<typeof formSchema>;
 
-type Props = {
+interface Props {
   triggerElement: React.ReactNode;
-};
+}
 
 export default function AddNewCycle({ triggerElement }: Props) {
   const [open, setOpen] = useState(false);
@@ -92,14 +92,14 @@ export default function AddNewCycle({ triggerElement }: Props) {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>{triggerElement}</DialogTrigger>
-      <DialogContent className="max-w-[90vw] md:max-w-xl md:max-w-xl p-0">
+      <DialogContent className="max-w-[95vw] sm:max-w-[90vw] md:max-w-xl p-0">
         <ScrollArea className="max-h-[90vh]">
           <form
             onSubmit={handleSubmit(onSubmit)}
-            className="space-y-3 p-3 md:p-6 sm:p-4"
+            className="space-y-3 p-2 sm:p-4 md:p-6"
           >
             <DialogHeader className="space-y-1">
-              <DialogTitle className="text-base sm:text-lg">
+              <DialogTitle className="text-sm sm:text-base md:text-lg">
                 New Cycle
               </DialogTitle>
               <DialogDescription className="text-xs sm:text-sm">
@@ -109,7 +109,7 @@ export default function AddNewCycle({ triggerElement }: Props) {
 
             <Card className="overflow-hidden">
               <CardHeader className="p-2 sm:p-3">
-                <CardTitle className="text-sm sm:text-base">
+                <CardTitle className="text-xs sm:text-sm md:text-base">
                   Date Range
                 </CardTitle>
               </CardHeader>
@@ -134,7 +134,7 @@ export default function AddNewCycle({ triggerElement }: Props) {
 
             <Card className="overflow-hidden">
               <CardHeader className="p-2 sm:p-3">
-                <CardTitle className="text-sm sm:text-base">
+                <CardTitle className="text-xs sm:text-sm md:text-base">
                   Categories
                 </CardTitle>
               </CardHeader>
@@ -153,7 +153,7 @@ export default function AddNewCycle({ triggerElement }: Props) {
                     append({ title: "", initialAmount: 0, weekly: true })
                   }
                   type="button"
-                  className="w-full text-xs md:text-base"
+                  className="w-full text-xs sm:text-sm md:text-base"
                 >
                   <PlusIcon className="mr-1 h-3 w-3" />
                   Add Category
@@ -162,7 +162,7 @@ export default function AddNewCycle({ triggerElement }: Props) {
             </Card>
 
             <div className="flex justify-end">
-              <Button type="submit" className="text-base md:text-lg">
+              <Button type="submit" className="text-sm sm:text-base md:text-lg">
                 Save
               </Button>
             </div>
@@ -173,14 +173,14 @@ export default function AddNewCycle({ triggerElement }: Props) {
   );
 }
 
-type CategoriesProps = {
+interface CategoriesProps {
   fields: Record<"id", string>[];
   remove: (index: number) => void;
   control: any;
   errors: any;
   watch: any;
   datesRangeLength: number;
-};
+}
 
 function Categories({
   fields,
@@ -211,7 +211,7 @@ function Categories({
   );
 }
 
-type CategoryProps = {
+interface CategoryProps {
   field: Record<"id", string>;
   index: number;
   datesRangeLength: number;
@@ -219,13 +219,13 @@ type CategoryProps = {
   errors: any;
   watch: any;
   control: any;
-};
+}
 
 function Category({ field, index, remove, errors, control }: CategoryProps) {
   return (
     <Card key={field.id} className="overflow-hidden">
       <CardHeader className="flex flex-row items-center justify-between p-2">
-        <CardTitle className="text-base font-medium">
+        <CardTitle className="text-sm sm:text-base font-medium">
           Category {index + 1}
         </CardTitle>
         <Button
@@ -233,12 +233,12 @@ function Category({ field, index, remove, errors, control }: CategoryProps) {
           size="sm"
           onClick={() => remove(index)}
           type="button"
-          className="h-12 w-12 p-0"
+          className="h-8 w-8 sm:h-10 sm:w-10 p-0"
         >
-          <TrashIcon className="h-6 w-6" />
+          <TrashIcon className="h-4 w-4 sm:h-5 sm:w-5" />
         </Button>
       </CardHeader>
-      <CardContent className="grid gap-2 p-2 px-4">
+      <CardContent className="grid gap-2 p-2 px-3 sm:px-4">
         <FormField
           name={`categories.${index}.title`}
           control={control}
@@ -246,7 +246,7 @@ function Category({ field, index, remove, errors, control }: CategoryProps) {
             <div className="space-y-1">
               <Label
                 htmlFor={`category-title-${index}`}
-                className="text-xs md:text-base"
+                className="text-xs sm:text-sm md:text-base"
               >
                 Name
               </Label>
@@ -254,6 +254,7 @@ function Category({ field, index, remove, errors, control }: CategoryProps) {
                 id={`category-title-${index}`}
                 {...field}
                 placeholder="Category name"
+                className="text-xs sm:text-sm md:text-base"
               />
               {errors.categories?.[index]?.title && (
                 <p className="text-xs text-red-500">
@@ -271,7 +272,7 @@ function Category({ field, index, remove, errors, control }: CategoryProps) {
             <div className="space-y-1">
               <Label
                 htmlFor={`category-amount-${index}`}
-                className="text-xs md:text-base"
+                className="text-xs sm:text-sm md:text-base"
               >
                 Amount
               </Label>
@@ -282,6 +283,7 @@ function Category({ field, index, remove, errors, control }: CategoryProps) {
                 value={field.value || undefined}
                 placeholder="Amount"
                 onChange={(e) => field.onChange(parseFloat(e.target.value))}
+                className="text-xs sm:text-sm md:text-base"
               />
               {errors.categories?.[index]?.initialAmount && (
                 <p className="text-xs text-red-500">
@@ -296,7 +298,9 @@ function Category({ field, index, remove, errors, control }: CategoryProps) {
           control={control}
           render={({ field }) => (
             <div className="space-y-1">
-              <Label className="text-xs md:text-base">Frequency</Label>
+              <Label className="text-xs sm:text-sm md:text-base">
+                Frequency
+              </Label>
               <RadioGroup
                 onValueChange={(value) => field.onChange(value === "weekly")}
                 value={field.value ? "weekly" : "monthly"}
@@ -306,7 +310,7 @@ function Category({ field, index, remove, errors, control }: CategoryProps) {
                   <RadioGroupItem value="weekly" id={`r1-${index}`} />
                   <Label
                     htmlFor={`r1-${index}`}
-                    className="text-xs md:text-base"
+                    className="text-xs sm:text-sm md:text-base"
                   >
                     Weekly
                   </Label>

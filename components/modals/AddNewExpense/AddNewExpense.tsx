@@ -33,6 +33,9 @@ import { useCycleContext } from "@/components/main/MainTable";
 import { expensesActions } from "@/app/actions";
 import { getSubcyclesByCycleIdWithCategories, Props } from "./types";
 import { formSchemaMonthly, formSchemaWeekly, FormData } from "./schemas";
+import { LabelSelect } from "@/components/label/LabelSelect";
+import { InfoTooltip } from "@/components/common/InfoTooltip";
+import { cn } from "@/lib/utils";
 
 export default function AddNewExpense({
   categoryId,
@@ -50,6 +53,7 @@ export default function AddNewExpense({
     categoryId: categoryId || "",
     amount: undefined,
     comment: "",
+    label: "",
   };
 
   const form = useForm<FormData>({
@@ -214,6 +218,34 @@ export default function AddNewExpense({
                                   value: category.id,
                                 }))
                           }
+                        />
+                      </FormControl>
+                      <FormMessage className="text-xs" />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  name="label"
+                  control={control}
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel
+                        className={cn(
+                          "text-xs sm:text-sm flex items-center gap-2",
+                          !field.value && "text-muted-foreground"
+                        )}
+                      >
+                        Label
+                        <InfoTooltip text="You can add a label to collect better statistics for your expenses" />
+                      </FormLabel>
+                      <FormControl>
+                        <LabelSelect
+                          className={cn(
+                            !field.value && "text-muted-foreground"
+                          )}
+                          disabled={false}
+                          setValue={(value) => field.onChange(value)}
                         />
                       </FormControl>
                       <FormMessage className="text-xs" />

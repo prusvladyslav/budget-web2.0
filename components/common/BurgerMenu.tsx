@@ -18,7 +18,7 @@ export function BurgerMenu({ user }: { user: SelectUser }) {
   return (
     <Sheet>
       <SheetTrigger asChild>
-        <Button variant="outline" size="icon">
+        <Button variant="outline" size={"icon"}>
           <Menu className="h-5 w-5" />
           <span className="sr-only">Toggle menu</span>
         </Button>
@@ -32,7 +32,7 @@ export function BurgerMenu({ user }: { user: SelectUser }) {
             <SheetTitle className="text-start">
               Hello, <span className="font-bold">{user?.name}</span>
             </SheetTitle>
-            <SheetDescription className="text-left">
+            <SheetDescription className="text-left text-xs sm:text-sm">
               This is the main menu of the app.
             </SheetDescription>
           </SheetHeader>

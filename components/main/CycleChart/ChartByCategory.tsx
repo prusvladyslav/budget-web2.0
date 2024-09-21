@@ -1,3 +1,4 @@
+"use client";
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
 
 import {
@@ -9,9 +10,40 @@ import {
 } from "@/components/ui/chart";
 import { CategoryConfig, ExpensesBySubcycle } from "./CycleChart";
 
+export default function ChartByCategory({
+  data,
+}: {
+  data?: ExpensesBySubcycle["byCategory"];
+}) {
+  if (!data) return <></>;
+
+  const config = generateChartConfigByCategory(data);
+
+  return (
+    <ChartContainer config={config} className="max-h-[200px] w-full">
+      <BarChart accessibilityLayer data={data}>
+        <CartesianGrid vertical={false} />
+        <XAxis
+          dataKey="title"
+          tickLine={false}
+          tickMargin={10}
+          axisLine={false}
+        />
+        <YAxis type="number" domain={[0, "dataMax"]} />
+        <ChartTooltip content={<ChartTooltipContent />} />
+        <ChartLegend content={<ChartLegendContent />} />
+        {Object.entries(config).map(([key, value]) => (
+          <Bar key={key} dataKey={key} fill={value.color} radius={2} />
+        ))}
+      </BarChart>
+    </ChartContainer>
+  );
+}
+
 interface ChartConfig {
   [key: string]: CategoryConfig;
 }
+
 function generateColor(str: string): string {
   let hash = 0;
   for (let i = 0; i < str.length; i++) {
@@ -38,32 +70,4 @@ function generateChartConfigByCategory(
   });
 
   return result;
-}
-
-export default function ChartByCategory({
-  data,
-}: {
-  data?: ExpensesBySubcycle["byCategory"];
-}) {
-  const config = generateChartConfigByCategory(data);
-
-  return (
-    <ChartContainer config={config} className="max-h-[200px] w-full">
-      <BarChart accessibilityLayer data={data}>
-        <CartesianGrid vertical={false} />
-        <XAxis
-          dataKey="title"
-          tickLine={false}
-          tickMargin={10}
-          axisLine={false}
-        />
-        <YAxis type="number" domain={[0, "dataMax"]} />
-        <ChartTooltip content={<ChartTooltipContent />} />
-        <ChartLegend content={<ChartLegendContent />} />
-        {Object.entries(config).map(([key, value]) => (
-          <Bar key={key} dataKey={key} fill={value.color} radius={2} />
-        ))}
-      </BarChart>
-    </ChartContainer>
-  );
 }
