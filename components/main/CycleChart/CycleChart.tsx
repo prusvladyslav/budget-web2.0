@@ -21,7 +21,7 @@ export interface CategoryConfig {
 }
 
 export default function CycleChart() {
-  const [open, setOpen] = useState(true);
+  const [open, setOpen] = useState(false);
 
   const { selectedCycleId } = useCycleContext();
 
