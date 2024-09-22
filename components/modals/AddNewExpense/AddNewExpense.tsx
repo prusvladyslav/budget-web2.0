@@ -109,16 +109,19 @@ export default function AddNewExpense({
 
   return (
     <Dialog open={open} onOpenChange={(open) => !open && handleClose()}>
-      <DialogContent className="max-w-[90vw] sm:max-w-lg p-0">
-        <ScrollArea className="max-h-[90vh]">
-          <div className="p-4 sm:p-6">
-            <DialogHeader className="mb-4">
-              <DialogTitle className="text-lg sm:text-xl">
+      <DialogContent className="max-w-[95vw] sm:max-w-lg p-0">
+        <ScrollArea className="max-h-[88vh] sm:max-h-[95vh]">
+          <div className="p-3 sm:p-6">
+            <DialogHeader className="mb-3 sm:mb-4">
+              <DialogTitle className="text-base sm:text-xl">
                 New Expense
               </DialogTitle>
             </DialogHeader>
             <Form {...form}>
-              <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+              <form
+                onSubmit={handleSubmit(onSubmit)}
+                className="space-y-3 sm:space-y-4"
+              >
                 <FormField
                   name="date"
                   control={control}
@@ -137,63 +140,65 @@ export default function AddNewExpense({
                   )}
                 />
 
-                <FormField
-                  name="cycleId"
-                  control={control}
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-xs sm:text-sm">
-                        Cycle
-                      </FormLabel>
-                      <FormControl>
-                        <SelectBasic
-                          className="w-full"
-                          placeholder="Select cycle"
-                          defaultValue={field.value}
-                          disabled={isLoading}
-                          setValue={(value) => field.onChange(value)}
-                          options={cycles?.map((cycle) => ({
-                            label: cycle.title,
-                            value: cycle.id,
-                          }))}
-                        />
-                      </FormControl>
-                      <FormMessage className="text-xs" />
-                    </FormItem>
-                  )}
-                />
-
-                {!monthly && (
+                <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
                   <FormField
-                    name="subcycleId"
+                    name="cycleId"
                     control={control}
                     render={({ field }) => (
-                      <FormItem>
+                      <FormItem className="flex-1">
                         <FormLabel className="text-xs sm:text-sm">
-                          Subcycle
+                          Cycle
                         </FormLabel>
                         <FormControl>
                           <SelectBasic
                             className="w-full"
-                            placeholder="Select subcycle"
-                            disabled={isLoading}
+                            placeholder="Select cycle"
                             defaultValue={field.value}
+                            disabled={isLoading}
                             setValue={(value) => field.onChange(value)}
-                            options={
-                              isLoading
-                                ? []
-                                : subcycles?.map((subcycle) => ({
-                                    label: subcycle.title,
-                                    value: subcycle.id,
-                                  }))
-                            }
+                            options={cycles?.map((cycle) => ({
+                              label: cycle.title,
+                              value: cycle.id,
+                            }))}
                           />
                         </FormControl>
                         <FormMessage className="text-xs" />
                       </FormItem>
                     )}
                   />
-                )}
+
+                  {!monthly && (
+                    <FormField
+                      name="subcycleId"
+                      control={control}
+                      render={({ field }) => (
+                        <FormItem className="flex-1">
+                          <FormLabel className="text-xs sm:text-sm">
+                            Subcycle
+                          </FormLabel>
+                          <FormControl>
+                            <SelectBasic
+                              className="w-full"
+                              placeholder="Select subcycle"
+                              disabled={isLoading}
+                              defaultValue={field.value}
+                              setValue={(value) => field.onChange(value)}
+                              options={
+                                isLoading
+                                  ? []
+                                  : subcycles?.map((subcycle) => ({
+                                      label: subcycle.title,
+                                      value: subcycle.id,
+                                    }))
+                              }
+                            />
+                          </FormControl>
+                          <FormMessage className="text-xs" />
+                        </FormItem>
+                      )}
+                    />
+                  )}
+                </div>
 
                 <FormField
                   name="categoryId"
@@ -265,7 +270,7 @@ export default function AddNewExpense({
                         <Input
                           {...field}
                           ref={amountInputRef}
-                          className="w-full h-8 sm:h-9"
+                          className="w-full h-9 sm:h-10 text-base"
                           type="number"
                           placeholder="Expense amount"
                           disabled={isLoading}
@@ -288,9 +293,9 @@ export default function AddNewExpense({
                         Comment (optional)
                       </FormLabel>
                       <FormControl>
-                        <Textarea
+                        <Input
                           {...field}
-                          className="resize-none text-base"
+                          className="text-sm sm:text-base"
                           placeholder="Comment for this expense"
                         />
                       </FormControl>
@@ -301,7 +306,7 @@ export default function AddNewExpense({
 
                 <Button
                   type="submit"
-                  className="w-full text-xs sm:text-sm h-8 sm:h-9"
+                  className="w-full text-sm sm:text-base h-10 sm:h-11"
                 >
                   Save Expense
                 </Button>
