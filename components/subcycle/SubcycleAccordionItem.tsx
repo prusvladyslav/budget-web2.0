@@ -55,7 +55,9 @@ function SubcycleAccordionItem({
         name: "Add expense",
         onClick: (categoryId: string) =>
           router.push(
-            `/?expensesModal=active&categoryId=${categoryId}&monthly=${monthly}`
+            `/?expensesModal=active&categoryId=${categoryId}${
+              monthly ? "&monthly=true" : ""
+            }`
           ),
       },
     ];
