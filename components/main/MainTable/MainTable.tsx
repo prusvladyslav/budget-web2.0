@@ -80,6 +80,7 @@ export default function MainTable({
   user: SelectUser | undefined;
 }) {
   if (!user) return null;
+  console.log("wtf");
 
   return (
     // <CycleContext user={user} cycles={cycles}>
