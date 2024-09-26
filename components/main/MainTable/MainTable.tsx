@@ -10,6 +10,7 @@ import AddNewExpense from "@/components/modals/AddNewExpense/AddNewExpense";
 import { useSearchParams } from "next/navigation";
 import MoveBudget from "@/components/modals/MoveBudget/MoveBudget";
 import CycleChart from "../CycleChart/CycleChart";
+import Confetti from "react-confetti";
 
 function MainTableContent({
   user,
@@ -81,8 +82,14 @@ export default function MainTable({
   if (!user) return null;
 
   return (
-    <CycleContext user={user} cycles={cycles}>
-      <MainTableContent user={user} cycles={cycles} />
-    </CycleContext>
+    // <CycleContext user={user} cycles={cycles}>
+    //   <MainTableContent user={user} cycles={cycles} />
+    // </CycleContext>
+    <>
+      <h2 className="text-2xl">
+        Свинка сьогодні все за рахунок йожика! з днем народження!
+      </h2>
+      <Confetti width={400} height={800} />
+    </>
   );
 }
