@@ -8,6 +8,7 @@ import type { Metadata } from "next";
 import { ExpensesTable } from "@/components/expenses/ExpenseTable/ExpensesTable";
 import GeneralLink from "@/components/common/GeneralLink";
 import { columns } from "@/components/expenses/ExpenseTable/columns";
+import React from "react";
 
 export const metadata: Metadata = {
   title: "Expenses history",

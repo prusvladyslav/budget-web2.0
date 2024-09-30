@@ -52,9 +52,7 @@ export const columns: ColumnDef<ExpensesTable>[] = [
       );
     },
   },
-  {
-    accessorKey: "categoryId",
-  },
+
   {
     accessorKey: "category",
     header: "Category",

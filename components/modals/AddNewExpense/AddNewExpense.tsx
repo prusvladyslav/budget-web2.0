@@ -31,11 +31,12 @@ import SelectBasic from "@/components/common/SelectBasic";
 import { URLS, useGet } from "@/lib/fetch";
 import { useCycleContext } from "@/components/main/MainTable";
 import { expensesActions } from "@/app/actions";
-import { getSubcyclesByCycleIdWithCategories, Props } from "./types";
 import { formSchemaMonthly, formSchemaWeekly, FormData } from "./schemas";
 import { LabelSelect } from "@/components/label/LabelSelect";
 import { InfoTooltip } from "@/components/common/InfoTooltip";
 import { cn } from "@/lib/utils";
+import { getSubcyclesByCycleIdWithCategories } from "@/types";
+import { Props } from "./types";
 
 export default function AddNewExpense({
   categoryId,

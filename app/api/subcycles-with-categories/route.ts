@@ -28,13 +28,27 @@ export async function GET(request: NextRequest) {
           subcycleId: true,
           initialAmount: true,
         },
+        with: {
+          expenses: {
+            columns: {
+              amount: true,
+            },
+          },
+        },
       },
     },
   });
 
   if (!cycle) return new Response("No cycle found", { status: 400 });
 
-  const categories = cycle.categories;
+  const categories = cycle.categories.map((category) => {
+    return {
+      ...category,
+      currentAmount:
+        category.initialAmount -
+        category.expenses.reduce((acc, item) => acc + item.amount, 0),
+    };
+  });
 
   const subcycles = cycle.subcycles;
 

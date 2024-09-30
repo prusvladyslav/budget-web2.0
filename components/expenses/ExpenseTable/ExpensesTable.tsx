@@ -27,6 +27,7 @@ import SelectBasic from "@/components/common/SelectBasic";
 import { useTransition } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { expensesActions } from "@/app/actions";
+import uniqBy from "lodash.uniqby";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -64,7 +65,6 @@ export function ExpensesTable<TData, TValue>({
         subcycleId: false,
         cycleId: false,
         id: false,
-        categoryId: false,
       },
     },
   });
@@ -99,7 +99,7 @@ export function ExpensesTable<TData, TValue>({
           setValue={(value) => {
             table.getColumn("cycleId")?.setFilterValue(value);
             table.getColumn("subcycleId")?.setFilterValue("");
-            table.getColumn("categoryId")?.setFilterValue("");
+            table.getColumn("category")?.setFilterValue("");
           }}
           placeholder="Cycle"
           options={cycles?.map((cycle) => ({
@@ -115,9 +115,7 @@ export function ExpensesTable<TData, TValue>({
           setValue={(value) =>
             table.getColumn("subcycleId")?.setFilterValue(value)
           }
-          placeholder={
-            filterCycleIdValue ? "Subcycle" : "Subcycle (fill the cycle first)"
-          }
+          placeholder={"Subcycle"}
           options={
             filterCycleIdValue
               ? subcycles
@@ -128,23 +126,22 @@ export function ExpensesTable<TData, TValue>({
                     value: subcycle.id,
                     label: subcycle.title,
                   }))
-              : []
+              : subcycles.map((subcycle) => ({
+                  value: subcycle.id,
+                  label: subcycle.title,
+                }))
           }
           disabled={false}
         />
         <SelectBasic
           disabled={false}
           value={
-            (table.getColumn("categoryId")?.getFilterValue() as string) || ""
+            (table.getColumn("category")?.getFilterValue() as string) || ""
           }
           setValue={(value) =>
-            table.getColumn("categoryId")?.setFilterValue(value)
+            table.getColumn("category")?.setFilterValue(value)
           }
-          placeholder={
-            filterSubcycleIdValue
-              ? "Category"
-              : "Category (fill the subcycle first)"
-          }
+          placeholder={"Category"}
           options={
             filterCycleIdValue
               ? categories
@@ -152,10 +149,13 @@ export function ExpensesTable<TData, TValue>({
                     (category) => category.subcycleId === filterSubcycleIdValue
                   )
                   .map((category) => ({
-                    value: category.id,
+                    value: category.title,
                     label: category.title,
                   }))
-              : []
+              : uniqBy(categories, "title").map((category) => ({
+                  value: category.title,
+                  label: category.title,
+                }))
           }
         />
         <div className="flex gap-5">

@@ -8,7 +8,7 @@ import { toast } from "sonner";
 import { useSWRConfig } from "swr";
 
 import { useRouter } from "next/navigation";
-import { getSubcyclesByCycleIdWithCategories, Props } from "./types";
+import { Props } from "./types";
 import { useCycleContext } from "@/components/main/MainTable";
 import { formSchemaMonthly, formSchemaWeekly, FormData } from "./schemas";
 import {
@@ -33,6 +33,7 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { moveBudget } from "@/app/actions/categories";
 import { MultiSelect } from "@/components/ui/multi-select";
+import { getSubcyclesByCycleIdWithCategories } from "@/types";
 
 export default function MoveBudget({
   categoryId,
@@ -224,7 +225,7 @@ export default function MoveBudget({
                               key={category.id}
                             >
                               <div>{category.title}:</div>
-                              <div>{category.initialAmount}</div>
+                              <div>{category.currentAmount}</div>
                             </div>
                           );
                         })}
