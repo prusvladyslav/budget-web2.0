@@ -97,7 +97,7 @@ export default function VaultForm({
         await valutActions.updateAccounts(data.accounts);
       });
     } catch (error) {
-      console.log(error);
+      console.error(error);
     }
   };
 
