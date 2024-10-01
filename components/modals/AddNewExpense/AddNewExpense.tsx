@@ -7,15 +7,7 @@ import { toast } from "sonner";
 import { useSWRConfig } from "swr";
 import { useRouter } from "next/navigation";
 
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import {
   Form,
@@ -37,6 +29,7 @@ import { InfoTooltip } from "@/components/common/InfoTooltip";
 import { cn } from "@/lib/utils";
 import { getSubcyclesByCycleIdWithCategories } from "@/types";
 import { Props } from "./types";
+import Modal from "../Modal";
 
 export default function AddNewExpense({
   categoryId,
@@ -109,213 +102,196 @@ export default function AddNewExpense({
   }, [reset, open, categoryId]);
 
   return (
-    <Dialog open={open} onOpenChange={(open) => !open && handleClose()}>
-      <DialogContent className="max-w-[95vw] sm:max-w-lg p-0">
-        <ScrollArea className="max-h-[88vh] sm:max-h-[95vh]">
-          <div className="p-3 sm:p-6">
-            <DialogHeader className="mb-3 sm:mb-4">
-              <DialogTitle className="text-base sm:text-xl">
-                New Expense
-              </DialogTitle>
-            </DialogHeader>
-            <Form {...form}>
-              <form
-                onSubmit={handleSubmit(onSubmit)}
-                className="space-y-3 sm:space-y-4"
-              >
-                <FormField
-                  name="date"
-                  control={control}
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-xs sm:text-sm">Date</FormLabel>
-                      <FormControl>
-                        <DatePicker
-                          className="w-full"
-                          date={field.value}
-                          setDate={(newDate) => field.onChange(newDate)}
-                        />
-                      </FormControl>
-                      <FormMessage className="text-xs" />
-                    </FormItem>
-                  )}
-                />
-
-                <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
-                  <FormField
-                    name="cycleId"
-                    control={control}
-                    render={({ field }) => (
-                      <FormItem className="flex-1">
-                        <FormLabel className="text-xs sm:text-sm">
-                          Cycle
-                        </FormLabel>
-                        <FormControl>
-                          <SelectBasic
-                            className="w-full"
-                            placeholder="Select cycle"
-                            defaultValue={field.value}
-                            disabled={isLoading}
-                            setValue={(value) => field.onChange(value)}
-                            options={cycles?.map((cycle) => ({
-                              label: cycle.title,
-                              value: cycle.id,
-                            }))}
-                          />
-                        </FormControl>
-                        <FormMessage className="text-xs" />
-                      </FormItem>
-                    )}
+    <Modal
+      dialogTitle="New Expense"
+      open={open}
+      onOpenChange={(open) => !open && handleClose()}
+    >
+      <Form {...form}>
+        <form
+          onSubmit={handleSubmit(onSubmit)}
+          className="space-y-3 sm:space-y-4"
+        >
+          <FormField
+            name="date"
+            control={control}
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="text-xs sm:text-sm">Date</FormLabel>
+                <FormControl>
+                  <DatePicker
+                    className="w-full"
+                    date={field.value}
+                    setDate={(newDate) => field.onChange(newDate)}
                   />
+                </FormControl>
+                <FormMessage className="text-xs" />
+              </FormItem>
+            )}
+          />
 
-                  {!monthly && (
-                    <FormField
-                      name="subcycleId"
-                      control={control}
-                      render={({ field }) => (
-                        <FormItem className="flex-1">
-                          <FormLabel className="text-xs sm:text-sm">
-                            Subcycle
-                          </FormLabel>
-                          <FormControl>
-                            <SelectBasic
-                              className="w-full"
-                              placeholder="Select subcycle"
-                              disabled={isLoading}
-                              defaultValue={field.value}
-                              setValue={(value) => field.onChange(value)}
-                              options={
-                                isLoading
-                                  ? []
-                                  : subcycles?.map((subcycle) => ({
-                                      label: subcycle.title,
-                                      value: subcycle.id,
-                                    }))
-                              }
-                            />
-                          </FormControl>
-                          <FormMessage className="text-xs" />
-                        </FormItem>
-                      )}
+          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
+            <FormField
+              name="cycleId"
+              control={control}
+              render={({ field }) => (
+                <FormItem className="flex-1">
+                  <FormLabel className="text-xs sm:text-sm">Cycle</FormLabel>
+                  <FormControl>
+                    <SelectBasic
+                      className="w-full"
+                      placeholder="Select cycle"
+                      defaultValue={field.value}
+                      disabled={isLoading}
+                      setValue={(value) => field.onChange(value)}
+                      options={cycles?.map((cycle) => ({
+                        label: cycle.title,
+                        value: cycle.id,
+                      }))}
                     />
-                  )}
-                </div>
+                  </FormControl>
+                  <FormMessage className="text-xs" />
+                </FormItem>
+              )}
+            />
 
-                <FormField
-                  name="categoryId"
-                  control={control}
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-xs sm:text-sm">
-                        Category
-                      </FormLabel>
-                      <FormControl>
-                        <SelectBasic
-                          className="w-full"
-                          placeholder="Select category"
-                          disabled={isLoading}
-                          defaultValue={field.value}
-                          setValue={(value) => field.onChange(value)}
-                          options={
-                            isLoading
-                              ? []
-                              : categories?.map((category) => ({
-                                  label: category.title,
-                                  value: category.id,
-                                }))
-                          }
-                        />
-                      </FormControl>
-                      <FormMessage className="text-xs" />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  name="label"
-                  control={control}
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel
-                        className={cn(
-                          "text-xs sm:text-sm flex items-center gap-2",
-                          !field.value && "text-muted-foreground"
-                        )}
-                      >
-                        Label
-                        <InfoTooltip text="You can add a label to collect better statistics for your expenses" />
-                      </FormLabel>
-                      <FormControl>
-                        <LabelSelect
-                          className={cn(
-                            !field.value && "text-muted-foreground"
-                          )}
-                          disabled={false}
-                          setValue={(value) => field.onChange(value)}
-                        />
-                      </FormControl>
-                      <FormMessage className="text-xs" />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  name="amount"
-                  control={control}
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-xs sm:text-sm">
-                        Amount
-                      </FormLabel>
-                      <FormControl>
-                        <Input
-                          {...field}
-                          ref={amountInputRef}
-                          className="w-full h-9 sm:h-10 text-base"
-                          type="number"
-                          placeholder="Expense amount"
-                          disabled={isLoading}
-                          onChange={(e) =>
-                            field.onChange(parseFloat(e.target.value))
-                          }
-                        />
-                      </FormControl>
-                      <FormMessage className="text-xs" />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  name="comment"
-                  control={control}
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-xs sm:text-sm">
-                        Comment (optional)
-                      </FormLabel>
-                      <FormControl>
-                        <Input
-                          {...field}
-                          className="text-sm sm:text-base"
-                          placeholder="Comment for this expense"
-                        />
-                      </FormControl>
-                      <FormMessage className="text-xs" />
-                    </FormItem>
-                  )}
-                />
-
-                <Button
-                  type="submit"
-                  className="w-full text-sm sm:text-base h-10 sm:h-11"
-                >
-                  Save Expense
-                </Button>
-              </form>
-            </Form>
+            {!monthly && (
+              <FormField
+                name="subcycleId"
+                control={control}
+                render={({ field }) => (
+                  <FormItem className="flex-1">
+                    <FormLabel className="text-xs sm:text-sm">
+                      Subcycle
+                    </FormLabel>
+                    <FormControl>
+                      <SelectBasic
+                        className="w-full"
+                        placeholder="Select subcycle"
+                        disabled={isLoading}
+                        defaultValue={field.value}
+                        setValue={(value) => field.onChange(value)}
+                        options={
+                          isLoading
+                            ? []
+                            : subcycles?.map((subcycle) => ({
+                                label: subcycle.title,
+                                value: subcycle.id,
+                              }))
+                        }
+                      />
+                    </FormControl>
+                    <FormMessage className="text-xs" />
+                  </FormItem>
+                )}
+              />
+            )}
           </div>
-        </ScrollArea>
-      </DialogContent>
-    </Dialog>
+
+          <FormField
+            name="categoryId"
+            control={control}
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="text-xs sm:text-sm">Category</FormLabel>
+                <FormControl>
+                  <SelectBasic
+                    className="w-full"
+                    placeholder="Select category"
+                    disabled={isLoading}
+                    defaultValue={field.value}
+                    setValue={(value) => field.onChange(value)}
+                    options={
+                      isLoading
+                        ? []
+                        : categories?.map((category) => ({
+                            label: category.title,
+                            value: category.id,
+                          }))
+                    }
+                  />
+                </FormControl>
+                <FormMessage className="text-xs" />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            name="label"
+            control={control}
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel
+                  className={cn(
+                    "text-xs sm:text-sm flex items-center gap-2",
+                    !field.value && "text-muted-foreground"
+                  )}
+                >
+                  Label
+                  <InfoTooltip text="You can add a label to collect better statistics for your expenses" />
+                </FormLabel>
+                <FormControl>
+                  <LabelSelect
+                    className={cn(!field.value && "text-muted-foreground")}
+                    disabled={false}
+                    setValue={(value) => field.onChange(value)}
+                  />
+                </FormControl>
+                <FormMessage className="text-xs" />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            name="amount"
+            control={control}
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="text-xs sm:text-sm">Amount</FormLabel>
+                <FormControl>
+                  <Input
+                    {...field}
+                    ref={amountInputRef}
+                    className="w-full h-9 sm:h-10 text-base"
+                    type="number"
+                    placeholder="Expense amount"
+                    disabled={isLoading}
+                    onChange={(e) => field.onChange(parseFloat(e.target.value))}
+                  />
+                </FormControl>
+                <FormMessage className="text-xs" />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            name="comment"
+            control={control}
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="text-xs sm:text-sm">
+                  Comment (optional)
+                </FormLabel>
+                <FormControl>
+                  <Input
+                    {...field}
+                    className="text-sm sm:text-base"
+                    placeholder="Comment for this expense"
+                  />
+                </FormControl>
+                <FormMessage className="text-xs" />
+              </FormItem>
+            )}
+          />
+
+          <Button
+            type="submit"
+            className="w-full text-sm sm:text-base h-10 sm:h-11"
+          >
+            Save
+          </Button>
+        </form>
+      </Form>
+    </Modal>
   );
 }

@@ -34,6 +34,7 @@ import { Separator } from "@/components/ui/separator";
 import { moveBudget } from "@/app/actions/categories";
 import { MultiSelect } from "@/components/ui/multi-select";
 import { getSubcyclesByCycleIdWithCategories } from "@/types";
+import Modal from "../Modal";
 
 export default function MoveBudget({
   categoryId,
@@ -114,219 +115,212 @@ export default function MoveBudget({
   }, [reset, open]);
 
   return (
-    <Dialog open={open} onOpenChange={(open) => !open && handleClose()}>
-      <DialogContent className="sm:max-w-[425px] p-0">
-        <ScrollArea className="max-h-[calc(100vh-20px)] p-8">
-          <Form {...form}>
-            <form onSubmit={handleSubmit(onSubmit)} className="px-2">
-              <DialogHeader className="mb-4">
-                <DialogTitle>Moving budget</DialogTitle>
-              </DialogHeader>
-              <div className="space-y-4">
-                <FormField
-                  name="cycleId"
-                  control={control}
-                  render={({ field }) => (
-                    <FormItem className="grid grid-cols-[1fr_3fr] items-center md:block">
-                      <FormLabel>Cycle:</FormLabel>
-                      <FormControl>
-                        <SelectBasic
-                          className="w-full"
-                          placeholder="Select cycle"
-                          defaultValue={field.value}
-                          disabled={isLoading}
-                          setValue={(value) => field.onChange(value)}
-                          options={cycles?.map((cycle) => ({
-                            label: cycle.title,
-                            value: cycle.id,
-                          }))}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <Separator />
-
-                {!monthly && (
-                  <FormField
-                    name="subcycleFromId"
-                    control={control}
-                    render={({ field }) => (
-                      <FormItem className="grid grid-cols-[1fr_3fr] items-center md:block">
-                        <FormLabel>Subcycle From:</FormLabel>
-                        <FormControl>
-                          <SelectBasic
-                            className="w-full"
-                            placeholder="Select subcycle"
-                            disabled={isLoading}
-                            defaultValue={field.value}
-                            setValue={(value) => field.onChange(value)}
-                            options={
-                              isLoading
-                                ? []
-                                : subcycles?.map((subcycle) => ({
-                                    label: subcycle.title,
-                                    value: subcycle.id,
-                                  }))
-                            }
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
+    <Modal
+      dialogTitle="Move budget"
+      open={open}
+      onOpenChange={(open) => !open && handleClose()}
+    >
+      <Form {...form}>
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+          <FormField
+            name="cycleId"
+            control={control}
+            render={({ field }) => (
+              <FormItem className="grid grid-cols-[1fr_3fr] items-center md:block">
+                <FormLabel>Cycle:</FormLabel>
+                <FormControl>
+                  <SelectBasic
+                    className="w-full"
+                    placeholder="Select cycle"
+                    defaultValue={field.value}
+                    disabled={isLoading}
+                    setValue={(value) => field.onChange(value)}
+                    options={cycles?.map((cycle) => ({
+                      label: cycle.title,
+                      value: cycle.id,
+                    }))}
                   />
-                )}
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
-                <FormField
-                  name="categoryFromId"
-                  control={control}
-                  render={({ field }) => (
-                    <FormItem className="grid grid-cols-[1fr_3fr] items-center md:block">
-                      <FormLabel>Category From:</FormLabel>
-                      <FormControl>
-                        <MultiSelect
-                          className="w-full"
-                          placeholder="Select category"
-                          disabled={isLoading}
-                          defaultValue={field.value}
-                          onValueChange={(value) => field.onChange(value)}
-                          options={
-                            isLoading
-                              ? []
-                              : categoriesFrom
-                              ? categoriesFrom?.map((category) => ({
-                                  label: category.title,
-                                  value: category.id,
-                                }))
-                              : []
-                          }
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                {categoryFromId.length && (
-                  <div className="flex flex-col gap-2">
-                    <span className="font-bold text-base">
-                      Current categories amounts
-                    </span>
-                    {categoriesData &&
-                      categoriesData
-                        .filter((category) =>
-                          categoryFromId?.includes(category.id)
-                        )
-                        .map((category) => {
-                          return (
-                            <div
-                              className="flex justify-between text-sm"
-                              key={category.id}
-                            >
-                              <div>{category.title}:</div>
-                              <div>{category.currentAmount}</div>
-                            </div>
-                          );
-                        })}
-                  </div>
-                )}
-                <Separator />
-                {!monthly && (
-                  <FormField
-                    name="subcycleToId"
-                    control={control}
-                    render={({ field }) => (
-                      <FormItem className="grid grid-cols-[1fr_3fr] items-center md:block">
-                        <FormLabel>Subcycle To:</FormLabel>
-                        <FormControl>
-                          <SelectBasic
-                            className="w-full"
-                            placeholder="Select subcycle"
-                            disabled={isLoading}
-                            defaultValue={field.value}
-                            setValue={(value) => field.onChange(value)}
-                            options={
-                              isLoading
-                                ? []
-                                : subcycles
-                                    ?.filter(
-                                      (subcycle) =>
-                                        subcycle.id !== subcycleFromId
-                                    )
-                                    .map((subcycle) => ({
-                                      label: subcycle.title,
-                                      value: subcycle.id,
-                                    }))
-                            }
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
+          <Separator />
+
+          {!monthly && (
+            <FormField
+              name="subcycleFromId"
+              control={control}
+              render={({ field }) => (
+                <FormItem className="grid grid-cols-[1fr_3fr] items-center md:block">
+                  <FormLabel>Subcycle From:</FormLabel>
+                  <FormControl>
+                    <SelectBasic
+                      className="w-full"
+                      placeholder="Select subcycle"
+                      disabled={isLoading}
+                      defaultValue={field.value}
+                      setValue={(value) => field.onChange(value)}
+                      options={
+                        isLoading
+                          ? []
+                          : subcycles?.map((subcycle) => ({
+                              label: subcycle.title,
+                              value: subcycle.id,
+                            }))
+                      }
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          )}
+
+          <FormField
+            name="categoryFromId"
+            control={control}
+            render={({ field }) => (
+              <FormItem className="grid grid-cols-[1fr_3fr] items-center md:block">
+                <FormLabel>Category From:</FormLabel>
+                <FormControl>
+                  <MultiSelect
+                    className="w-full"
+                    placeholder="Select category"
+                    disabled={isLoading}
+                    defaultValue={field.value}
+                    onValueChange={(value) => field.onChange(value)}
+                    options={
+                      isLoading
+                        ? []
+                        : categoriesFrom
+                        ? categoriesFrom?.map((category) => ({
+                            label: category.title,
+                            value: category.id,
+                          }))
+                        : []
+                    }
                   />
-                )}
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          {categoryFromId.length && (
+            <div className="flex flex-col gap-2">
+              <span className="font-bold text-base">
+                Current categories amounts
+              </span>
+              {categoriesData &&
+                categoriesData
+                  .filter((category) => categoryFromId?.includes(category.id))
+                  .map((category) => {
+                    return (
+                      <div
+                        className="flex justify-between text-sm"
+                        key={category.id}
+                      >
+                        <div>{category.title}:</div>
+                        <div>{category.currentAmount}</div>
+                      </div>
+                    );
+                  })}
+            </div>
+          )}
+          <Separator />
+          {!monthly && (
+            <FormField
+              name="subcycleToId"
+              control={control}
+              render={({ field }) => (
+                <FormItem className="grid grid-cols-[1fr_3fr] items-center md:block">
+                  <FormLabel>Subcycle To:</FormLabel>
+                  <FormControl>
+                    <SelectBasic
+                      className="w-full"
+                      placeholder="Select subcycle"
+                      disabled={isLoading}
+                      defaultValue={field.value}
+                      setValue={(value) => field.onChange(value)}
+                      options={
+                        isLoading
+                          ? []
+                          : subcycles
+                              ?.filter(
+                                (subcycle) => subcycle.id !== subcycleFromId
+                              )
+                              .map((subcycle) => ({
+                                label: subcycle.title,
+                                value: subcycle.id,
+                              }))
+                      }
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          )}
 
-                <FormField
-                  name="categoryToId"
-                  control={control}
-                  render={({ field }) => (
-                    <FormItem className="grid grid-cols-[1fr_3fr] items-center md:block">
-                      <FormLabel>Category To:</FormLabel>
-                      <FormControl>
-                        <SelectBasic
-                          className="w-full"
-                          placeholder="Select category"
-                          disabled={isLoading}
-                          defaultValue={field.value}
-                          setValue={(value) => field.onChange(value)}
-                          options={
-                            isLoading
-                              ? []
-                              : categoriesTo?.map((category) => ({
-                                  label: category.title,
-                                  value: category.id,
-                                }))
-                          }
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <Separator />
+          <FormField
+            name="categoryToId"
+            control={control}
+            render={({ field }) => (
+              <FormItem className="grid grid-cols-[1fr_3fr] items-center md:block">
+                <FormLabel>Category To:</FormLabel>
+                <FormControl>
+                  <SelectBasic
+                    className="w-full"
+                    placeholder="Select category"
+                    disabled={isLoading}
+                    defaultValue={field.value}
+                    setValue={(value) => field.onChange(value)}
+                    options={
+                      isLoading
+                        ? []
+                        : categoriesTo?.map((category) => ({
+                            label: category.title,
+                            value: category.id,
+                          }))
+                    }
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <Separator />
 
-                <FormField
-                  name="amount"
-                  control={control}
-                  render={({ field }) => (
-                    <FormItem className="grid grid-cols-[1fr_3fr] items-center md:block">
-                      <FormLabel>Amount:</FormLabel>
-                      <FormControl>
-                        <Input
-                          {...field}
-                          className="w-full"
-                          type="number"
-                          placeholder="Expense amount"
-                          disabled={isLoading}
-                          defaultValue={field.value}
-                          onChange={(e) => field.onChange(e.target.value)}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
-              <DialogFooter className="mt-4">
-                <Button disabled={isPending} type="submit">
-                  Save
-                </Button>
-              </DialogFooter>
-            </form>
-          </Form>
-        </ScrollArea>
-      </DialogContent>
-    </Dialog>
+          <FormField
+            name="amount"
+            control={control}
+            render={({ field }) => (
+              <FormItem className="grid grid-cols-[1fr_3fr] items-center md:block">
+                <FormLabel>Amount:</FormLabel>
+                <FormControl>
+                  <Input
+                    {...field}
+                    className="w-full"
+                    type="number"
+                    placeholder="Expense amount"
+                    disabled={isLoading}
+                    defaultValue={field.value}
+                    onChange={(e) => field.onChange(e.target.value)}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <Button
+            type="submit"
+            className="w-full text-sm sm:text-base h-10 sm:h-11"
+          >
+            Save
+          </Button>
+        </form>
+      </Form>
+    </Modal>
   );
 }
