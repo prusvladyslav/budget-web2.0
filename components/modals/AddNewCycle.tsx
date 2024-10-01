@@ -27,6 +27,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import TwoDatesPicker from "@/components/common/TwoDatesPicker";
 import { createWeeksArray } from "@/lib/utils";
 import { cyclesActions } from "@/app/actions";
+import Modal from "./Modal";
 
 const categorySchema = z.object({
   title: z.string().min(1, "Required"),
@@ -90,86 +91,73 @@ export default function AddNewCycle({ triggerElement }: Props) {
   const datesRangeLength = createWeeksArray({ dateRange }).length;
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>{triggerElement}</DialogTrigger>
-      <DialogContent className="max-w-[95vw] sm:max-w-[90vw] md:max-w-xl p-0">
-        <ScrollArea className="max-h-[90vh]">
-          <form
-            onSubmit={handleSubmit(onSubmit)}
-            className="space-y-3 p-2 sm:p-4 md:p-6"
-          >
-            <DialogHeader className="space-y-1">
-              <DialogTitle className="text-sm sm:text-base md:text-lg">
-                New Cycle
-              </DialogTitle>
-              <DialogDescription className="text-xs sm:text-sm">
-                Set your billing period
-              </DialogDescription>
-            </DialogHeader>
-
-            <Card className="overflow-hidden">
-              <CardHeader className="p-2 sm:p-3">
-                <CardTitle className="text-xs sm:text-sm md:text-base">
-                  Date Range
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="p-2 sm:p-3">
-                <FormField
-                  name="date"
-                  control={control}
-                  render={({ field }) => (
-                    <TwoDatesPicker
-                      date={field.value}
-                      setDate={(newDate) => field.onChange(newDate)}
-                    />
-                  )}
+    <Modal
+      dialogTitle="New Cycle"
+      triggerElement={triggerElement}
+      open={open}
+      onOpenChange={setOpen}
+    >
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-3">
+        <Card className="overflow-hidden">
+          <CardHeader className="p-2 sm:p-3">
+            <CardTitle className="text-xs sm:text-sm md:text-base">
+              Date Range
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="p-2 sm:p-3">
+            <FormField
+              name="date"
+              control={control}
+              render={({ field }) => (
+                <TwoDatesPicker
+                  date={field.value}
+                  setDate={(newDate) => field.onChange(newDate)}
                 />
-                {errors.date && (
-                  <p className="mt-1 text-xs text-red-500">
-                    {errors.date.message}
-                  </p>
-                )}
-              </CardContent>
-            </Card>
+              )}
+            />
+            {errors.date && (
+              <p className="mt-1 text-xs text-red-500">{errors.date.message}</p>
+            )}
+          </CardContent>
+        </Card>
 
-            <Card className="overflow-hidden">
-              <CardHeader className="p-2 sm:p-3">
-                <CardTitle className="text-xs sm:text-sm md:text-base">
-                  Categories
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="p-2 sm:p-3 space-y-2">
-                <Categories
-                  fields={fields}
-                  remove={remove}
-                  control={control}
-                  errors={errors}
-                  watch={watch}
-                  datesRangeLength={datesRangeLength}
-                />
-                <Button
-                  variant="outline"
-                  onClick={() =>
-                    append({ title: "", initialAmount: 0, weekly: true })
-                  }
-                  type="button"
-                  className="w-full text-xs sm:text-sm md:text-base"
-                >
-                  <PlusIcon className="mr-1 h-3 w-3" />
-                  Add Category
-                </Button>
-              </CardContent>
-            </Card>
+        <Card className="overflow-hidden">
+          <CardHeader className="p-2 sm:p-3">
+            <CardTitle className="text-xs sm:text-sm md:text-base">
+              Categories
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="p-2 sm:p-3 space-y-2">
+            <Categories
+              fields={fields}
+              remove={remove}
+              control={control}
+              errors={errors}
+              watch={watch}
+              datesRangeLength={datesRangeLength}
+            />
+            <Button
+              variant="outline"
+              onClick={() =>
+                append({ title: "", initialAmount: 0, weekly: true })
+              }
+              type="button"
+              className="w-full text-xs sm:text-sm md:text-base"
+            >
+              <PlusIcon className="mr-1 h-3 w-3" />
+              Add Category
+            </Button>
+          </CardContent>
+        </Card>
 
-            <div className="flex justify-end">
-              <Button type="submit" className="text-sm sm:text-base md:text-lg">
-                Save
-              </Button>
-            </div>
-          </form>
-        </ScrollArea>
-      </DialogContent>
-    </Dialog>
+        <Button
+          type="submit"
+          className="w-full text-sm sm:text-base h-10 sm:h-11"
+        >
+          Save
+        </Button>
+      </form>
+    </Modal>
   );
 }
 
