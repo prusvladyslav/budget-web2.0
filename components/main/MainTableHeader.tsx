@@ -1,13 +1,11 @@
 "use client";
 import CycleContextMenu from "@/components/contextMenus/CycleContextMenu";
-import AddNewCycle from "../modals/AddNewCycle";
 import { TabsTrigger } from "../ui/tabs";
-import { SelectCycle } from "@/db/schema";
 import { useEffect } from "react";
 import { useHotkeys } from "react-hotkeys-hook";
 import { ChevronDown } from "lucide-react";
-import { PlusButton } from "../common/PlusButton";
 import { useCycleContext } from "./MainTable";
+import React from "react";
 
 export default function MainTableHeader() {
   const { selectedCycleId, updateCycleId, cycles } = useCycleContext();
@@ -42,9 +40,13 @@ export default function MainTableHeader() {
   }, [cycles, selectedCycleId]);
 
   return (
-    <>
+    <div className="space-x-2 flex">
       {cycles?.map((cycle) => (
-        <TabsTrigger key={cycle.id} value={cycle.id} className="space-x-2">
+        <TabsTrigger
+          key={cycle.id}
+          value={cycle.id}
+          className="space-x-2 shadow-md border"
+        >
           <>
             <span onClick={(e) => e.preventDefault()}>{cycle.title}</span>
             <CycleContextMenu key={cycle.id} cycle={cycle}>
@@ -53,6 +55,6 @@ export default function MainTableHeader() {
           </>
         </TabsTrigger>
       ))}
-    </>
+    </div>
   );
 }

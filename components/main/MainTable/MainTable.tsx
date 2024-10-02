@@ -42,7 +42,7 @@ function MainTableContent({
         <QuickMenu user={user} />
       </div>
       {hasCycles && (
-        <TabsList className="border-b w-full justify-start px-2 overflow-x-auto overflow-y-hidden space-x-2">
+        <TabsList className="w-full justify-start px-2 py-2 overflow-x-auto overflow-y-hidden">
           <MainTableHeader />
         </TabsList>
       )}
