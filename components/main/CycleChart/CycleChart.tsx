@@ -62,7 +62,7 @@ export default function CycleChart() {
         </div>
       )} */}
       {!isLoading && chartData && (
-        <CardContent className="pt-2">
+        <CardContent className="pt-2 max-h-[300px]">
           <ChartByAmount data={chartDataByAmount} />
         </CardContent>
       )}
