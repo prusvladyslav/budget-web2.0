@@ -1,8 +1,5 @@
-import {
-  categoriesActions,
-  expensesActions,
-  subcyclesActions,
-} from "@/app/actions";
+"use server";
+
 import { db } from "@/db";
 import {
   categoryTable,
@@ -11,14 +8,11 @@ import {
   subsycleTable,
 } from "@/db/schema";
 import { eq, sql } from "drizzle-orm";
-import { NextRequest, NextResponse } from "next/server";
 
-export async function GET(request: NextRequest): Promise<NextResponse> {
-  const searchParams = request.nextUrl.searchParams;
-
-  const cycleId = searchParams.get("cycleId");
-
-  if (!cycleId) return new NextResponse("No cycleId provided", { status: 400 });
+export async function getExpensesBySubcycle(cycleId: string) {
+  if (!cycleId) {
+    throw new Error("No cycleId provided");
+  }
 
   try {
     const preparedCycle = db.query.cycleTable
@@ -57,7 +51,9 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
 
     const cycle = await preparedCycle.execute({ cycleId: cycleId });
 
-    if (!cycle) return new NextResponse("No cycle found", { status: 400 });
+    if (!cycle) {
+      throw new Error("No cycle found");
+    }
 
     const byAmount = cycle.subcycles.map((subcycle) => {
       const initialAmount = subcycle.categories.reduce(
@@ -85,8 +81,9 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
       byAmount,
     };
 
-    return new NextResponse(JSON.stringify(result));
+    return result;
   } catch (error) {
-    return new NextResponse("Internal Server Error", { status: 500 });
+    console.error("Error in getExpensesBySubcycle:", error);
+    throw error;
   }
 }

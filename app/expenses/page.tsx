@@ -9,6 +9,9 @@ import { ExpensesTable } from "@/components/expenses/ExpenseTable/ExpensesTable"
 import GeneralLink from "@/components/common/GeneralLink";
 import { columns } from "@/components/expenses/ExpenseTable/columns";
 import React from "react";
+import { BurgerMenu } from "@/components/common/BurgerMenu";
+import { getUser } from "../actions/users";
+import SubpageHeader from "@/components/common/SubpageHeader";
 
 export const metadata: Metadata = {
   title: "Expenses history",
@@ -16,6 +19,7 @@ export const metadata: Metadata = {
 };
 
 export default async function Page() {
+  const user = await getUser();
   const [expenses, categories, cycles, subcycles] = await Promise.all([
     expensesActions.getAllExpensesTable(),
     categoriesActions.getAllCategories(),
@@ -27,10 +31,8 @@ export default async function Page() {
 
   return (
     <>
-      <GeneralLink href="/">Go back</GeneralLink>
-      <div className="flex justify-between">
-        <h2 className="text-lg font-bold">Expenses history</h2>
-      </div>
+      <SubpageHeader user={user} pageTitle="Expenses history" />
+
       <ExpensesTable
         cycles={cycles}
         subcycles={subcycles}

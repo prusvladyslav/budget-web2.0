@@ -270,7 +270,7 @@ function Category({ field, index, remove, errors, control }: CategoryProps) {
                 type="number"
                 value={field.value || undefined}
                 placeholder="Amount"
-                onChange={(e) => field.onChange(parseFloat(e.target.value))}
+                onChange={(e) => field.onChange(Number.parseFloat(e.target.value))}
                 className="text-xs sm:text-sm md:text-base"
               />
               {errors.categories?.[index]?.initialAmount && (

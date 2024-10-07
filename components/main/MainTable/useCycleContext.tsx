@@ -2,11 +2,11 @@
 import React, {
   createContext,
   useContext,
-  ReactNode,
+  type ReactNode,
   useEffect,
   useMemo,
 } from "react";
-import { SelectCycle, SelectUser } from "@/db/schema";
+import { SelectCycle, type SelectUser } from "@/db/schema";
 import { useCycleState } from "./useCycleState";
 
 interface MainTableContextType {

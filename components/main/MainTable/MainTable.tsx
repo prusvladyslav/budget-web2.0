@@ -1,7 +1,7 @@
 "use client";
 import { Tabs, TabsList } from "@/components/ui/tabs";
 import MainTableHeader from "../MainTableHeader";
-import { SelectUser } from "@/db/schema";
+import type { SelectUser } from "@/db/schema";
 import CycleTab from "../CycleTab";
 import { CycleContext, useCycleContext } from "./useCycleContext";
 import { BurgerMenu } from "@/components/common/BurgerMenu";
@@ -9,7 +9,6 @@ import QuickMenu from "../QuickMenu/QuickMenu";
 import AddNewExpense from "@/components/modals/AddNewExpense/AddNewExpense";
 import { useSearchParams } from "next/navigation";
 import MoveBudget from "@/components/modals/MoveBudget/MoveBudget";
-import CycleChart from "../CycleChart/CycleChart";
 import React from "react";
 
 function MainTableContent({
@@ -47,12 +46,7 @@ function MainTableContent({
         </TabsList>
       )}
 
-      {hasCycles && (
-        <>
-          <CycleTab />
-          <CycleChart />
-        </>
-      )}
+      {hasCycles && <CycleTab />}
       <AddNewExpense
         categoryId={categoryId}
         monthly={Boolean(monthly)}

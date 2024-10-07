@@ -1,7 +1,9 @@
 "use client";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
-import { ColumnDef } from "@tanstack/react-table";
+import { convertDateFormat } from "@/lib/utils";
+import type { ColumnDef } from "@tanstack/react-table";
+import { lightFormat } from "date-fns";
 import { ArrowUpDown } from "lucide-react";
 
 type ExpensesTable = {
@@ -70,6 +72,12 @@ export const columns: ColumnDef<ExpensesTable>[] = [
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       );
+    },
+    sortingFn: (rowA, rowB, columnId) => {
+      const dateA = new Date(convertDateFormat(rowA.getValue(columnId)));
+      const dateB = new Date(convertDateFormat(rowB.getValue(columnId)));
+
+      return dateA.getTime() - dateB.getTime();
     },
   },
   {

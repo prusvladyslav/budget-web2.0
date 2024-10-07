@@ -11,6 +11,7 @@ import { usersActions } from "../actions";
 import { Suspense } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import VaultTotal from "@/components/vault/VaultTotal";
+import SubpageHeader from "@/components/common/SubpageHeader";
 
 export default async function Page() {
   const accounts = await getVault();
@@ -19,7 +20,7 @@ export default async function Page() {
   if (!user) return null;
   return (
     <div>
-      <BurgerMenu user={user} />
+      <SubpageHeader user={user} pageTitle="Vault" />
       <div className="flex flex-col space-y-5 md:space-y-0 md:flex-row md:space-x-10 mt-5">
         <Suspense fallback={<VaultSkeleton />}>
           <VaultForm accounts={accounts} />
@@ -39,6 +40,7 @@ const VaultSkeleton = () => {
         </CardHeader>
         <CardContent className="space-y-4">
           {[1, 2].map((_, index) => (
+            // biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
             <Card key={index}>
               <CardContent className="pt-6">
                 <div className="flex items-center justify-between mb-4">

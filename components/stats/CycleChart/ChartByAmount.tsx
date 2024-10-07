@@ -7,7 +7,13 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
-import { ExpensesBySubcycle } from "./CycleChart";
+type ExpensesBySubcycle = {
+  byAmount: Array<{
+    title: string;
+    initialAmount: number;
+    currentAmount: number;
+  }>;
+};
 
 const config = {
   initialAmount: {

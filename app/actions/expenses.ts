@@ -1,6 +1,6 @@
 "use server";
 import { db } from "@/db";
-import { expenseTable, InsertExpense } from "@/db/schema";
+import { expenseTable, type InsertExpense } from "@/db/schema";
 import { formatDate } from "@/lib/utils";
 import { auth } from "@clerk/nextjs/server";
 import { and, desc, eq, inArray } from "drizzle-orm";

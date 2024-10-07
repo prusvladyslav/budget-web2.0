@@ -18,7 +18,7 @@ import {
 import { Trash2, Plus } from "lucide-react";
 import { valutActions } from "@/app/actions";
 import {} from "next/cache";
-import { SelectVault } from "@/db/schema";
+import type { SelectVault } from "@/db/schema";
 import {
   Select,
   SelectContent,
@@ -87,7 +87,7 @@ export default function VaultForm({
       (account) => account.isMain
     );
     if (mainAccountIndex === -1 && watchAccounts.length > 0) {
-      setValue(`accounts.0.isMain`, true);
+      setValue("accounts.0.isMain", true);
     }
   }, [watchAccounts, setValue]);
 
@@ -105,7 +105,7 @@ export default function VaultForm({
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 md:w-3/4">
       <Card>
         <CardHeader>
-          <CardTitle>Vault Accounts</CardTitle>
+          <CardTitle>Accounts</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           {fields.map((field, index) => {
@@ -186,7 +186,9 @@ export default function VaultForm({
                               type="number"
                               placeholder="Enter amount"
                               onChange={(e) =>
-                                field.onChange(parseFloat(e.target.value))
+                                field.onChange(
+                                  Number.parseFloat(e.target.value)
+                                )
                               }
                             />
                           )}

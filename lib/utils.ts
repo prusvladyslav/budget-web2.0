@@ -1,6 +1,6 @@
 import { type ClassValue, clsx } from "clsx";
 import { differenceInCalendarDays, format, parse } from "date-fns";
-import { DateRange } from "react-day-picker";
+import type { DateRange } from "react-day-picker";
 import { twMerge } from "tailwind-merge";
 
 export function cn(...inputs: ClassValue[]) {
@@ -80,4 +80,16 @@ export function calculateAmountByDays({
   const difference = differenceInCalendarDays(to, from) + 1;
 
   return Math.trunc((amount / 7) * difference);
+}
+
+export function convertDateFormat(inputDate: string) {
+  // Split the input date string into day, month, and year
+  const [day, month, year] = inputDate.split(".");
+
+  // Pad the day and month with leading zeros if necessary
+  const paddedDay = day.padStart(2, "0");
+  const paddedMonth = month.padStart(2, "0");
+
+  // Return the date in YYYY-MM-DD format
+  return `${year}-${paddedMonth}-${paddedDay}`;
 }

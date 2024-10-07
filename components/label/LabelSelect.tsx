@@ -5,7 +5,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../ui/select";
-import { defaultOptions, TLabelName } from "./const";
+import { defaultOptions, type TLabelName } from "./const";
 import { useGetIcon } from "./utils";
 
 type Props = {

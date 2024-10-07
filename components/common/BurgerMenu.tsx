@@ -8,7 +8,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { SelectUser } from "@/db/schema";
+import type { SelectUser } from "@/db/schema";
 import { SignOutButton } from "@clerk/nextjs";
 import { Menu } from "lucide-react";
 import GeneralLink from "./GeneralLink";
@@ -41,9 +41,9 @@ export function BurgerMenu({ user }: { user: SelectUser }) {
             <h2>Links:</h2>
             <div className="flex flex-col mt-2">
               <GeneralLink href="/">Main page</GeneralLink>
-              <GeneralLink href="/settings">User Settings</GeneralLink>
               <GeneralLink href="/expenses">Expenses History</GeneralLink>
               <GeneralLink href="/vault">Vault</GeneralLink>
+              <GeneralLink href="/stats">Statistics</GeneralLink>
             </div>
           </div>
           <Separator />

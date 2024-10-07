@@ -2,8 +2,8 @@
 
 import { memo, useMemo } from "react";
 import { useRouter } from "next/navigation";
-import { SelectSubcycle } from "@/db/schema";
-import { CategoryWithCurrentAmount } from "../main/CycleTab/CycleTab";
+import type { SelectSubcycle } from "@/db/schema";
+import type { CategoryWithCurrentAmount } from "../main/CycleTab/CycleTab";
 import {
   AccordionItem,
   AccordionTrigger,

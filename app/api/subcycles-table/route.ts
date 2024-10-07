@@ -1,7 +1,7 @@
 import { db } from "@/db";
 import { categoryTable, expenseTable, subsycleTable } from "@/db/schema";
 import { and, eq, isNull, sql } from "drizzle-orm";
-import { NextRequest } from "next/server";
+import type { NextRequest } from "next/server";
 
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;

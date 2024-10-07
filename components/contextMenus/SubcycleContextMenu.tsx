@@ -5,7 +5,7 @@ import {
   ContextMenuItem,
   ContextMenuTrigger,
 } from "@/components/ui/context-menu";
-import { SelectSubcycle } from "@/db/schema";
+import type { SelectSubcycle } from "@/db/schema";
 import { toast } from "sonner";
 import { Dialog } from "../ui/dialog";
 import { subcyclesActions } from "@/app/actions";

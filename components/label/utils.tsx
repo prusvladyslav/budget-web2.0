@@ -8,7 +8,7 @@ import {
   ShoppingBag,
   Utensils,
 } from "lucide-react";
-import { TLabelName } from "./const";
+import type { TLabelName } from "./const";
 
 const defaultIconProps = {
   width: 16,

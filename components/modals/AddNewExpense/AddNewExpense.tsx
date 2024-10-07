@@ -23,12 +23,12 @@ import SelectBasic from "@/components/common/SelectBasic";
 import { URLS, useGet } from "@/lib/fetch";
 import { useCycleContext } from "@/components/main/MainTable";
 import { expensesActions } from "@/app/actions";
-import { formSchemaMonthly, formSchemaWeekly, FormData } from "./schemas";
+import { formSchemaMonthly, formSchemaWeekly, type FormData } from "./schemas";
 import { LabelSelect } from "@/components/label/LabelSelect";
 import { InfoTooltip } from "@/components/common/InfoTooltip";
 import { cn } from "@/lib/utils";
-import { getSubcyclesByCycleIdWithCategories } from "@/types";
-import { Props } from "./types";
+import type { getSubcyclesByCycleIdWithCategories } from "@/types";
+import type { Props } from "./types";
 import Modal from "../Modal";
 
 export default function AddNewExpense({
@@ -256,7 +256,7 @@ export default function AddNewExpense({
                     type="number"
                     placeholder="Expense amount"
                     disabled={isLoading}
-                    onChange={(e) => field.onChange(parseFloat(e.target.value))}
+                    onChange={(e) => field.onChange(Number.parseFloat(e.target.value))}
                   />
                 </FormControl>
                 <FormMessage className="text-xs" />

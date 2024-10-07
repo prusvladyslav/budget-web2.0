@@ -8,9 +8,9 @@ import { toast } from "sonner";
 import { useSWRConfig } from "swr";
 
 import { useRouter } from "next/navigation";
-import { Props } from "./types";
+import type { Props } from "./types";
 import { useCycleContext } from "@/components/main/MainTable";
-import { formSchemaMonthly, formSchemaWeekly, FormData } from "./schemas";
+import { formSchemaMonthly, formSchemaWeekly, type FormData } from "./schemas";
 import {
   Dialog,
   DialogContent,
@@ -33,7 +33,7 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { moveBudget } from "@/app/actions/categories";
 import { MultiSelect } from "@/components/ui/multi-select";
-import { getSubcyclesByCycleIdWithCategories } from "@/types";
+import type { getSubcyclesByCycleIdWithCategories } from "@/types";
 import Modal from "../Modal";
 
 export default function MoveBudget({

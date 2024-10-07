@@ -3,7 +3,7 @@ import AddNewCycle from "@/components/modals/AddNewCycle";
 import { Button } from "@/components/ui/button";
 
 import { Separator } from "@/components/ui/separator";
-import { SelectUser } from "@/db/schema";
+import type { SelectUser } from "@/db/schema";
 import { useCycleContext } from "../MainTable";
 import Link from "next/link";
 

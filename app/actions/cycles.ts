@@ -4,7 +4,7 @@ import { db } from "@/db";
 import {
   categoryTable,
   cycleTable,
-  InsertCategory,
+  type InsertCategory,
   subsycleTable,
 } from "@/db/schema";
 import {
@@ -17,7 +17,7 @@ import { auth } from "@clerk/nextjs/server";
 import { and, eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { cache } from "react";
-import { DateRange } from "react-day-picker";
+import type { DateRange } from "react-day-picker";
 import * as z from "zod";
 
 const CycleSchema = z.object({
@@ -93,23 +93,21 @@ export const createCycle = cache(async ({ date, categories }: CreateCycle) => {
       .returning({ id: subsycleTable.id, title: subsycleTable.title });
 
     // create categories for the new cycle
-    const weeklyCategories = newSubcycles
-      .map((newSubcycle) => {
-        const weeklyCategories = categories.filter(
-          (category) => category.weekly === true
-        );
-        return weeklyCategories.map((category) => ({
-          ...category,
-          initialAmount: calculateAmountByDays({
-            dateRange: parseDateRange(newSubcycle.title),
-            amount: category.initialAmount,
-          }),
-          cycleId: newCycleId,
-          userId,
-          subcycleId: newSubcycle.id,
-        }));
-      })
-      .flat();
+    const weeklyCategories = newSubcycles.flatMap((newSubcycle) => {
+      const weeklyCategories = categories.filter(
+        (category) => category.weekly === true
+      );
+      return weeklyCategories.map((category) => ({
+        ...category,
+        initialAmount: calculateAmountByDays({
+          dateRange: parseDateRange(newSubcycle.title),
+          amount: category.initialAmount,
+        }),
+        cycleId: newCycleId,
+        userId,
+        subcycleId: newSubcycle.id,
+      }));
+    });
 
     const monthlyCategories = categories
       .filter((category) => category.weekly === false)
@@ -126,27 +124,6 @@ export const createCycle = cache(async ({ date, categories }: CreateCycle) => {
       .values([...weeklyCategories, ...monthlyCategories]);
   }
   revalidatePath("/");
-});
-
-export const updateCycleId = cache(async (cycleId: string, title: string) => {
-  const { userId } = auth();
-
-  if (!userId) return null;
-
-  const result = CycleSchema.safeParse({ title, cycleId });
-
-  if (!result.success) {
-    return console.error(result.error.issues);
-  }
-
-  await db
-    .update(cycleTable)
-    .set({
-      title,
-    })
-    .where(eq(cycleTable.id, cycleId));
-  revalidatePath("/");
-  return cycleId;
 });
 
 export const deleteCycle = cache(async (cycleId: string) => {

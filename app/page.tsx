@@ -1,3 +1,4 @@
+"use server";
 import { db } from "@/db";
 import { usersTable } from "@/db/schema";
 import { currentUser } from "@clerk/nextjs/server";
@@ -7,23 +8,14 @@ import MainTable from "@/components/main/MainTable";
 import { SWRProvider } from "@/components/common/SWRprovider";
 import { usersActions } from "./actions";
 import { Suspense } from "react";
+import { getUserWithCycle } from "./actions/users";
 
 export default async function Home() {
   const clerUser = await currentUser();
 
   if (!clerUser) return null;
 
-  const user = await db.query.usersTable.findFirst({
-    where: eq(usersTable.id, clerUser.id),
-    with: {
-      cycles: {
-        columns: {
-          id: true,
-          title: true,
-        },
-      },
-    },
-  });
+  const user = await getUserWithCycle();
   const cycles = user?.cycles || [];
 
   if (!user) {

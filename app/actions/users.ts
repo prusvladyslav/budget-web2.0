@@ -29,6 +29,24 @@ export const getUser = cache(async () => {
   return user;
 });
 
+export const getUserWithCycle = cache(async () => {
+  const { userId } = auth();
+
+  if (!userId) return null;
+
+  return await db.query.usersTable.findFirst({
+    where: eq(usersTable.id, userId),
+    with: {
+      cycles: {
+        columns: {
+          id: true,
+          title: true,
+        },
+      },
+    },
+  });
+});
+
 export const createUser = cache(async (name: string, id: string) => {
   const result = CreateUserSchema.safeParse({ name, id });
   if (!result.success) {

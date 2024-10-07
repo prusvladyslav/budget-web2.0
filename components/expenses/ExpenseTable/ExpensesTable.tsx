@@ -1,14 +1,14 @@
 "use client";
 
 import {
-  ColumnDef,
+  type ColumnDef,
   flexRender,
   getCoreRowModel,
   getPaginationRowModel,
   useReactTable,
   getSortedRowModel,
-  SortingState,
-  ColumnFiltersState,
+  type SortingState,
+  type ColumnFiltersState,
   getFilteredRowModel,
 } from "@tanstack/react-table";
 
@@ -22,7 +22,7 @@ import {
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
-import { SelectCategory, SelectCycle, SelectSubcycle } from "@/db/schema";
+import type { SelectCategory, SelectCycle, SelectSubcycle } from "@/db/schema";
 import SelectBasic from "@/components/common/SelectBasic";
 import { useTransition } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -76,6 +76,7 @@ export function ExpensesTable<TData, TValue>({
       const expensesIds = table
         .getFilteredSelectedRowModel()
         .rows.map((row) => row.original)
+        // biome-ignore lint/suspicious/noExplicitAny: <explanation>
         .map((row: any) => row.id);
       await expensesActions.deleteExpenses(expensesIds);
     });
@@ -202,6 +203,7 @@ export function ExpensesTable<TData, TValue>({
               Array(5)
                 .fill(null)
                 .map((_, index) => (
+                  // biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
                   <TableRow key={index}>
                     <TableCell>
                       <Skeleton className="h-4 w-[80px]" />

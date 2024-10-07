@@ -5,7 +5,6 @@ export const URLS = {
   subCyclesTable: "/api/subcycles-table",
   categories: "/api/categories",
   subCyclesWithCategories: "/api/subcycles-with-categories",
-  expensesBySubcycle: "/api/expenses-by-subcycle", // refactor
 };
 
 export const useGet = <T>(url: string | null, key: string) => {
