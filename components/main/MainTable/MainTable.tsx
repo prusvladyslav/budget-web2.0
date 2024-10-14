@@ -14,6 +14,7 @@ import React from "react";
 function MainTableContent({
   user,
   cycles,
+  children,
 }: {
   user: SelectUser;
   cycles:
@@ -22,6 +23,7 @@ function MainTableContent({
         title: string;
       }[]
     | null;
+  children: React.ReactNode;
 }) {
   const { selectedCycleId, updateCycleId } = useCycleContext();
   const hasCycles = cycles && cycles.length > 0;
@@ -38,7 +40,7 @@ function MainTableContent({
     >
       <div className="flex items-center gap-4">
         <BurgerMenu user={user} />
-        <QuickMenu user={user} />
+        {children}
       </div>
       {hasCycles && (
         <TabsList className="w-full justify-start px-2 py-2 overflow-x-auto overflow-y-hidden">
@@ -64,6 +66,7 @@ function MainTableContent({
 export default function MainTable({
   cycles,
   user,
+  children,
 }: {
   cycles:
     | {
@@ -72,12 +75,13 @@ export default function MainTable({
       }[]
     | null;
   user: SelectUser | undefined;
+  children?: React.ReactNode;
 }) {
   if (!user) return null;
 
   return (
     <CycleContext user={user} cycles={cycles}>
-      <MainTableContent user={user} cycles={cycles} />
+      <MainTableContent user={user} cycles={cycles} children={children} />
     </CycleContext>
   );
 }

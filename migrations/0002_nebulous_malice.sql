@@ -1,0 +1,1 @@
+ALTER TABLE `users` ADD `last_created_cycles_ids_json` text;

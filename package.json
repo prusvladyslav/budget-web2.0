@@ -6,7 +6,9 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "db:generate": "pnpm drizzle-kit generate",
+    "db:push": "pnpm drizzle-kit push"
   },
   "dependencies": {
     "@clerk/nextjs": "^5.3.0",

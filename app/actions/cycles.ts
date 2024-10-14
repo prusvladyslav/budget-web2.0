@@ -36,6 +36,31 @@ export const getCycles = cache(async () => {
   return cycles;
 });
 
+export const getCycleById = cache(async (cycleId: string) => {
+  const { userId } = auth();
+
+  if (!userId) return null;
+
+  const cycle = await db.query.cycleTable.findFirst({
+    where: eq(cycleTable.id, cycleId),
+    with: {
+      subcycles: {
+        columns: {
+          id: true,
+          title: true,
+        },
+        with: {
+          categories: true,
+        },
+      },
+    },
+  });
+
+  if (!cycle) return null;
+
+  return cycle;
+});
+
 export type Category = Omit<InsertCategory, "cycleId">;
 
 type CreateCycle = {
@@ -93,20 +118,24 @@ export const createCycle = cache(async ({ date, categories }: CreateCycle) => {
       .returning({ id: subsycleTable.id, title: subsycleTable.title });
 
     // create categories for the new cycle
+
     const weeklyCategories = newSubcycles.flatMap((newSubcycle) => {
-      const weeklyCategories = categories.filter(
-        (category) => category.weekly === true
-      );
-      return weeklyCategories.map((category) => ({
-        ...category,
-        initialAmount: calculateAmountByDays({
-          dateRange: parseDateRange(newSubcycle.title),
-          amount: category.initialAmount,
-        }),
-        cycleId: newCycleId,
-        userId,
-        subcycleId: newSubcycle.id,
-      }));
+      return categories
+        .filter((category) => category.weekly === true)
+        .map((category) => {
+          const calculatedAmountByDays = calculateAmountByDays({
+            dateRange: parseDateRange(newSubcycle.title),
+            amount: category.initialAmount,
+          });
+
+          return {
+            ...category,
+            initialAmount: calculatedAmountByDays,
+            cycleId: newCycleId,
+            userId,
+            subcycleId: newSubcycle.id,
+          };
+        });
     });
 
     const monthlyCategories = categories

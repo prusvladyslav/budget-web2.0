@@ -8,9 +8,13 @@ export const usersTable = sqliteTable("users", {
   lastOpenedCycleId: text("last_opened_cycle_id"),
   lastOpenedSubcycleId: text("last_opened_subcycle_id"),
   debug: integer("debug", { mode: "boolean" }).default(false),
+  lastCreatedCategoriesJson: text("last_created_categories_json"),
 });
 
-export type SelectUser = typeof usersTable.$inferSelect;
+export type SelectUser = Omit<
+  typeof usersTable.$inferSelect,
+  "lastCreatedCategoriesJson"
+>;
 
 export const usersRelations = relations(usersTable, ({ many }) => ({
   cycles: many(cycleTable),

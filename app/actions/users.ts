@@ -25,6 +25,9 @@ export const getUser = cache(async () => {
 
   const user = await db.query.usersTable.findFirst({
     where: eq(usersTable.id, userId),
+    columns: {
+      lastCreatedCategoriesJson: false,
+    },
   });
   return user;
 });
@@ -80,5 +83,20 @@ export const updateUser = cache(
       .where(eq(usersTable.id, userId));
 
     return validUpdates;
+  }
+);
+
+export const updateUserLastCreatedCategoriesJson = cache(
+  async (
+    categories: Array<{ title: string; initialAmount: number; weekly: boolean }>
+  ) => {
+    const { userId } = auth();
+
+    if (!userId) return null;
+
+    await db
+      .update(usersTable)
+      .set({ lastCreatedCategoriesJson: JSON.stringify(categories) })
+      .where(eq(usersTable.id, userId));
   }
 );

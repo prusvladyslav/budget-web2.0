@@ -9,24 +9,16 @@ import { toast } from "sonner";
 import { PlusIcon, TrashIcon } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
+
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { FormField } from "@/components/ui/form";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 import TwoDatesPicker from "@/components/common/TwoDatesPicker";
 import { createWeeksArray } from "@/lib/utils";
-import { cyclesActions } from "@/app/actions";
+import { cyclesActions, usersActions } from "@/app/actions";
 import Modal from "./Modal";
 
 const categorySchema = z.object({
@@ -49,9 +41,17 @@ type FormData = z.infer<typeof formSchema>;
 
 interface Props {
   triggerElement: React.ReactNode;
+  defaultCategories: Array<{
+    title: string;
+    initialAmount: number | undefined;
+    weekly: boolean;
+  }>;
 }
 
-export default function AddNewCycle({ triggerElement }: Props) {
+export default function AddNewCycle({
+  triggerElement,
+  defaultCategories,
+}: Props) {
   const [open, setOpen] = useState(false);
   const {
     reset,
@@ -66,7 +66,7 @@ export default function AddNewCycle({ triggerElement }: Props) {
         from: new Date(),
         to: addDays(new Date(), 31),
       },
-      categories: [{ title: "", initialAmount: undefined, weekly: true }],
+      categories: defaultCategories,
     },
   });
 
@@ -77,7 +77,10 @@ export default function AddNewCycle({ triggerElement }: Props) {
 
   const onSubmit = async (data: FormData) => {
     try {
-      await cyclesActions.createCycle(data);
+      await Promise.all([
+        cyclesActions.createCycle(data),
+        usersActions.updateUserLastCreatedCategoriesJson(data.categories),
+      ]);
       toast.success("Cycle created");
       reset();
       setOpen(false);
@@ -270,7 +273,9 @@ function Category({ field, index, remove, errors, control }: CategoryProps) {
                 type="number"
                 value={field.value || undefined}
                 placeholder="Amount"
-                onChange={(e) => field.onChange(Number.parseFloat(e.target.value))}
+                onChange={(e) =>
+                  field.onChange(Number.parseFloat(e.target.value))
+                }
                 className="text-xs sm:text-sm md:text-base"
               />
               {errors.categories?.[index]?.initialAmount && (

@@ -1,14 +1,12 @@
 "use server";
-import { db } from "@/db";
-import { usersTable } from "@/db/schema";
 import { currentUser } from "@clerk/nextjs/server";
-import { eq } from "drizzle-orm";
 
 import MainTable from "@/components/main/MainTable";
 import { SWRProvider } from "@/components/common/SWRprovider";
 import { usersActions } from "./actions";
 import { Suspense } from "react";
 import { getUserWithCycle } from "./actions/users";
+import QuickMenu from "@/components/main/QuickMenu/QuickMenu";
 
 export default async function Home() {
   const clerUser = await currentUser();
@@ -30,6 +28,7 @@ export default async function Home() {
       ...newUser[0],
       lastOpenedCycleId: null,
       lastOpenedSubcycleId: null,
+      lastCreatedCycles: JSON.stringify([]),
       debug: false,
     };
     return (
@@ -42,7 +41,11 @@ export default async function Home() {
   return (
     <Suspense fallback={<div>Loading...</div>}>
       <SWRProvider>
-        <MainTable cycles={cycles} user={user} />
+        <MainTable
+          cycles={cycles}
+          user={user}
+          children={<QuickMenu cycles={cycles} />}
+        />
       </SWRProvider>
     </Suspense>
   );

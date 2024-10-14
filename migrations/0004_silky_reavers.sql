@@ -1,0 +1,1 @@
+ALTER TABLE `users` RENAME COLUMN `last_created_cycles` TO `last_created_categories_json`;

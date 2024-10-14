@@ -15,6 +15,27 @@
       "when": 1726906664985,
       "tag": "0001_quiet_argent",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1728937049942,
+      "tag": "0002_nebulous_malice",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "6",
+      "when": 1728937818599,
+      "tag": "0003_last_talkback",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "6",
+      "when": 1728938855125,
+      "tag": "0004_silky_reavers",
+      "breakpoints": true
     }
   ]
 }
