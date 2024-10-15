@@ -1,5 +1,5 @@
 "use client";
-import { type SelectCategory, SelectCycle, type SelectSubcycle } from "@/db/schema";
+import type { SelectCategory, SelectSubcycle } from "@/db/schema";
 import { TabsContent } from "../../ui/tabs";
 import { URLS, useGet } from "@/lib/fetch";
 import { Accordion, AccordionItem } from "../../ui/accordion";

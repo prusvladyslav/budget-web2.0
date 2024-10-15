@@ -3,7 +3,6 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { convertDateFormat } from "@/lib/utils";
 import type { ColumnDef } from "@tanstack/react-table";
-import { lightFormat } from "date-fns";
 import { ArrowUpDown } from "lucide-react";
 
 type ExpensesTable = {

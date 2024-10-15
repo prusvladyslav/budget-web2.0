@@ -5,7 +5,6 @@ import { useEffect } from "react";
 import { useHotkeys } from "react-hotkeys-hook";
 import { ChevronDown } from "lucide-react";
 import { useCycleContext } from "./MainTable";
-import React from "react";
 
 export default function MainTableHeader() {
   const { selectedCycleId, updateCycleId, cycles } = useCycleContext();

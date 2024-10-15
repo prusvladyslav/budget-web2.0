@@ -12,14 +12,6 @@ import type { Props } from "./types";
 import { useCycleContext } from "@/components/main/MainTable";
 import { formSchemaMonthly, formSchemaWeekly, type FormData } from "./schemas";
 import {
-  Dialog,
-  DialogContent,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import {
   Form,
   FormControl,
   FormField,

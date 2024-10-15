@@ -4,7 +4,6 @@ import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
 import { ChevronDown } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
-import React from "react";
 import { TabsTrigger } from "../../ui/tabs";
 import { useCycleContext } from "../MainTable";
 

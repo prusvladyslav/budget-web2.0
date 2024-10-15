@@ -6,7 +6,6 @@ import {
 } from "@/components/ui/card";
 import VaultForm from "@/components/vault/VaultForm";
 import { getVault, getVaultTotal } from "../actions/vault";
-import { BurgerMenu } from "@/components/common/BurgerMenu";
 import { usersActions } from "../actions";
 import { Suspense } from "react";
 import { Skeleton } from "@/components/ui/skeleton";

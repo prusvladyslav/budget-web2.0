@@ -5,11 +5,10 @@ import type { SelectUser } from "@/db/schema";
 import CycleTab from "../CycleTab";
 import { CycleContext, useCycleContext } from "./useCycleContext";
 import { BurgerMenu } from "@/components/common/BurgerMenu";
-import QuickMenu from "../QuickMenu/QuickMenu";
 import AddNewExpense from "@/components/modals/AddNewExpense/AddNewExpense";
 import { useSearchParams } from "next/navigation";
 import MoveBudget from "@/components/modals/MoveBudget/MoveBudget";
-import React from "react";
+import type React from "react";
 
 function MainTableContent({
   user,
