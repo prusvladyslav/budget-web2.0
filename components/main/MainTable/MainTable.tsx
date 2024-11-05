@@ -80,7 +80,9 @@ export default function MainTable({
 
   return (
     <CycleContext user={user} cycles={cycles}>
-      <MainTableContent user={user} cycles={cycles} children={children} />
+      <MainTableContent user={user} cycles={cycles}>
+        {children}
+      </MainTableContent>
     </CycleContext>
   );
 }

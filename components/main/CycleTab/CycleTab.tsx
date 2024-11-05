@@ -33,7 +33,7 @@ export default function CycleTab() {
   if (!cycle) return null;
 
   const { data, isLoading } = useGet<getSubcyclesByCycleIdResponse>(
-    URLS.subCyclesTable + "?cycleId=" + cycle.id,
+    `${URLS.subCyclesTable}?cycleId=${cycle.id}`,
     "subcyclesTable"
   );
 
@@ -101,7 +101,7 @@ const CycleTabSkeleton = () => {
       {Array(5)
         .fill(null)
         .map((_, index) => (
-          <AccordionItem value={""} key={index}>
+          <AccordionItem value={""} key={index + _}>
             <Skeleton className="h-[56px] w-full flex items-center justify-between">
               <Skeleton className="ml-[16px] h-[32px] w-[250px] bg-gray-300" />
             </Skeleton>

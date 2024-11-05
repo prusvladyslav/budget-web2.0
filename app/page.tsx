@@ -41,11 +41,9 @@ export default async function Home() {
   return (
     <Suspense fallback={<div>Loading...</div>}>
       <SWRProvider>
-        <MainTable
-          cycles={cycles}
-          user={user}
-          children={<QuickMenu cycles={cycles} />}
-        />
+        <MainTable cycles={cycles} user={user}>
+          <QuickMenu cycles={cycles} />
+        </MainTable>
       </SWRProvider>
     </Suspense>
   );

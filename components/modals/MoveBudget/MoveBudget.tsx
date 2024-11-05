@@ -62,7 +62,7 @@ export default function MoveBudget({
   const subcycleToId = watch("subcycleToId");
 
   const { data, isLoading } = useGet<getSubcyclesByCycleIdWithCategories>(
-    open ? URLS.subCyclesWithCategories + "?cycleId=" + cycledId : null,
+    open ? `${URLS.subCyclesWithCategories}?cycleId=${cycledId}` : null,
     "subcyclesWithCategories"
   );
 
@@ -91,11 +91,11 @@ export default function MoveBudget({
       startTransition(async () => {
         await moveBudget(data);
         mutate(() => true);
-        toast.success(`Budget moved successfully`);
+        toast.success("Budget moved successfully");
       });
     } catch (error) {
       console.error(error);
-      toast.error(`Error moving budget`);
+      toast.error("Error moving budget");
     } finally {
       reset();
       handleClose();
@@ -204,20 +204,19 @@ export default function MoveBudget({
               <span className="font-bold text-base">
                 Current categories amounts
               </span>
-              {categoriesData &&
-                categoriesData
-                  .filter((category) => categoryFromId?.includes(category.id))
-                  .map((category) => {
-                    return (
-                      <div
-                        className="flex justify-between text-sm"
-                        key={category.id}
-                      >
-                        <div>{category.title}:</div>
-                        <div>{category.currentAmount}</div>
-                      </div>
-                    );
-                  })}
+              {categoriesData
+                ?.filter((category) => categoryFromId?.includes(category.id))
+                .map((category) => {
+                  return (
+                    <div
+                      className="flex justify-between text-sm"
+                      key={category.id}
+                    >
+                      <div>{category.title}:</div>
+                      <div>{category.currentAmount}</div>
+                    </div>
+                  );
+                })}
             </div>
           )}
           <Separator />

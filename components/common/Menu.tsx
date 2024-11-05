@@ -28,7 +28,7 @@ export function Menu({ items }: Props) {
               <MenubarItem
                 className="px-4"
                 key={item.id}
-                onClick={() => item.onClick && item.onClick()}
+                onClick={() => item.onClick?.()}
               >
                 {item.name}
               </MenubarItem>

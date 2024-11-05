@@ -1,6 +1,7 @@
 "use client";
 import { cn } from "@/lib/utils";
 import { Button } from "../ui/button";
+// biome-ignore lint/suspicious/noExplicitAny: <explanation>
 export function PlusIcon(props: any) {
   return (
     <svg
@@ -15,6 +16,7 @@ export function PlusIcon(props: any) {
       strokeLinecap="round"
       strokeLinejoin="round"
     >
+      <title>plus</title>
       <path d="M5 12h14" />
       <path d="M12 5v14" />
     </svg>
