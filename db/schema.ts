@@ -57,6 +57,7 @@ export const subsycleTable = sqliteTable("subsycles", {
     .notNull()
     .references(() => usersTable.id, { onDelete: "cascade" }),
   title: text("title").notNull(),
+  fullDate: text("fullDate"),
   createdAt: text("created_at")
     .default(sql`(CURRENT_TIMESTAMP)`)
     .notNull(),

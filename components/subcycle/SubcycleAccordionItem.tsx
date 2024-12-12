@@ -73,7 +73,7 @@ function SubcycleAccordionItem({
         {
           id: 3,
           name: "Expenses history",
-          onClick: () => router.push(`/expenses`),
+          onClick: () => router.push("/expenses"),
         }
       );
     }
@@ -143,7 +143,7 @@ function DesktopView({
           <TableHead>Title</TableHead>
           <TableHead>Initial</TableHead>
           <TableHead>Current</TableHead>
-          <TableHead></TableHead>
+          <TableHead />
         </TableRow>
       </TableHeader>
       <TableBody>
@@ -171,7 +171,7 @@ function DesktopView({
             <TableCell className="font-black text-base">
               {totalCurrent}
             </TableCell>
-            <TableCell className="text-right"></TableCell>
+            <TableCell className="text-right" />
           </TableRow>
         )}
       </TableBody>

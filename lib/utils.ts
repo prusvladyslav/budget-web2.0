@@ -15,6 +15,14 @@ export function formatDateRange(dateRange: DateRange): string {
 
   return `${fromFormatted} - ${toFormatted}`;
 }
+export function formatDateRangeWithYear(dateRange: DateRange): string {
+  if (!dateRange.from || !dateRange.to) return "";
+
+  const fromFormatted = format(dateRange.from, "dd.MM.yyyy");
+  const toFormatted = format(dateRange.to, "dd.MM.yyyy");
+
+  return `${fromFormatted} - ${toFormatted}`;
+}
 export function formatDate(date: Date, withYear = true): string {
   return format(date, withYear ? "dd.MM.yyyy" : "dd.MM");
 }
@@ -24,13 +32,8 @@ export function parseDateRange(dateRangeStr: string): DateRange | null {
 
   if (!fromFormatted || !toFormatted) return null;
 
-  const currentYear = new Date().getFullYear();
-
-  const fromDate = parse(fromFormatted, "dd.MM", new Date());
-  const toDate = parse(toFormatted, "dd.MM", new Date());
-
-  const from = new Date(fromDate.setFullYear(currentYear));
-  const to = new Date(toDate.setFullYear(currentYear));
+  const from = parse(fromFormatted, "dd.MM.yyyy", new Date());
+  const to = parse(toFormatted, "dd.MM.yyyy", new Date());
 
   return {
     from,

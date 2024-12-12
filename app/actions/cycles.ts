@@ -11,6 +11,7 @@ import {
   calculateAmountByDays,
   createWeeksArray,
   formatDateRange,
+  formatDateRangeWithYear,
   parseDateRange,
 } from "@/lib/utils";
 import { auth } from "@clerk/nextjs/server";
@@ -108,6 +109,7 @@ export const createCycle = cache(async ({ date, categories }: CreateCycle) => {
 
     const subcyclesArray = weeksArr.map((week) => ({
       title: formatDateRange(week),
+      fullDate: formatDateRangeWithYear({ from: week.from, to: week.to }),
       cycleId: newCycleId,
       userId,
     }));
@@ -115,7 +117,11 @@ export const createCycle = cache(async ({ date, categories }: CreateCycle) => {
     const newSubcycles = await db
       .insert(subsycleTable)
       .values(subcyclesArray)
-      .returning({ id: subsycleTable.id, title: subsycleTable.title });
+      .returning({
+        id: subsycleTable.id,
+        title: subsycleTable.title,
+        fullDate: subsycleTable.fullDate,
+      });
 
     // create categories for the new cycle
 
@@ -124,7 +130,9 @@ export const createCycle = cache(async ({ date, categories }: CreateCycle) => {
         .filter((category) => category.weekly === true)
         .map((category) => {
           const calculatedAmountByDays = calculateAmountByDays({
-            dateRange: parseDateRange(newSubcycle.title),
+            dateRange: newSubcycle.fullDate
+              ? parseDateRange(newSubcycle.fullDate)
+              : null,
             amount: category.initialAmount,
           });
 

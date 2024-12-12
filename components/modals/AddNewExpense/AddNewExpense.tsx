@@ -61,7 +61,7 @@ export default function AddNewExpense({
   const subcycleId = watch("subcycleId");
 
   const { data, isLoading } = useGet<getSubcyclesByCycleIdWithCategories>(
-    URLS.subCyclesWithCategories + "?cycleId=" + cycleId,
+    `${URLS.subCyclesWithCategories}?cycleId=${cycleId}`,
     "subcyclesWithCategories"
   );
 
@@ -256,7 +256,9 @@ export default function AddNewExpense({
                     type="number"
                     placeholder="Expense amount"
                     disabled={isLoading}
-                    onChange={(e) => field.onChange(Number.parseFloat(e.target.value))}
+                    onChange={(e) =>
+                      field.onChange(Number.parseFloat(e.target.value))
+                    }
                   />
                 </FormControl>
                 <FormMessage className="text-xs" />
