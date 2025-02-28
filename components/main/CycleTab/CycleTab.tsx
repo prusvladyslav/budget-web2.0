@@ -38,14 +38,13 @@ export default function CycleTab() {
   const quickExpenseModalActive =
     searchParams?.get("quickExpenses") === "active";
 
+  const { data, isLoading } = useGet<getSubcyclesByCycleIdResponse>(
+    `${URLS.subCyclesTable}?cycleId=${selectedCycleId}`,
+    "subcyclesTable"
+  );
   if (!cycles) return null;
 
   if (!cycle) return null;
-
-  const { data, isLoading } = useGet<getSubcyclesByCycleIdResponse>(
-    `${URLS.subCyclesTable}?cycleId=${cycle.id}`,
-    "subcyclesTable"
-  );
 
   if (isLoading) return <CycleTabSkeleton />;
 
