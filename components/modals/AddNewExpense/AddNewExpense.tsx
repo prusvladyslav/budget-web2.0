@@ -39,7 +39,6 @@ export default function AddNewExpense({
   const router = useRouter();
   const handleClose = () => router.push("/");
   const { selectedCycleId, selectedSubcycleId, cycles } = useCycleContext();
-
   const defaultValues = {
     date: new Date(),
     cycleId: selectedCycleId || "",
@@ -79,7 +78,7 @@ export default function AddNewExpense({
         ...data,
         date: data.date.toISOString(),
       });
-      mutate(() => true);
+      mutate(`${URLS.subCyclesTable}?cycleId=${selectedCycleId}`);
       toast.success("Expense added successfully");
     } catch (error) {
       console.error(error);

@@ -1,3 +1,4 @@
+"use server";
 import { db } from "@/db";
 import { subsycleTable, categoryTable, expenseTable } from "@/db/schema";
 import { auth } from "@clerk/nextjs/server";

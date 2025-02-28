@@ -1,14 +1,18 @@
 "use server";
 import { db } from "@/db";
-import { expenseTable, type InsertExpense } from "@/db/schema";
+import { expenseTable, subsycleTable, type InsertExpense } from "@/db/schema";
 import { formatDate } from "@/lib/utils";
 import { auth } from "@clerk/nextjs/server";
-import { and, desc, eq, inArray } from "drizzle-orm";
+import { and, desc, eq, inArray, sql } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { cache } from "react";
 import * as z from "zod";
 import { getAllCategories } from "./categories";
-import { addToMainAccount, deductFromMainAccount } from "./vault";
+import {
+  addToMainAccount,
+  deductFromMainAccount,
+  getMainAccount,
+} from "./vault";
 
 const ExpenseSchema = z.object({
   id: z.string().min(1, "Invalid ID"),
@@ -114,3 +118,90 @@ export const deleteExpenses = cache(async (ids: string[]) => {
 
   revalidatePath("/expenses");
 });
+
+export const addQuickExpenses = cache(
+  async (newBalance: number, cycleId: string) => {
+    const { userId } = auth();
+
+    if (!userId) return null;
+
+    const currentBalance = (await getMainAccount())?.amount || 0;
+
+    const totalValue = currentBalance - newBalance;
+
+    const preparedSubcycles = db.query.subsycleTable
+      .findMany({
+        where: eq(subsycleTable.cycleId, sql.placeholder("cycleId")),
+        columns: {
+          id: true,
+          title: true,
+        },
+        with: {
+          categories: {
+            columns: {
+              id: true,
+              initialAmount: true,
+              title: true,
+            },
+            with: {
+              expenses: {
+                columns: {
+                  amount: true,
+                },
+              },
+            },
+          },
+        },
+      })
+      .prepare();
+
+    const subcycles = await preparedSubcycles.execute({ cycleId: cycleId });
+
+    const mappedSubcycles = subcycles.map((subcycle) => {
+      return {
+        ...subcycle,
+        categories: subcycle.categories.map((category) => {
+          return {
+            ...category,
+            currentAmount:
+              category.initialAmount -
+              category.expenses.reduce((acc, item) => acc + item.amount, 0),
+          };
+        }),
+      };
+    });
+
+    let balanceLeft = totalValue;
+
+    const expenses = [];
+
+    for (const subcycle of mappedSubcycles) {
+      for (const category of subcycle.categories) {
+        if (balanceLeft > 0 && category.currentAmount > 0) {
+          const deductedAmount = Math.min(balanceLeft, category.currentAmount);
+          balanceLeft -= deductedAmount;
+          const expense = {
+            date: new Date().toISOString(),
+            cycleId: cycleId,
+            subcycleId: subcycle.id,
+            categoryId: category.id,
+            amount: deductedAmount,
+            label: "",
+            comment: "",
+            userId,
+          };
+          expenses.push(expense);
+        }
+      }
+    }
+
+    if (balanceLeft > 0) {
+      return { error: "Could not add quick expenses" };
+    }
+
+    await db.insert(expenseTable).values(expenses);
+
+    deductFromMainAccount(totalValue);
+    revalidatePath("/");
+  }
+);

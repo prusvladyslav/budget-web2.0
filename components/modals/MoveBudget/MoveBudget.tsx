@@ -90,7 +90,7 @@ export default function MoveBudget({
     try {
       startTransition(async () => {
         await moveBudget(data);
-        mutate(() => true);
+        mutate(`${URLS.subCyclesTable}?cycleId=${selectedCycleId}`);
         toast.success("Budget moved successfully");
       });
     } catch (error) {
@@ -235,16 +235,12 @@ export default function MoveBudget({
                       defaultValue={field.value}
                       setValue={(value) => field.onChange(value)}
                       options={
-                        isLoading
+                        isLoading || !subcycles
                           ? []
-                          : subcycles
-                              ?.filter(
-                                (subcycle) => subcycle.id !== subcycleFromId
-                              )
-                              .map((subcycle) => ({
-                                label: subcycle.title,
-                                value: subcycle.id,
-                              }))
+                          : subcycles.map((subcycle) => ({
+                              label: subcycle.title,
+                              value: subcycle.id,
+                            }))
                       }
                     />
                   </FormControl>
@@ -270,10 +266,15 @@ export default function MoveBudget({
                     options={
                       isLoading
                         ? []
-                        : categoriesTo?.map((category) => ({
-                            label: category.title,
-                            value: category.id,
-                          }))
+                        : categoriesTo
+                            ?.map((category) => ({
+                              label: category.title,
+                              value: category.id,
+                            }))
+                            .filter(
+                              (category) =>
+                                !categoryFromId.includes(category.value)
+                            )
                     }
                   />
                 </FormControl>
@@ -306,6 +307,7 @@ export default function MoveBudget({
           />
           <Button
             type="submit"
+            disabled={isPending || isLoading}
             className="w-full text-sm sm:text-base h-10 sm:h-11"
           >
             Save

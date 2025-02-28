@@ -6,6 +6,10 @@ import { Accordion, AccordionItem } from "../../ui/accordion";
 import SubcycleAccordionItem from "../../subcycle/SubcycleAccordionItem";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useCycleContext } from "../MainTable";
+import { QuickExpensesModal } from "@/components/modals/QuickExpensesModal";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { useSearchParams } from "next/navigation";
 
 export type CategoryWithCurrentAmount = Array<
   SelectCategory & { currentAmount: number }
@@ -23,10 +27,16 @@ export type getSubcyclesByCycleIdResponse = {
 export default function CycleTab() {
   const {
     selectedSubcycleId,
+    selectedCycleId,
     updateSubcycleId,
     cycles,
     selectedCycle: cycle,
   } = useCycleContext();
+
+  const searchParams = useSearchParams();
+
+  const quickExpenseModalActive =
+    searchParams?.get("quickExpenses") === "active";
 
   if (!cycles) return null;
 
@@ -84,12 +94,21 @@ export default function CycleTab() {
             categories={monthlyCategories}
           />
         )}
-        <div className="h-[56px] p-4 font-semibold text-lg border-1 bg-muted/60">
-          Total:{" "}
-          <span className="font-black">
-            {Math.trunc(leftInWeeklyCategories + leftInMonthyCategories)}
-          </span>
+        <div className="h-[56px] p-4 font-semibold text-lg border-1 bg-muted/60 items-center flex justify-between">
+          <div>
+            Total:{" "}
+            <span className="font-black">
+              {Math.trunc(leftInWeeklyCategories + leftInMonthyCategories)}
+            </span>
+          </div>
+          {cycles.at(-1)?.id === selectedCycleId && (
+            <Link href={"/?quickExpenses=active"}>
+              <Button>Quick Expenses</Button>
+            </Link>
+          )}
         </div>
+
+        {quickExpenseModalActive && <QuickExpensesModal />}
       </Accordion>
     </TabsContent>
   );

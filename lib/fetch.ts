@@ -3,7 +3,6 @@ import axios, { type AxiosResponse } from "axios";
 
 export const URLS = {
   subCyclesTable: "/api/subcycles-table",
-  categories: "/api/categories",
   subCyclesWithCategories: "/api/subcycles-with-categories",
 };
 
