@@ -146,19 +146,7 @@ export const createCycle = cache(async ({ date, categories }: CreateCycle) => {
         });
     });
 
-    const monthlyCategories = categories
-      .filter((category) => category.weekly === false)
-      .map((category) => {
-        return {
-          ...category,
-          cycleId: newCycleId,
-          userId,
-        };
-      });
-
-    await db
-      .insert(categoryTable)
-      .values([...weeklyCategories, ...monthlyCategories]);
+    await db.insert(categoryTable).values([...weeklyCategories]);
   }
   revalidatePath("/");
 });

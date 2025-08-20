@@ -286,41 +286,6 @@ function Category({ field, index, remove, errors, control }: CategoryProps) {
             </div>
           )}
         />
-        <FormField
-          name={`categories.${index}.weekly`}
-          control={control}
-          render={({ field }) => (
-            <div className="space-y-1">
-              <Label className="text-xs sm:text-sm md:text-base">
-                Frequency
-              </Label>
-              <RadioGroup
-                onValueChange={(value) => field.onChange(value === "weekly")}
-                value={field.value ? "weekly" : "monthly"}
-                className="flex space-x-4"
-              >
-                <div className="flex items-center space-x-1">
-                  <RadioGroupItem value="weekly" id={`r1-${index}`} />
-                  <Label
-                    htmlFor={`r1-${index}`}
-                    className="text-xs sm:text-sm md:text-base"
-                  >
-                    Weekly
-                  </Label>
-                </div>
-                <div className="flex items-center space-x-1">
-                  <RadioGroupItem value="monthly" id={`r2-${index}`} />
-                  <Label
-                    htmlFor={`r2-${index}`}
-                    className="text-xs md:text-base"
-                  >
-                    Monthly
-                  </Label>
-                </div>
-              </RadioGroup>
-            </div>
-          )}
-        />
       </CardContent>
     </Card>
   );
