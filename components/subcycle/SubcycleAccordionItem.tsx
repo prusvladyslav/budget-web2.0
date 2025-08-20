@@ -20,6 +20,7 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { Menu } from "../common/Menu";
 import { cn } from "@/lib/utils";
+import Link from "next/link";
 
 interface SubcycleAccordionItemProps {
   subcycle: SelectSubcycle;
@@ -136,6 +137,7 @@ function DesktopView({
   totalCurrent,
   monthly,
 }: ViewProps) {
+  const router = useRouter();
   return (
     <Table className="hidden md:table">
       <TableHeader>
@@ -148,7 +150,16 @@ function DesktopView({
       </TableHeader>
       <TableBody>
         {categories.map((category) => (
-          <TableRow key={category.id}>
+          <TableRow
+            key={category.id}
+            onClick={() =>
+              router.push(
+                `/?expensesModal=active&categoryId=${category.id}${
+                  monthly ? "&monthly=true" : ""
+                }`
+              )
+            }
+          >
             <TableCell className="font-extrabold">{category.title}</TableCell>
             <TableCell>{category.initialAmount}</TableCell>
             <TableCell>{category.currentAmount}</TableCell>
@@ -162,7 +173,7 @@ function DesktopView({
             </TableCell>
           </TableRow>
         ))}
-        {!monthly && (
+        {!monthly && categories.length > 1 && (
           <TableRow className="bg-gray-50">
             <TableCell className="font-black text-base">Total</TableCell>
             <TableCell className="font-black text-base">
@@ -186,6 +197,7 @@ function MobileView({
   totalCurrent,
   monthly,
 }: ViewProps) {
+  const router = useRouter();
   return (
     <div className="md:hidden">
       {categories.map((category, index) => (
@@ -195,6 +207,13 @@ function MobileView({
             index === 0 && "rounded-b-none border-b-0 border-t-0"
           )}
           key={category.id}
+          onClick={() =>
+            router.push(
+              `/?expensesModal=active&categoryId=${category.id}${
+                monthly ? "&monthly=true" : ""
+              }`
+            )
+          }
         >
           <CardHeader className="flex flex-row items-center justify-between">
             <CardTitle className="text-base font-extrabold">
@@ -215,7 +234,7 @@ function MobileView({
           </CardContent>
         </Card>
       ))}
-      {!monthly && (
+      {!monthly && categories.length > 1 && (
         <Card className={cn("mt-2 bg-gray-50 shadow-md")}>
           <CardHeader>
             <CardTitle className="text-lg font-extrabold">Total</CardTitle>

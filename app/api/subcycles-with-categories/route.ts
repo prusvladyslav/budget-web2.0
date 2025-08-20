@@ -3,6 +3,14 @@ import { cycleTable } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import type { NextRequest } from "next/server";
 
+const cors = {
+  headers: {
+    "Access-Control-Allow-Origin": "*",
+    "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
+    "Access-Control-Allow-Headers": "Content-Type, Authorization",
+  },
+};
+
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
 
