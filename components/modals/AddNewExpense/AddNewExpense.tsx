@@ -96,6 +96,7 @@ export default function AddNewExpense({
         <Button
           type="button"
           onClick={onSubmit}
+          disabled={!amount || Number.parseFloat(amount) <= 0}
           className="w-full text-sm sm:text-base h-10 sm:h-11"
         >
           Save
