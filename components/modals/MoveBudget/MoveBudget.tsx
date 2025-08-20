@@ -7,7 +7,6 @@ import { URLS, useGet } from "@/lib/fetch";
 import { toast } from "sonner";
 import { useSWRConfig } from "swr";
 
-import { useRouter } from "next/navigation";
 import type { Props } from "./types";
 import { useCycleContext } from "@/components/main/MainTable";
 import { formSchemaMonthly, formSchemaWeekly, type FormData } from "./schemas";
@@ -33,9 +32,11 @@ export default function MoveBudget({
   monthly = false,
   open,
 }: Props) {
-  const router = useRouter();
+  const { updateMoveBudgetCategoryId } = useCycleContext();
 
-  const handleClose = () => router.push("/");
+  const handleClose = () => {
+    updateMoveBudgetCategoryId(null);
+  };
 
   const { selectedCycleId, selectedSubcycleId, cycles } = useCycleContext();
 

@@ -24,13 +24,15 @@ function MainTableContent({
     | null;
   children: React.ReactNode;
 }) {
-  const { selectedCycleId, updateCycleId } = useCycleContext();
+  const {
+    selectedCycleId,
+    updateCycleId,
+    selectedCategoryId,
+    moveBudgetCategoryId,
+  } = useCycleContext();
+
   const hasCycles = cycles && cycles.length > 0;
-  const searchParams = useSearchParams();
-  const categoryId = searchParams?.get("categoryId");
-  const monthly = searchParams?.get("monthly");
-  const expensesModal = searchParams?.get("expensesModal");
-  const moveBudget = searchParams?.get("moveBudget");
+
   return (
     <Tabs
       value={selectedCycleId}
@@ -49,14 +51,12 @@ function MainTableContent({
 
       {hasCycles && <CycleTab />}
       <AddNewExpense
-        categoryId={categoryId}
-        monthly={Boolean(monthly)}
-        open={expensesModal === "active"}
+        categoryId={selectedCategoryId}
+        open={selectedCategoryId !== null}
       />
       <MoveBudget
-        categoryId={categoryId}
-        monthly={Boolean(monthly)}
-        open={moveBudget === "active"}
+        categoryId={moveBudgetCategoryId}
+        open={moveBudgetCategoryId !== null}
       />
     </Tabs>
   );

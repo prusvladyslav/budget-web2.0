@@ -21,6 +21,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { Menu } from "../common/Menu";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
+import { useCycleContext } from "../main/MainTable";
 
 interface SubcycleAccordionItemProps {
   subcycle: SelectSubcycle;
@@ -47,19 +48,14 @@ function SubcycleAccordionItem({
   categories,
   monthly = false,
 }: Props) {
+  const { updateCategoryId, updateMoveBudgetCategoryId } = useCycleContext();
   const router = useRouter();
-
   const menuItems = useMemo(() => {
     const baseItems = [
       {
         id: 1,
         name: "Add expense",
-        onClick: (categoryId: string) =>
-          router.push(
-            `/?expensesModal=active&categoryId=${categoryId}${
-              monthly ? "&monthly=true" : ""
-            }`
-          ),
+        onClick: (categoryId: string) => updateCategoryId(categoryId),
       },
     ];
 
@@ -69,7 +65,7 @@ function SubcycleAccordionItem({
           id: 2,
           name: "Move budget",
           onClick: (categoryId: string) =>
-            router.push(`/?moveBudget=active&categoryId=${categoryId}`),
+            updateMoveBudgetCategoryId(categoryId),
         },
         {
           id: 3,
@@ -137,7 +133,7 @@ function DesktopView({
   totalCurrent,
   monthly,
 }: ViewProps) {
-  const router = useRouter();
+  const { updateCategoryId } = useCycleContext();
   return (
     <Table className="hidden md:table">
       <TableHeader>
@@ -152,13 +148,7 @@ function DesktopView({
         {categories.map((category) => (
           <TableRow
             key={category.id}
-            onClick={() =>
-              router.push(
-                `/?expensesModal=active&categoryId=${category.id}${
-                  monthly ? "&monthly=true" : ""
-                }`
-              )
-            }
+            onClick={() => updateCategoryId(category.id)}
           >
             <TableCell className="font-extrabold">{category.title}</TableCell>
             <TableCell>{category.initialAmount}</TableCell>
@@ -167,7 +157,10 @@ function DesktopView({
               <Menu
                 items={menuItems.map((item) => ({
                   ...item,
-                  onClick: () => item.onClick(category.id),
+                  onClick: (e: React.MouseEvent<HTMLDivElement>) => {
+                    e.stopPropagation();
+                    item.onClick(category.id);
+                  },
                 }))}
               />
             </TableCell>
@@ -197,7 +190,7 @@ function MobileView({
   totalCurrent,
   monthly,
 }: ViewProps) {
-  const router = useRouter();
+  const { updateCategoryId } = useCycleContext();
   return (
     <div className="md:hidden">
       {categories.map((category, index) => (
@@ -207,13 +200,7 @@ function MobileView({
             index === 0 && "rounded-b-none border-b-0 border-t-0"
           )}
           key={category.id}
-          onClick={() =>
-            router.push(
-              `/?expensesModal=active&categoryId=${category.id}${
-                monthly ? "&monthly=true" : ""
-              }`
-            )
-          }
+          onClick={() => updateCategoryId(category.id)}
         >
           <CardHeader className="flex flex-row items-center justify-between">
             <CardTitle className="text-base font-extrabold">
@@ -223,7 +210,10 @@ function MobileView({
               <Menu
                 items={menuItems.map((item) => ({
                   ...item,
-                  onClick: () => item.onClick(category.id),
+                  onClick: (e: React.MouseEvent<HTMLDivElement>) => {
+                    e.stopPropagation();
+                    item.onClick(category.id);
+                  },
                 }))}
               />
             </div>

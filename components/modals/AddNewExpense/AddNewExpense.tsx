@@ -21,8 +21,10 @@ export default function AddNewExpense({
   monthly = false,
   open,
 }: Props) {
-  const router = useRouter();
-  const handleClose = () => router.push("/");
+  const { updateCategoryId } = useCycleContext();
+  const handleClose = () => {
+    updateCategoryId(null);
+  };
   const [amount, setAmount] = useState<string>("");
 
   const { selectedCycleId, selectedSubcycleId } = useCycleContext();

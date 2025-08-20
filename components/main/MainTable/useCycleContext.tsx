@@ -4,6 +4,7 @@ import {
   useContext,
   type ReactNode,
   useMemo,
+  useState,
 } from "react";
 import type { SelectUser } from "@/db/schema";
 import { useCycleState } from "./useCycleState";
@@ -11,6 +12,8 @@ import { useCycleState } from "./useCycleState";
 interface MainTableContextType {
   selectedCycleId: string;
   selectedSubcycleId: string;
+  selectedCategoryId: string | null;
+  updateCategoryId: (categoryId: string | null) => void;
   updateCycleId: (cycleId: string) => void;
   updateSubcycleId: (subcycleId: string) => void;
   cycles:
@@ -25,6 +28,8 @@ interface MainTableContextType {
         title: string;
       }
     | undefined;
+  moveBudgetCategoryId: string | null;
+  updateMoveBudgetCategoryId: (categoryId: string | null) => void;
 }
 
 const MainTableContext = createContext<MainTableContextType | undefined>(
@@ -59,10 +64,23 @@ export function CycleContext({
     [selectedCycleId, cycles]
   );
 
+  const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(
+    null
+  );
+  const [moveBudgetCategoryId, setMoveBudgetCategoryId] = useState<
+    string | null
+  >(null);
+
   const contextValue = useMemo(
     () => ({
       selectedCycleId,
       selectedSubcycleId,
+      selectedCategoryId,
+      updateCategoryId: (categoryId: string | null) =>
+        setSelectedCategoryId(categoryId),
+      updateMoveBudgetCategoryId: (categoryId: string | null) =>
+        setMoveBudgetCategoryId(categoryId),
+      moveBudgetCategoryId,
       updateCycleId,
       updateSubcycleId,
       cycles,
@@ -71,6 +89,8 @@ export function CycleContext({
     [
       selectedCycleId,
       selectedSubcycleId,
+      selectedCategoryId,
+      moveBudgetCategoryId,
       updateCycleId,
       updateSubcycleId,
       cycles,

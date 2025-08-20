@@ -11,7 +11,7 @@ type Props = {
   items: {
     id: number;
     name: string;
-    onClick: () => void;
+    onClick: (e: React.MouseEvent<HTMLDivElement>) => void;
   }[];
 };
 
@@ -19,7 +19,10 @@ export function Menu({ items }: Props) {
   return (
     <Menubar className="h-fit w-fit md:h-10">
       <MenubarMenu>
-        <MenubarTrigger className="p-0 md:py-1.5 md:px-3 relative after:absolute after:inset-[-22px] after:content-['']">
+        <MenubarTrigger
+          className="p-0 md:py-1.5 md:px-3 relative after:absolute after:inset-[-22px] after:content-['']"
+          onClick={(e) => e.stopPropagation()}
+        >
           <Ellipsis className="h-5 w-5" />
         </MenubarTrigger>
         <MenubarContent className="min-w-[0px]">
@@ -28,7 +31,9 @@ export function Menu({ items }: Props) {
               <MenubarItem
                 className="px-4"
                 key={item.id}
-                onClick={() => item.onClick?.()}
+                onClick={(e) => {
+                  item.onClick?.(e);
+                }}
               >
                 {item.name}
               </MenubarItem>

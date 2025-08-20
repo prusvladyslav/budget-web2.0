@@ -73,7 +73,7 @@ export function MobileNumberKeyboard({
             <div key={index} className="h-12" />
           ) : (
             <Button
-              key={key}
+              key={key + index}
               variant="outline"
               size="sm"
               type="button"
