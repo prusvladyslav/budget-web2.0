@@ -67,7 +67,7 @@ export function MobileNumberKeyboard({
       />
 
       {/* Number Grid */}
-      <div className="grid grid-cols-3 gap-2 mb-3">
+      <div className="grid grid-cols-3 gap-2 mb-3 sm:hidden">
         {keys.flat().map((key, index) =>
           key === "" ? (
             <div key={index} className="h-12" />
@@ -97,7 +97,7 @@ export function MobileNumberKeyboard({
       </div>
 
       {/* Action Buttons */}
-      <div className="flex gap-2">
+      <div className="flex gap-2 sm:hidden">
         <Button
           variant="outline"
           size="sm"

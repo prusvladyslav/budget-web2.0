@@ -1,53 +1,91 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useEffect, useRef } from "react";
 import { toast } from "sonner";
 import { useSWRConfig } from "swr";
 import { useRouter } from "next/navigation";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 
-import { URLS } from "@/lib/fetch";
+import DatePicker from "@/components/common/DatePicker";
+import SelectBasic from "@/components/common/SelectBasic";
+import { URLS, useGet } from "@/lib/fetch";
 import { useCycleContext } from "@/components/main/MainTable";
 import { expensesActions } from "@/app/actions";
-
+import { formSchemaMonthly, formSchemaWeekly, type FormData } from "./schemas";
+import { LabelSelect } from "@/components/label/LabelSelect";
+import { InfoTooltip } from "@/components/common/InfoTooltip";
+import { cn } from "@/lib/utils";
+import type { getSubcyclesByCycleIdWithCategories } from "@/types";
 import type { Props } from "./types";
 import Modal from "../Modal";
 import { MobileNumberKeyboard } from "@/components/common/MobileNumberKeyboard";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 
 export default function AddNewExpense({
   categoryId,
   monthly = false,
   open,
 }: Props) {
-  const { updateCategoryId } = useCycleContext();
-  const handleClose = () => {
-    updateCategoryId(null);
-  };
-  const [amount, setAmount] = useState<string>("");
+  const { selectedCycleId, selectedSubcycleId, cycles, updateCategoryId } =
+    useCycleContext();
 
-  const { selectedCycleId, selectedSubcycleId } = useCycleContext();
+  const handleClose = () => updateCategoryId(null);
 
   const defaultValues = {
     date: new Date(),
     cycleId: selectedCycleId || "",
     ...(!monthly && { subcycleId: selectedSubcycleId || "" }),
     categoryId: categoryId || "",
-    amount: 0,
+    amount: undefined,
     comment: "",
     label: "",
   };
 
+  const form = useForm<FormData>({
+    resolver: zodResolver(monthly ? formSchemaMonthly : formSchemaWeekly),
+    defaultValues,
+  });
+
+  const { reset, control, handleSubmit, watch } = form;
+
+  const cycleId = watch("cycleId");
+  const subcycleId = watch("subcycleId");
+
+  const { data, isLoading } = useGet<getSubcyclesByCycleIdWithCategories>(
+    `${URLS.subCyclesWithCategories}?cycleId=${cycleId}`,
+    "subcyclesWithCategories"
+  );
+
+  const subcycles = data?.data.subcycles;
+  const categoriesData = data?.data.categories[monthly ? "monthly" : "weekly"];
+  const categories = monthly
+    ? categoriesData
+    : categoriesData?.filter((category) => category.subcycleId === subcycleId);
+
   const { mutate } = useSWRConfig();
 
-  const onSubmit = async () => {
+  const onSubmit = async (data: FormData) => {
     try {
-      const amountValue = Number.parseFloat(amount) || 0;
       await expensesActions.addExpense({
-        ...defaultValues,
-        amount: amountValue,
-        date: defaultValues.date.toISOString(),
+        ...data,
+        date: data.date.toISOString(),
       });
       mutate(`${URLS.subCyclesTable}?cycleId=${selectedCycleId}`);
       toast.success("Expense added successfully");
@@ -55,18 +93,14 @@ export default function AddNewExpense({
       console.error(error);
       toast.error("Error adding expense");
     } finally {
-      setAmount("");
+      reset();
       handleClose();
     }
   };
 
-  const handleAmountChange = (value: string) => {
-    setAmount(value);
-  };
-
-  const handleKeyboardChange = (value: string) => {
-    setAmount(value);
-  };
+  useEffect(() => {
+    reset(defaultValues);
+  }, [reset, open]);
 
   return (
     <Modal
@@ -74,34 +108,195 @@ export default function AddNewExpense({
       open={open}
       onOpenChange={(open) => !open && handleClose()}
     >
-      <div className="space-y-3 sm:space-y-4">
-        <Input
-          className="w-full h-9 sm:h-10 text-base hidden sm:block"
-          type="number"
-          placeholder="Expense amount"
-          value={amount}
-          onChange={(e) => handleAmountChange(e.target.value)}
-        />
-
-        {/* Mobile Number Keyboard - Only visible on mobile */}
-        <div className="block sm:hidden">
-          <MobileNumberKeyboard
-            value={amount}
-            onChange={handleKeyboardChange}
-            onChangeInput={handleAmountChange}
-            className="mt-4"
-          />
-        </div>
-
-        <Button
-          type="button"
-          onClick={onSubmit}
-          disabled={!amount || Number.parseFloat(amount) <= 0}
-          className="w-full text-sm sm:text-base h-10 sm:h-11"
+      <Form {...form}>
+        <form
+          onSubmit={handleSubmit(onSubmit)}
+          className="space-y-3 sm:space-y-4"
         >
-          Save
-        </Button>
-      </div>
+          <Accordion type="single" collapsible>
+            <AccordionItem value="1">
+              <AccordionTrigger>Details</AccordionTrigger>
+              <AccordionContent className="space-y-3 sm:space-y-4">
+                <FormField
+                  name="date"
+                  control={control}
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-xs sm:text-sm">Date</FormLabel>
+                      <FormControl>
+                        <DatePicker
+                          className="w-full"
+                          date={field.value}
+                          setDate={(newDate) => field.onChange(newDate)}
+                        />
+                      </FormControl>
+                      <FormMessage className="text-xs" />
+                    </FormItem>
+                  )}
+                />
+                <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
+                  <FormField
+                    name="cycleId"
+                    control={control}
+                    render={({ field }) => (
+                      <FormItem className="flex-1">
+                        <FormLabel className="text-xs sm:text-sm">
+                          Cycle
+                        </FormLabel>
+                        <FormControl>
+                          <SelectBasic
+                            className="w-full"
+                            placeholder="Select cycle"
+                            defaultValue={field.value}
+                            disabled={isLoading}
+                            setValue={(value) => field.onChange(value)}
+                            options={cycles?.map((cycle) => ({
+                              label: cycle.title,
+                              value: cycle.id,
+                            }))}
+                          />
+                        </FormControl>
+                        <FormMessage className="text-xs" />
+                      </FormItem>
+                    )}
+                  />
+
+                  {!monthly && (
+                    <FormField
+                      name="subcycleId"
+                      control={control}
+                      render={({ field }) => (
+                        <FormItem className="flex-1">
+                          <FormLabel className="text-xs sm:text-sm">
+                            Subcycle
+                          </FormLabel>
+                          <FormControl>
+                            <SelectBasic
+                              className="w-full"
+                              placeholder="Select subcycle"
+                              disabled={isLoading}
+                              defaultValue={field.value}
+                              setValue={(value) => field.onChange(value)}
+                              options={
+                                isLoading
+                                  ? []
+                                  : subcycles?.map((subcycle) => ({
+                                      label: subcycle.title,
+                                      value: subcycle.id,
+                                    }))
+                              }
+                            />
+                          </FormControl>
+                          <FormMessage className="text-xs" />
+                        </FormItem>
+                      )}
+                    />
+                  )}
+                </div>
+                <FormField
+                  name="categoryId"
+                  control={control}
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-xs sm:text-sm">
+                        Category
+                      </FormLabel>
+                      <FormControl>
+                        <SelectBasic
+                          className="w-full"
+                          placeholder="Select category"
+                          disabled={isLoading}
+                          defaultValue={field.value}
+                          setValue={(value) => field.onChange(value)}
+                          options={
+                            isLoading
+                              ? []
+                              : categories?.map((category) => ({
+                                  label: category.title,
+                                  value: category.id,
+                                }))
+                          }
+                        />
+                      </FormControl>
+                      <FormMessage className="text-xs" />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  name="label"
+                  control={control}
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel
+                        className={cn(
+                          "text-xs sm:text-sm flex items-center gap-2",
+                          !field.value && "text-muted-foreground"
+                        )}
+                      >
+                        Label
+                        <InfoTooltip text="You can add a label to collect better statistics for your expenses" />
+                      </FormLabel>
+                      <FormControl>
+                        <LabelSelect
+                          className={cn(
+                            !field.value && "text-muted-foreground"
+                          )}
+                          disabled={false}
+                          setValue={(value) => field.onChange(value)}
+                        />
+                      </FormControl>
+                      <FormMessage className="text-xs" />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  name="comment"
+                  control={control}
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-xs sm:text-sm">
+                        Comment (optional)
+                      </FormLabel>
+                      <FormControl>
+                        <Input
+                          {...field}
+                          className="text-sm sm:text-base"
+                          placeholder="Comment for this expense"
+                        />
+                      </FormControl>
+                      <FormMessage className="text-xs" />
+                    </FormItem>
+                  )}
+                />
+              </AccordionContent>
+            </AccordionItem>
+          </Accordion>
+          <FormField
+            name="amount"
+            control={control}
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="text-xl">Amount</FormLabel>
+                <FormControl>
+                  <MobileNumberKeyboard
+                    value={field.value?.toString() || ""}
+                    onChange={(value) => field.onChange(value)}
+                    onChangeInput={(value) => field.onChange(value)}
+                  />
+                </FormControl>
+                <FormMessage className="text-xs" />
+              </FormItem>
+            )}
+          />
+
+          <Button
+            type="submit"
+            className="w-full text-sm sm:text-base h-10 sm:h-11"
+          >
+            Save
+          </Button>
+        </form>
+      </Form>
     </Modal>
   );
 }

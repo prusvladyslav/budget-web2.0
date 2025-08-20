@@ -52,7 +52,7 @@ function MainTableContent({
       {hasCycles && <CycleTab />}
       <AddNewExpense
         categoryId={selectedCategoryId}
-        open={selectedCategoryId !== null}
+        open={!!selectedCategoryId}
       />
       <MoveBudget
         categoryId={moveBudgetCategoryId}
