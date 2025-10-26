@@ -54,10 +54,12 @@ function MainTableContent({
         categoryId={selectedCategoryId}
         open={!!selectedCategoryId}
       />
-      <MoveBudget
-        categoryId={moveBudgetCategoryId}
-        open={moveBudgetCategoryId !== null}
-      />
+      {moveBudgetCategoryId && (
+        <MoveBudget
+          categoryId={moveBudgetCategoryId}
+          open={moveBudgetCategoryId !== null}
+        />
+      )}
     </Tabs>
   );
 }

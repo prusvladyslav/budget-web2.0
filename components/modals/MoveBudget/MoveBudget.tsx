@@ -299,7 +299,6 @@ export default function MoveBudget({
                 <FormLabel>Amount:</FormLabel>
                 <FormControl>
                   <Input
-                    {...field}
                     className="w-full"
                     type="number"
                     placeholder="Expense amount"
