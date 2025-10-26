@@ -1,7 +1,7 @@
 "use client";
 import { useForm } from "react-hook-form";
 
-import { useEffect, useTransition } from "react";
+import { useEffect, useState, useTransition } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { URLS, useGet } from "@/lib/fetch";
 import { toast } from "sonner";
@@ -24,7 +24,7 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { moveBudget } from "@/app/actions/categories";
 import { MultiSelect } from "@/components/ui/multi-select";
-import type { getSubcyclesByCycleIdWithCategories } from "@/types";
+import type { Category, getSubcyclesByCycleIdWithCategories } from "@/types";
 import Modal from "../Modal";
 
 export default function MoveBudget({
@@ -33,9 +33,11 @@ export default function MoveBudget({
   open,
 }: Props) {
   const { updateMoveBudgetCategoryId } = useCycleContext();
+  const [categoriesData, setCategoriesData] = useState<Category[]>([]);
 
   const handleClose = () => {
     updateMoveBudgetCategoryId(null);
+    setCategoriesData([]);
   };
 
   const { selectedCycleId, selectedSubcycleId, cycles } = useCycleContext();
@@ -46,7 +48,7 @@ export default function MoveBudget({
     categoryFromId: categoryId ? [categoryId] : [],
     subcycleToId: "",
     categoryToId: "",
-    amount: undefined,
+    amount: 0,
   };
 
   const form = useForm<FormData>({
@@ -69,7 +71,11 @@ export default function MoveBudget({
 
   const subcycles = data?.data.subcycles;
 
-  const categoriesData = data?.data.categories[monthly ? "monthly" : "weekly"];
+  useEffect(() => {
+    if (data) {
+      setCategoriesData(data.data.categories[monthly ? "monthly" : "weekly"]);
+    }
+  }, [data, monthly]);
 
   const categoriesFrom = monthly
     ? categoriesData
@@ -298,7 +304,13 @@ export default function MoveBudget({
                     type="number"
                     placeholder="Expense amount"
                     disabled={isLoading}
-                    defaultValue={field.value}
+                    defaultValue={
+                      categoryId
+                        ? categoriesData.find(
+                            (category) => category.id === categoryId
+                          )?.currentAmount
+                        : 0
+                    }
                     onChange={(e) => field.onChange(e.target.value)}
                   />
                 </FormControl>
