@@ -223,33 +223,6 @@ export default function AddNewExpense({
                   )}
                 />
                 <FormField
-                  name="label"
-                  control={control}
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel
-                        className={cn(
-                          "text-xs sm:text-sm flex items-center gap-2",
-                          !field.value && "text-muted-foreground"
-                        )}
-                      >
-                        Label
-                        <InfoTooltip text="You can add a label to collect better statistics for your expenses" />
-                      </FormLabel>
-                      <FormControl>
-                        <LabelSelect
-                          className={cn(
-                            !field.value && "text-muted-foreground"
-                          )}
-                          disabled={false}
-                          setValue={(value) => field.onChange(value)}
-                        />
-                      </FormControl>
-                      <FormMessage className="text-xs" />
-                    </FormItem>
-                  )}
-                />
-                <FormField
                   name="comment"
                   control={control}
                   render={({ field }) => (
@@ -282,6 +255,30 @@ export default function AddNewExpense({
                     value={field.value?.toString() || ""}
                     onChange={(value) => field.onChange(value)}
                     onChangeInput={(value) => field.onChange(value)}
+                  />
+                </FormControl>
+                <FormMessage className="text-xs" />
+              </FormItem>
+            )}
+          />
+          <FormField
+            name="label"
+            control={control}
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel
+                  className={cn(
+                    "text-xs sm:text-sm flex items-center gap-2",
+                    !field.value && "text-muted-foreground"
+                  )}
+                >
+                  Label
+                </FormLabel>
+                <FormControl>
+                  <LabelSelect
+                    className={cn(!field.value && "text-muted-foreground")}
+                    disabled={false}
+                    setValue={(value) => field.onChange(value)}
                   />
                 </FormControl>
                 <FormMessage className="text-xs" />

@@ -2,8 +2,13 @@ import {
   Bus,
   CarTaxiFront,
   CircleEllipsis,
+  CreditCard,
   Film,
+  GraduationCap,
   Ham,
+  Heart,
+  Pill,
+  Receipt,
   Shirt,
   ShoppingBag,
   Utensils,
@@ -19,7 +24,7 @@ export const useGetIcon = (icon: TLabelName) => {
   switch (icon) {
     case "groceries":
       return <Ham {...defaultIconProps} />;
-    case "restaurant":
+    case "eating out":
       return <Utensils {...defaultIconProps} />;
     case "transport":
       return <Bus {...defaultIconProps} />;
@@ -31,6 +36,16 @@ export const useGetIcon = (icon: TLabelName) => {
       return <CarTaxiFront {...defaultIconProps} />;
     case "clothing":
       return <Shirt {...defaultIconProps} />;
+    case "subscriptions":
+      return <CreditCard {...defaultIconProps} />;
+    case "education":
+      return <GraduationCap {...defaultIconProps} />;
+    case "drugs":
+      return <Pill {...defaultIconProps} />;
+    case "health":
+      return <Heart {...defaultIconProps} />;
+    case "utility bills":
+      return <Receipt {...defaultIconProps} />;
     case "other":
       return <CircleEllipsis {...defaultIconProps} />;
     default:

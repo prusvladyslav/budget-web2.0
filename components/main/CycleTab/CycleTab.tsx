@@ -10,6 +10,20 @@ import { QuickExpensesModal } from "@/components/modals/QuickExpensesModal";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { useSearchParams } from "next/navigation";
+import { useState } from "react";
+import { getCycleReportData } from "@/app/actions/report";
+import {
+  exportExpensesToXlsx,
+  exportExpensesGroupedByLabel,
+} from "@/lib/xlsx-export";
+import { toast } from "sonner";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { ChevronDown } from "lucide-react";
 
 export type CategoryWithCurrentAmount = Array<
   SelectCategory & { currentAmount: number }
@@ -34,6 +48,45 @@ export default function CycleTab() {
   } = useCycleContext();
 
   const searchParams = useSearchParams();
+  const [isExporting, setIsExporting] = useState(false);
+
+  const handleExportReport = async (type: "history" | "grouped-by-label") => {
+    if (!selectedCycleId) return;
+
+    setIsExporting(true);
+    try {
+      const reportData = await getCycleReportData(selectedCycleId);
+
+      if (!reportData || reportData.expenses.length === 0) {
+        toast.error("No expenses found for this cycle");
+        return;
+      }
+
+      if (type === "history") {
+        exportExpensesToXlsx(reportData.expenses, reportData.cycleName);
+      } else {
+        exportExpensesGroupedByLabel(reportData.expenses, reportData.cycleName);
+      }
+
+      toast.success("Report downloaded successfully", {
+        action: {
+          label: "Open in Google Sheets",
+          onClick: () => {
+            window.open(
+              "https://docs.google.com/spreadsheets/u/0/?usp=sheets_home",
+              "_blank"
+            );
+          },
+        },
+        duration: 8000,
+      });
+    } catch (error) {
+      toast.error("Failed to generate report");
+      console.error(error);
+    } finally {
+      setIsExporting(false);
+    }
+  };
 
   const quickExpenseModalActive =
     searchParams?.get("quickExpenses") === "active";
@@ -100,11 +153,35 @@ export default function CycleTab() {
               {Math.trunc(leftInWeeklyCategories + leftInMonthyCategories)}
             </span>
           </div>
-          {cycles.at(-1)?.id === selectedCycleId && (
-            <Link href={"/?quickExpenses=active"}>
-              <Button>Quick Expenses</Button>
-            </Link>
-          )}
+          <div className="gap-4 flex">
+            {cycles.at(-1)?.id === selectedCycleId && (
+              <Link href={"/?quickExpenses=active"}>
+                <Button>Quick Expenses</Button>
+              </Link>
+            )}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant={"outline"}
+                  className="hidden md:flex items-center gap-1"
+                  disabled={isExporting}
+                >
+                  {isExporting ? "Generating..." : "Generate report"}
+                  <ChevronDown className="h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem onClick={() => handleExportReport("history")}>
+                  Expenses history
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={() => handleExportReport("grouped-by-label")}
+                >
+                  Grouped by label
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
         </div>
 
         {quickExpenseModalActive && <QuickExpensesModal />}

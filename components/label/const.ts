@@ -1,11 +1,16 @@
 const labelsNames = [
+  "eating out",
+  "food delivery",
   "groceries",
-  "restaurant",
   "transport",
   "entertainment",
   "shopping",
-  "food delivery",
   "clothing",
+  "subscriptions",
+  "education",
+  "drugs",
+  "health",
+  "utility bills",
   "other",
 ] as const;
 
