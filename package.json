@@ -46,7 +46,7 @@
     "lodash.uniqby": "^4.7.0",
     "lucide-react": "^0.426.0",
     "mobile-device-detect": "^0.4.3",
-    "next": "14.2.5",
+    "next": "14.2.35",
     "next-safe-action": "^7.5.0",
     "next-themes": "^0.3.0",
     "react": "^18",
