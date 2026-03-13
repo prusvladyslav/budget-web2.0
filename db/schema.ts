@@ -41,6 +41,10 @@ export const cycleRelations = relations(cycleTable, ({ one, many }) => ({
   categories: many(categoryTable),
   subcycles: many(subsycleTable),
   expenses: many(expenseTable),
+  monthlyReport: one(monthlyReportTable, {
+    fields: [cycleTable.id],
+    references: [monthlyReportTable.cycleId],
+  }),
 }));
 
 export type InsertCycle = typeof cycleTable.$inferInsert;
@@ -172,3 +176,37 @@ export const vaultTable = sqliteTable("vault", {
 
 export type SelectVault = typeof vaultTable.$inferSelect;
 export type InsertVault = typeof vaultTable.$inferInsert;
+
+export const monthlyReportTable = sqliteTable("monthly_reports", {
+  id: text("id")
+    .primaryKey()
+    .$defaultFn(() => randomUUID()),
+  cycleId: text("cycle_id")
+    .notNull()
+    .unique()
+    .references(() => cycleTable.id, { onDelete: "cascade" }),
+  userId: text("user_id")
+    .notNull()
+    .references(() => usersTable.id, { onDelete: "cascade" }),
+  income: integer("income").notNull(),
+  tax: integer("tax").notNull(),
+  rent: integer("rent").notNull(),
+  savingsShortTerm: integer("savings_short_term").notNull(),
+  savingsLongTerm: integer("savings_long_term").notNull(),
+  invest: integer("invest").notNull(),
+  dayToDay: integer("day_to_day").notNull(),
+  leftover: integer("leftover").notNull(),
+  createdAt: text("created_at")
+    .default(sql`(CURRENT_TIMESTAMP)`)
+    .notNull(),
+});
+
+export const monthlyReportRelations = relations(monthlyReportTable, ({ one }) => ({
+  cycle: one(cycleTable, {
+    fields: [monthlyReportTable.cycleId],
+    references: [cycleTable.id],
+  }),
+}));
+
+export type InsertMonthlyReport = typeof monthlyReportTable.$inferInsert;
+export type SelectMonthlyReport = typeof monthlyReportTable.$inferSelect;

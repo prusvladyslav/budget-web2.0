@@ -1,8 +1,9 @@
 "use server";
 import { db } from "@/db";
-import { categoryTable, expenseTable, cycleTable, subsycleTable } from "@/db/schema";
+import { categoryTable, expenseTable, cycleTable, subsycleTable, monthlyReportTable, type SelectMonthlyReport } from "@/db/schema";
 import { auth } from "@clerk/nextjs/server";
 import { and, desc, eq } from "drizzle-orm";
+import { revalidatePath } from "next/cache";
 import { cache } from "react";
 
 export type ExpenseReportRow = {
@@ -66,3 +67,85 @@ export const getCycleReportData = cache(async (cycleId: string): Promise<CycleRe
     expenses: reportRows,
   };
 });
+
+type CreateMonthlyReportInput = {
+  cycleId: string;
+  income: number;
+  tax: number;
+  rent: number;
+  savingsShortTerm: number;
+  savingsLongTerm: number;
+  invest: number;
+  dayToDay: number;
+  leftover: number;
+};
+
+export const createMonthlyReport = async (
+  input: CreateMonthlyReportInput
+): Promise<void> => {
+  const { userId } = auth();
+  if (!userId) return;
+
+  await db.insert(monthlyReportTable).values({
+    cycleId: input.cycleId,
+    userId,
+    income: Math.round(input.income),
+    tax: Math.round(input.tax),
+    rent: Math.round(input.rent),
+    savingsShortTerm: Math.round(input.savingsShortTerm),
+    savingsLongTerm: Math.round(input.savingsLongTerm),
+    invest: Math.round(input.invest),
+    dayToDay: Math.round(input.dayToDay),
+    leftover: Math.round(input.leftover),
+  });
+};
+
+type UpdateMonthlyReportInput = CreateMonthlyReportInput & {
+  reportId: string;
+};
+
+export const updateMonthlyReport = async (
+  input: UpdateMonthlyReportInput
+): Promise<void> => {
+  const { userId } = auth();
+  if (!userId) return;
+
+  await db
+    .update(monthlyReportTable)
+    .set({
+      cycleId: input.cycleId,
+      income: Math.round(input.income),
+      tax: Math.round(input.tax),
+      rent: Math.round(input.rent),
+      savingsShortTerm: Math.round(input.savingsShortTerm),
+      savingsLongTerm: Math.round(input.savingsLongTerm),
+      invest: Math.round(input.invest),
+      dayToDay: Math.round(input.dayToDay),
+      leftover: Math.round(input.leftover),
+    })
+    .where(
+      and(
+        eq(monthlyReportTable.id, input.reportId),
+        eq(monthlyReportTable.userId, userId)
+      )
+    );
+
+  revalidatePath("/reports");
+};
+
+export type MonthlyReportWithCycle = SelectMonthlyReport & { cycleTitle: string };
+
+export const getMonthlyReports = cache(
+  async (): Promise<MonthlyReportWithCycle[]> => {
+    const { userId } = auth();
+    if (!userId) return [];
+
+    const reports = await db.query.monthlyReportTable.findMany({
+      where: eq(monthlyReportTable.userId, userId),
+      with: { cycle: { columns: { title: true } } },
+      orderBy: [desc(monthlyReportTable.createdAt)],
+    });
+
+    return reports.map((r) => ({ ...r, cycleTitle: r.cycle.title }));
+  }
+);

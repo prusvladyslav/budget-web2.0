@@ -1,0 +1,1 @@
+ALTER TABLE `monthly_reports` ADD `leftover` integer NOT NULL;

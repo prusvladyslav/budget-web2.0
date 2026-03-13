@@ -9,17 +9,18 @@ import { toast } from "sonner";
 import { PlusIcon, TrashIcon } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { FormField } from "@/components/ui/form";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 import TwoDatesPicker from "@/components/common/TwoDatesPicker";
 import { createWeeksArray } from "@/lib/utils";
 import { cyclesActions, usersActions } from "@/app/actions";
 import Modal from "./Modal";
+import MonthlyReportForm from "./MonthlyReportForm";
 
 const categorySchema = z.object({
   title: z.string().min(1, "Required"),
@@ -35,6 +36,7 @@ const formSchema = z.object({
   categories: z
     .array(categorySchema)
     .min(1, "At least one category is required"),
+  createMonthlyReport: z.boolean().default(false),
 });
 
 type FormData = z.infer<typeof formSchema>;
@@ -53,6 +55,10 @@ export default function AddNewCycle({
   defaultCategories,
 }: Props) {
   const [open, setOpen] = useState(false);
+  const [step, setStep] = useState<1 | 2>(1);
+  const [createdCycleId, setCreatedCycleId] = useState<string | null>(null);
+  const [dayToDayDefault, setDayToDayDefault] = useState<number>(0);
+
   const {
     reset,
     control,
@@ -67,6 +73,7 @@ export default function AddNewCycle({
         to: addDays(new Date(), 31),
       },
       categories: defaultCategories,
+      createMonthlyReport: false,
     },
   });
 
@@ -75,15 +82,32 @@ export default function AddNewCycle({
     name: "categories",
   });
 
+  const handleOpenChange = (nextOpen: boolean) => {
+    if (!nextOpen) {
+      setStep(1);
+      setCreatedCycleId(null);
+      setDayToDayDefault(0);
+      reset();
+    }
+    setOpen(nextOpen);
+  };
+
   const onSubmit = async (data: FormData) => {
     try {
-      await Promise.all([
+      const [result] = await Promise.all([
         cyclesActions.createCycle(data),
         usersActions.updateUserLastCreatedCategoriesJson(data.categories),
       ]);
-      toast.success("Cycle created");
-      reset();
-      setOpen(false);
+
+      if (data.createMonthlyReport && result?.cycleId) {
+        setCreatedCycleId(result.cycleId);
+        setDayToDayDefault(result.cycleTotal ?? 0);
+        setStep(2);
+      } else {
+        toast.success("Cycle created");
+        reset();
+        setOpen(false);
+      }
     } catch (error) {
       console.error(error);
       toast.error("Error creating Cycle");
@@ -95,71 +119,114 @@ export default function AddNewCycle({
 
   return (
     <Modal
-      dialogTitle="New Cycle"
+      dialogTitle={step === 1 ? "New Cycle" : "Monthly Report"}
       triggerElement={triggerElement}
       open={open}
-      onOpenChange={setOpen}
+      onOpenChange={handleOpenChange}
     >
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-3">
-        <Card className="overflow-hidden">
-          <CardHeader className="p-2 sm:p-3">
-            <CardTitle className="text-xs sm:text-sm md:text-base">
-              Date Range
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="p-2 sm:p-3">
+      {step === 1 ? (
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-3">
+          <Card className="overflow-hidden">
+            <CardHeader className="p-2 sm:p-3">
+              <CardTitle className="text-xs sm:text-sm md:text-base">
+                Date Range
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="p-2 sm:p-3">
+              <FormField
+                name="date"
+                control={control}
+                render={({ field }) => (
+                  <TwoDatesPicker
+                    date={field.value}
+                    setDate={(newDate) => field.onChange(newDate)}
+                  />
+                )}
+              />
+              {errors.date && (
+                <p className="mt-1 text-xs text-red-500">
+                  {errors.date.message}
+                </p>
+              )}
+            </CardContent>
+          </Card>
+
+          <Card className="overflow-hidden">
+            <CardHeader className="p-2 sm:p-3">
+              <CardTitle className="text-xs sm:text-sm md:text-base">
+                Categories
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="p-2 sm:p-3 space-y-2">
+              <Categories
+                fields={fields}
+                remove={remove}
+                control={control}
+                errors={errors}
+                watch={watch}
+                datesRangeLength={datesRangeLength}
+              />
+              <Button
+                variant="outline"
+                onClick={() =>
+                  append({ title: "", initialAmount: 0, weekly: true })
+                }
+                type="button"
+                className="w-full text-xs sm:text-sm md:text-base"
+              >
+                <PlusIcon className="mr-1 h-3 w-3" />
+                Add Category
+              </Button>
+            </CardContent>
+          </Card>
+
+          <div className="flex items-center gap-2 py-1">
             <FormField
-              name="date"
+              name="createMonthlyReport"
               control={control}
               render={({ field }) => (
-                <TwoDatesPicker
-                  date={field.value}
-                  setDate={(newDate) => field.onChange(newDate)}
-                />
+                <>
+                  <Checkbox
+                    id="create-monthly-report"
+                    checked={field.value}
+                    onCheckedChange={field.onChange}
+                  />
+                  <Label
+                    htmlFor="create-monthly-report"
+                    className="text-sm cursor-pointer"
+                  >
+                    Create monthly report
+                  </Label>
+                </>
               )}
             />
-            {errors.date && (
-              <p className="mt-1 text-xs text-red-500">{errors.date.message}</p>
-            )}
-          </CardContent>
-        </Card>
+          </div>
 
-        <Card className="overflow-hidden">
-          <CardHeader className="p-2 sm:p-3">
-            <CardTitle className="text-xs sm:text-sm md:text-base">
-              Categories
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="p-2 sm:p-3 space-y-2">
-            <Categories
-              fields={fields}
-              remove={remove}
-              control={control}
-              errors={errors}
-              watch={watch}
-              datesRangeLength={datesRangeLength}
-            />
-            <Button
-              variant="outline"
-              onClick={() =>
-                append({ title: "", initialAmount: 0, weekly: true })
-              }
-              type="button"
-              className="w-full text-xs sm:text-sm md:text-base"
-            >
-              <PlusIcon className="mr-1 h-3 w-3" />
-              Add Category
-            </Button>
-          </CardContent>
-        </Card>
-
-        <Button
-          type="submit"
-          className="w-full text-sm sm:text-base h-10 sm:h-11"
-        >
-          Save
-        </Button>
-      </form>
+          <Button
+            type="submit"
+            className="w-full text-sm sm:text-base h-10 sm:h-11"
+          >
+            Save
+          </Button>
+        </form>
+      ) : (
+        <MonthlyReportForm
+          cycleId={createdCycleId!}
+          dayToDayDefault={dayToDayDefault}
+          onSuccess={() => {
+            toast.success("Cycle and report created");
+            reset();
+            setStep(1);
+            setOpen(false);
+          }}
+          onSkip={() => {
+            toast.success("Cycle created");
+            reset();
+            setStep(1);
+            setOpen(false);
+          }}
+        />
+      )}
     </Modal>
   );
 }

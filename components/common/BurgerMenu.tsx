@@ -44,6 +44,7 @@ export function BurgerMenu({ user }: { user: SelectUser }) {
               <GeneralLink href="/expenses">Expenses History</GeneralLink>
               <GeneralLink href="/vault">Vault</GeneralLink>
               <GeneralLink href="/stats">Statistics</GeneralLink>
+              <GeneralLink href="/reports">Monthly Reports</GeneralLink>
             </div>
           </div>
           <Separator />

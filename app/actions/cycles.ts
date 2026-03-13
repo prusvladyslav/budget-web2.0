@@ -147,8 +147,20 @@ export const createCycle = cache(async ({ date, categories }: CreateCycle) => {
     });
 
     await db.insert(categoryTable).values([...weeklyCategories]);
+
+    const weeklyTotal = weeklyCategories.reduce(
+      (sum, cat) => sum + cat.initialAmount,
+      0
+    );
+    const monthlyTotal = categories
+      .filter((cat) => cat.weekly === false)
+      .reduce((sum, cat) => sum + cat.initialAmount, 0);
+
+    revalidatePath("/");
+    return { cycleId: newCycleId, cycleTotal: weeklyTotal + monthlyTotal };
   }
   revalidatePath("/");
+  return { cycleId: newCycleId, cycleTotal: 0 };
 });
 
 export const deleteCycle = cache(async (cycleId: string) => {
