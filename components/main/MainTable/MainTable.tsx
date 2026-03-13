@@ -17,11 +17,11 @@ function MainTableContent({
 }: {
   user: SelectUser;
   cycles:
-    | {
-        id: string;
-        title: string;
-      }[]
-    | null;
+  | {
+    id: string;
+    title: string;
+  }[]
+  | null;
   children: React.ReactNode;
 }) {
   const {
@@ -37,14 +37,14 @@ function MainTableContent({
     <Tabs
       value={selectedCycleId}
       onValueChange={updateCycleId}
-      className="w-full space-y-4"
+      className="w-full"
     >
       <div className="flex items-center gap-4">
         <BurgerMenu user={user} />
         {children}
       </div>
       {hasCycles && (
-        <TabsList className="w-full justify-start px-2 py-2 overflow-x-auto overflow-y-hidden">
+        <TabsList className="w-full justify-start px-2 py-2 overflow-x-auto overflow-y-hidden mt-2">
           <MainTableHeader />
         </TabsList>
       )}
@@ -70,11 +70,11 @@ export default function MainTable({
   children,
 }: {
   cycles:
-    | {
-        id: string;
-        title: string;
-      }[]
-    | null;
+  | {
+    id: string;
+    title: string;
+  }[]
+  | null;
   user: SelectUser | undefined;
   children?: React.ReactNode;
 }) {

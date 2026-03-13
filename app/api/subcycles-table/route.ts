@@ -15,6 +15,7 @@ export async function GET(request: NextRequest) {
       columns: {
         id: true,
         title: true,
+        fullDate: true,
       },
       with: {
         categories: {

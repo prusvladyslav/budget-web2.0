@@ -24,6 +24,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { ChevronDown } from "lucide-react";
+import BurnRateWidget from "./BurnRateWidget";
 
 export type CategoryWithCurrentAmount = Array<
   SelectCategory & { currentAmount: number }
@@ -33,6 +34,7 @@ export type getSubcyclesByCycleIdResponse = {
   subcycles: Array<
     SelectSubcycle & {
       categories: CategoryWithCurrentAmount;
+      fullDate: string | null;
     }
   >;
   monthlyCategories: CategoryWithCurrentAmount;
@@ -123,7 +125,8 @@ export default function CycleTab() {
   );
 
   return (
-    <TabsContent value={cycle.id} key={cycle.id}>
+    <TabsContent value={cycle.id} key={cycle.id} className="mt-0">
+      <BurnRateWidget subcycles={subcycles} monthlyCategories={monthlyCategories} />
       <Accordion
         type="single"
         collapsible
