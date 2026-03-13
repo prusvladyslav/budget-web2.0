@@ -1,9 +1,9 @@
 "use server";
 
 import { db } from "@/db";
-import { type InsertVault, vaultTable } from "@/db/schema";
+import { type InsertVault, vaultSnapshotsTable, vaultTable } from "@/db/schema";
 import { auth } from "@clerk/nextjs/server";
-import { and, eq } from "drizzle-orm";
+import { and, eq, lt } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { cache } from "react";
 
@@ -30,9 +30,43 @@ export const updateAccounts = cache(
         .insert(vaultTable)
         .values(accounts.map((account) => ({ ...account, userId })));
     }
+
+    await saveSnapshot(userId, accounts);
+
     revalidatePath("/vault");
   }
 );
+
+async function saveSnapshot(
+  userId: string,
+  accounts: Array<Omit<InsertVault, "userId">>
+) {
+  const rate = await getExchangeRates();
+
+  const uahTotal = accounts.reduce((acc, account) => {
+    const rate_ = rate.uah[account.currency.toLowerCase()];
+    return acc + (rate_ ? account.amount / rate_ : 0);
+  }, 0);
+  const usdTotal = uahTotal * rate.uah.usd;
+
+  await db.insert(vaultSnapshotsTable).values({
+    userId,
+    totalUah: uahTotal,
+    totalUsd: usdTotal,
+  });
+
+  // prune snapshots older than 90 days
+  const cutoff = new Date();
+  cutoff.setDate(cutoff.getDate() - 90);
+  await db
+    .delete(vaultSnapshotsTable)
+    .where(
+      and(
+        eq(vaultSnapshotsTable.userId, userId),
+        lt(vaultSnapshotsTable.createdAt, cutoff.toISOString())
+      )
+    );
+}
 
 const getExchangeRates = async () => {
   try {
@@ -148,3 +182,13 @@ export const addToMainAccount = async (amount: number) => {
 
   revalidatePath("/vault");
 };
+
+export const getVaultSnapshots = cache(async () => {
+  const { userId } = auth();
+  if (!userId) return [];
+
+  return db.query.vaultSnapshotsTable.findMany({
+    where: eq(vaultSnapshotsTable.userId, userId),
+    orderBy: (t, { asc }) => asc(t.createdAt),
+  });
+});

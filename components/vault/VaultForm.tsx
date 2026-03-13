@@ -17,7 +17,7 @@ import {
 } from "@/components/ui/card";
 import { Trash2, Plus } from "lucide-react";
 import { valutActions } from "@/app/actions";
-import {} from "next/cache";
+import { } from "next/cache";
 import type { SelectVault } from "@/db/schema";
 import {
   Select,
@@ -102,7 +102,7 @@ export default function VaultForm({
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 md:w-3/4">
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
       <Card>
         <CardHeader>
           <CardTitle>Accounts</CardTitle>

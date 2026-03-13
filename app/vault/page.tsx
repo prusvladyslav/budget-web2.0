@@ -5,7 +5,8 @@ import {
   CardHeader,
 } from "@/components/ui/card";
 import VaultForm from "@/components/vault/VaultForm";
-import { getVault, getVaultTotal } from "../actions/vault";
+import VaultChart from "@/components/vault/VaultChart";
+import { getVault, getVaultTotal, getVaultSnapshots } from "../actions/vault";
 import { usersActions } from "../actions";
 import { Suspense } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -15,6 +16,7 @@ import SubpageHeader from "@/components/common/SubpageHeader";
 export default async function Page() {
   const accounts = await getVault();
   const totals = await getVaultTotal();
+  const snapshots = await getVaultSnapshots();
   const user = await usersActions.getUser();
   if (!user) return null;
   return (
@@ -22,9 +24,14 @@ export default async function Page() {
       <SubpageHeader user={user} pageTitle="Vault" />
       <div className="flex flex-col space-y-5 md:space-y-0 md:flex-row md:space-x-10 mt-5">
         <Suspense fallback={<VaultSkeleton />}>
-          <VaultForm accounts={accounts} />
+          <div className="md:w-[70%]">
+            <VaultForm accounts={accounts} />
+          </div>
         </Suspense>
-        <VaultTotal totals={totals} />
+        <div className="flex flex-col space-y-5 md:w-[30%]">
+          <VaultTotal totals={totals} />
+          <VaultChart snapshots={snapshots} />
+        </div>
       </div>
     </div>
   );

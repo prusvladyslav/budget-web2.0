@@ -1,6 +1,6 @@
 import { randomUUID } from "crypto";
 import { relations, sql } from "drizzle-orm";
-import { integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
+import { integer, real, sqliteTable, text } from "drizzle-orm/sqlite-core";
 
 export const usersTable = sqliteTable("users", {
   id: text("id").primaryKey(),
@@ -176,6 +176,22 @@ export const vaultTable = sqliteTable("vault", {
 
 export type SelectVault = typeof vaultTable.$inferSelect;
 export type InsertVault = typeof vaultTable.$inferInsert;
+
+export const vaultSnapshotsTable = sqliteTable("vault_snapshots", {
+  id: text("id")
+    .primaryKey()
+    .$defaultFn(() => randomUUID()),
+  userId: text("user_id")
+    .notNull()
+    .references(() => usersTable.id, { onDelete: "cascade" }),
+  totalUah: real("total_uah").notNull(),
+  totalUsd: real("total_usd").notNull(),
+  createdAt: text("created_at")
+    .default(sql`(CURRENT_TIMESTAMP)`)
+    .notNull(),
+});
+
+export type SelectVaultSnapshot = typeof vaultSnapshotsTable.$inferSelect;
 
 export const monthlyReportTable = sqliteTable("monthly_reports", {
   id: text("id")
