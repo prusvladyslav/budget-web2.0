@@ -1,10 +1,9 @@
 "use client";
 import { parse, differenceInCalendarDays, isWithinInterval } from "date-fns";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { TrendingDown, TrendingUp, ChevronUp } from "lucide-react";
-import { useState, useEffect } from "react";
-import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
+import { TrendingDown, TrendingUp } from "lucide-react";
+import { useEffect, useState } from "react";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import type { CategoryWithCurrentAmount, getSubcyclesByCycleIdResponse } from "./CycleTab";
 
 type Subcycle = getSubcyclesByCycleIdResponse["subcycles"][number];
@@ -214,31 +213,23 @@ export default function BurnRateWidget({ subcycles, monthlyCategories }: Props) 
     : null;
 
   return (
-    <div className="px-2">
-      <div className="flex items-center justify-between pt-2 pb-1">
-        <span className="text-xs font-medium uppercase text-muted-foreground tracking-wide">
+    <Accordion
+      type="single"
+      collapsible
+      value={open ? "pace" : ""}
+      onValueChange={(v) => setOpen(v === "pace")}
+    >
+      <AccordionItem value="pace" className="border-none">
+        <AccordionTrigger className="text-xs font-medium uppercase bg-muted/50 p-4 pr-3 group">
           Pace
-        </span>
-        <Button
-          variant="ghost"
-          size="icon"
-          className="h-10 w-10"
-          onClick={() => setOpen((o) => !o)}
-        >
-          <ChevronUp
-            className={cn(
-              "size-4 transition-transform duration-200",
-              !open && "rotate-180"
-            )}
-          />
-        </Button>
-      </div>
-      {open && (
-        <div className="flex gap-2 pb-2">
-          <PaceCard label="Cycle pace" dateLabel={cycleDateLabel} metrics={cycleMetrics} />
-          {weekCard}
-        </div>
-      )}
-    </div>
+        </AccordionTrigger>
+        <AccordionContent className="pt-2">
+          <div className="flex gap-2 pb-2">
+            <PaceCard label="Cycle pace" dateLabel={cycleDateLabel} metrics={cycleMetrics} />
+            {weekCard}
+          </div>
+        </AccordionContent>
+      </AccordionItem>
+    </Accordion>
   );
 }

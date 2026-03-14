@@ -154,7 +154,7 @@ export default function CycleTab() {
   );
 
   return (
-    <TabsContent value={cycle.id} key={cycle.id} className="mt-0">
+    <TabsContent value={cycle.id} key={cycle.id} className="mt-0 flex flex-col gap-4">
       <BurnRateWidget subcycles={subcycles} monthlyCategories={monthlyCategories} />
       <Accordion
         type="single"

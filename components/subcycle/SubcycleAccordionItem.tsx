@@ -32,17 +32,17 @@ interface SubcycleAccordionItemProps {
 
 type ConditionalProps =
   | {
-      monthly: true;
-      categories: CategoryWithCurrentAmount;
-      subcycle?: never;
-      isCurrent?: boolean;
-    }
+    monthly: true;
+    categories: CategoryWithCurrentAmount;
+    subcycle?: never;
+    isCurrent?: boolean;
+  }
   | {
-      monthly: false;
-      subcycle: SelectSubcycle;
-      categories: CategoryWithCurrentAmount;
-      isCurrent?: boolean;
-    };
+    monthly: false;
+    subcycle: SelectSubcycle;
+    categories: CategoryWithCurrentAmount;
+    isCurrent?: boolean;
+  };
 
 type Props = ConditionalProps;
 
@@ -95,7 +95,7 @@ function SubcycleAccordionItem({
     <AccordionItem value={monthly ? "1" : subcycle?.id ?? ""}>
       <AccordionTrigger
         className={cn(
-          "bg-muted p-4 group",
+          "bg-muted p-4 pr-3 group",
           isCurrent && "border-l-2 border-primary"
         )}
       >

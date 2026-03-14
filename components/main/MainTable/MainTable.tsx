@@ -38,7 +38,7 @@ function MainTableContent({
       onValueChange={updateCycleId}
       className="w-full"
     >
-      <div className="flex items-center gap-2 p-2">
+      <div className="flex items-center gap-2 py-2">
         <BurgerMenu user={user} />
         {hasCycles && <MainTableHeader />}
         {children}
