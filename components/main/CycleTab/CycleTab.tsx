@@ -224,12 +224,19 @@ export default function CycleTab() {
 const CycleTabSkeleton = () => {
   return (
     <Accordion type="single" collapsible value={""}>
+      <AccordionItem value={""} className="mb-4 bg-muted/50 ">
+        <Skeleton className="h-[48px] w-full flex items-center rounded-none justify-between">
+          <Skeleton className="ml-[16px] h-[16px] w-[250px] rounded-none bg-gray-300" />
+          <Skeleton className="mr-[16px] size-[12px] rounded-none bg-gray-300" />
+        </Skeleton>
+      </AccordionItem>
       {Array(5)
         .fill(null)
         .map((_, index) => (
           <AccordionItem value={""} key={index + _}>
-            <Skeleton className="h-[56px] w-full flex items-center justify-between">
-              <Skeleton className="ml-[16px] h-[32px] w-[250px] bg-gray-300" />
+            <Skeleton className="h-[56px] w-full flex items-center rounded-none justify-between">
+              <Skeleton className="ml-[16px] h-[24px] w-[250px] rounded-none bg-gray-300" />
+              <Skeleton className="mr-[16px] size-[12px] rounded-none bg-gray-300" />
             </Skeleton>
           </AccordionItem>
         ))}
