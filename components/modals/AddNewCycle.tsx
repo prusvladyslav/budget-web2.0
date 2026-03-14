@@ -116,7 +116,7 @@ export default function AddNewCycle({
       } else {
         toast.success("Cycle created");
         reset();
-        setOpen(false);
+        handleOpenChange(false);
       }
     } catch (error) {
       console.error(error);
@@ -227,13 +227,13 @@ export default function AddNewCycle({
             toast.success("Cycle and report created");
             reset();
             setStep(1);
-            setOpen(false);
+            handleOpenChange(false);
           }}
           onSkip={() => {
             toast.success("Cycle created");
             reset();
             setStep(1);
-            setOpen(false);
+            handleOpenChange(false);
           }}
         />
       )}
