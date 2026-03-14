@@ -1,1 +1,1 @@
-export { default } from "./MainTableHeader";
+export * from "./MainTableHeader";

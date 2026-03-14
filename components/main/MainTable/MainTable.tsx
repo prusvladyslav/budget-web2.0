@@ -1,12 +1,11 @@
 "use client";
 import { Tabs } from "@/components/ui/tabs";
-import MainTableHeader from "../MainTableHeader";
+import { MainTableHeader } from "../MainTableHeader";
 import type { SelectUser } from "@/db/schema";
 import CycleTab from "../CycleTab";
 import { CycleContext, useCycleContext } from "./useCycleContext";
 import { BurgerMenu } from "@/components/common/BurgerMenu";
 import AddNewExpense from "@/components/modals/AddNewExpense/AddNewExpense";
-import { useSearchParams } from "next/navigation";
 import MoveBudget from "@/components/modals/MoveBudget/MoveBudget";
 import type React from "react";
 

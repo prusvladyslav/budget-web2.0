@@ -11,9 +11,9 @@ import {
 import { MoreHorizontal } from "lucide-react";
 import { useEffect, useMemo } from "react";
 import { useHotkeys } from "react-hotkeys-hook";
-import { useCycleContext } from "./MainTable";
+import { useCycleContext } from "../MainTable";
 
-export default function MainTableHeader() {
+export function MainTableHeader() {
   const { selectedCycleId, updateCycleId, cycles } = useCycleContext();
 
   useHotkeys(["meta+arrowright", "ctrl+arrowright"], () => {
