@@ -86,6 +86,24 @@ export const updateUser = cache(
   }
 );
 
+export const getDefaultCategories = async () => {
+  const { userId } = auth();
+  if (!userId) return [{ title: "", initialAmount: undefined as number | undefined, weekly: true }];
+
+  const data = await db.query.usersTable.findFirst({
+    where: eq(usersTable.id, userId),
+    columns: { lastCreatedCategoriesJson: true },
+  });
+
+  return data?.lastCreatedCategoriesJson
+    ? (JSON.parse(data.lastCreatedCategoriesJson) as Array<{
+        title: string;
+        initialAmount: number | undefined;
+        weekly: boolean;
+      }>)
+    : [{ title: "", initialAmount: undefined as number | undefined, weekly: true }];
+};
+
 export const updateUserLastCreatedCategoriesJson = cache(
   async (
     categories: Array<{ title: string; initialAmount: number; weekly: boolean }>

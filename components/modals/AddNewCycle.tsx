@@ -42,19 +42,25 @@ const formSchema = z.object({
 type FormData = z.infer<typeof formSchema>;
 
 interface Props {
-  triggerElement: React.ReactNode;
+  triggerElement?: React.ReactNode;
   defaultCategories: Array<{
     title: string;
     initialAmount: number | undefined;
     weekly: boolean;
   }>;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
 }
 
 export default function AddNewCycle({
   triggerElement,
   defaultCategories,
+  open: externalOpen,
+  onOpenChange: externalOnOpenChange,
 }: Props) {
-  const [open, setOpen] = useState(false);
+  const [internalOpen, setInternalOpen] = useState(false);
+  const isControlled = externalOpen !== undefined;
+  const open = isControlled ? externalOpen! : internalOpen;
   const [step, setStep] = useState<1 | 2>(1);
   const [createdCycleId, setCreatedCycleId] = useState<string | null>(null);
   const [dayToDayDefault, setDayToDayDefault] = useState<number>(0);
@@ -89,7 +95,11 @@ export default function AddNewCycle({
       setDayToDayDefault(0);
       reset();
     }
-    setOpen(nextOpen);
+    if (isControlled) {
+      externalOnOpenChange?.(nextOpen);
+    } else {
+      setInternalOpen(nextOpen);
+    }
   };
 
   const onSubmit = async (data: FormData) => {

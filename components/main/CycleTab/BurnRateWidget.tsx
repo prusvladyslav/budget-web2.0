@@ -220,7 +220,7 @@ export default function BurnRateWidget({ subcycles, monthlyCategories }: Props) 
       onValueChange={(v) => setOpen(v === "pace")}
     >
       <AccordionItem value="pace" className="border-none">
-        <AccordionTrigger className="text-xs font-medium uppercase bg-muted/50 p-4 pr-3 group">
+        <AccordionTrigger className="text-xs font-medium uppercase bg-accent p-4 pr-3 group">
           Pace
         </AccordionTrigger>
         <AccordionContent className="pt-2">

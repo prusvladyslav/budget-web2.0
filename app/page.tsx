@@ -6,7 +6,6 @@ import { SWRProvider } from "@/components/common/SWRprovider";
 import { usersActions } from "./actions";
 import { Suspense } from "react";
 import { getUserWithCycle } from "./actions/users";
-import QuickMenu from "@/components/main/QuickMenu/QuickMenu";
 
 export default async function Home() {
   const clerUser = await currentUser();
@@ -41,9 +40,7 @@ export default async function Home() {
   return (
     <Suspense fallback={<div>Loading...</div>}>
       <SWRProvider>
-        <MainTable cycles={cycles} user={user}>
-          <QuickMenu cycles={cycles} />
-        </MainTable>
+        <MainTable cycles={cycles} user={user} />
       </SWRProvider>
     </Suspense>
   );
