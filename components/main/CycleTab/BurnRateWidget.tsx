@@ -1,7 +1,10 @@
 "use client";
 import { parse, differenceInCalendarDays, isWithinInterval } from "date-fns";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { TrendingDown, TrendingUp } from "lucide-react";
+import { TrendingDown, TrendingUp, ChevronUp } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 import type { CategoryWithCurrentAmount, getSubcyclesByCycleIdResponse } from "./CycleTab";
 
 type Subcycle = getSubcyclesByCycleIdResponse["subcycles"][number];
@@ -111,11 +114,10 @@ function PaceCard({
           <PaceBar pct={pctBudget} colored />
         </div>
         <div
-          className={`flex items-center gap-1 pt-0.5 text-xs font-semibold ${
-            isOver
-              ? "text-red-600 dark:text-red-400"
-              : "text-green-700 dark:text-green-400"
-          }`}
+          className={`flex items-center gap-1 pt-0.5 text-xs font-semibold ${isOver
+            ? "text-red-600 dark:text-red-400"
+            : "text-green-700 dark:text-green-400"
+            }`}
         >
           {isOver ? (
             <TrendingUp className="h-3.5 w-3.5 shrink-0" />
@@ -140,6 +142,15 @@ type Props = {
 
 export default function BurnRateWidget({ subcycles, monthlyCategories }: Props) {
   const today = new Date();
+
+  const [open, setOpen] = useState(() => {
+    if (typeof window === "undefined") return true;
+    return localStorage.getItem("pace-widget-open") !== "false";
+  });
+
+  useEffect(() => {
+    localStorage.setItem("pace-widget-open", String(open));
+  }, [open]);
 
   // Derive cycle date range from first/last subcycle fullDate
   const subcyclesWithDates = subcycles
@@ -181,31 +192,53 @@ export default function BurnRateWidget({ subcycles, monthlyCategories }: Props) 
 
   const weekCard = activeSubcycle
     ? (() => {
-        const { budget: weekBudget, remaining: weekRemaining } = calcTotals(
-          activeSubcycle.categories
-        );
-        if (weekBudget === 0) return null;
-        const weekMetrics = getPaceMetrics(
-          weekBudget,
-          weekRemaining,
-          activeSubcycle.parsed.from,
-          activeSubcycle.parsed.to,
-          today
-        );
-        return (
-          <PaceCard
-            label="Week pace"
-            dateLabel={activeSubcycle.title}
-            metrics={weekMetrics}
-          />
-        );
-      })()
+      const { budget: weekBudget, remaining: weekRemaining } = calcTotals(
+        activeSubcycle.categories
+      );
+      if (weekBudget === 0) return null;
+      const weekMetrics = getPaceMetrics(
+        weekBudget,
+        weekRemaining,
+        activeSubcycle.parsed.from,
+        activeSubcycle.parsed.to,
+        today
+      );
+      return (
+        <PaceCard
+          label="Week pace"
+          dateLabel={activeSubcycle.title}
+          metrics={weekMetrics}
+        />
+      );
+    })()
     : null;
 
   return (
-    <div className="flex gap-2 py-2">
-      <PaceCard label="Cycle pace" dateLabel={cycleDateLabel} metrics={cycleMetrics} />
-      {weekCard}
+    <div className="px-2">
+      <div className="flex items-center justify-between pt-2 pb-1">
+        <span className="text-xs font-medium uppercase text-muted-foreground tracking-wide">
+          Pace
+        </span>
+        <Button
+          variant="ghost"
+          size="icon"
+          className="h-10 w-10"
+          onClick={() => setOpen((o) => !o)}
+        >
+          <ChevronUp
+            className={cn(
+              "size-4 transition-transform duration-200",
+              !open && "rotate-180"
+            )}
+          />
+        </Button>
+      </div>
+      {open && (
+        <div className="flex gap-2 pb-2">
+          <PaceCard label="Cycle pace" dateLabel={cycleDateLabel} metrics={cycleMetrics} />
+          {weekCard}
+        </div>
+      )}
     </div>
   );
 }

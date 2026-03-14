@@ -1,5 +1,5 @@
 "use client";
-import { Tabs, TabsList } from "@/components/ui/tabs";
+import { Tabs } from "@/components/ui/tabs";
 import MainTableHeader from "../MainTableHeader";
 import type { SelectUser } from "@/db/schema";
 import CycleTab from "../CycleTab";
@@ -39,15 +39,11 @@ function MainTableContent({
       onValueChange={updateCycleId}
       className="w-full"
     >
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-2 p-2">
         <BurgerMenu user={user} />
+        {hasCycles && <MainTableHeader />}
         {children}
       </div>
-      {hasCycles && (
-        <TabsList className="w-full justify-start px-2 py-2 overflow-x-auto overflow-y-hidden mt-2">
-          <MainTableHeader />
-        </TabsList>
-      )}
 
       {hasCycles && <CycleTab />}
       <AddNewExpense

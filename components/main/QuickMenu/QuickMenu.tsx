@@ -1,12 +1,10 @@
 import AddNewCycle from "@/components/modals/AddNewCycle";
 import { Button } from "@/components/ui/button";
-
-import { Separator } from "@/components/ui/separator";
 import { db } from "@/db";
 import { usersTable } from "@/db/schema";
 import { auth } from "@clerk/nextjs/server";
 import { eq } from "drizzle-orm";
-import Link from "next/link";
+import { Plus } from "lucide-react";
 
 export default async function QuickMenu({
   cycles,
@@ -27,19 +25,20 @@ export default async function QuickMenu({
   const defaultCategories =
     data && data.lastCreatedCategoriesJson
       ? (JSON.parse(data.lastCreatedCategoriesJson) as Array<{
-          title: string;
-          initialAmount: number;
-          weekly: boolean;
-        }>)
+        title: string;
+        initialAmount: number;
+        weekly: boolean;
+      }>)
       : [{ title: "", initialAmount: undefined, weekly: true }];
 
   return (
-    <div className="flex h-10 items-center rounded-md border bg-background">
-      <Separator orientation="vertical" className="m-0" />
-      <AddNewCycle
-        defaultCategories={defaultCategories}
-        triggerElement={<Button variant={"ghost"}>Add new cycle</Button>}
-      />
-    </div>
+    <AddNewCycle
+      defaultCategories={defaultCategories}
+      triggerElement={
+        <Button variant="outline" size="icon" className="h-10 w-10 shrink-0">
+          <Plus className="h-4 w-4" />
+        </Button>
+      }
+    />
   );
 }

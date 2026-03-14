@@ -10,7 +10,8 @@ import { QuickExpensesModal } from "@/components/modals/QuickExpensesModal";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { useSearchParams } from "next/navigation";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { parse, isWithinInterval } from "date-fns";
 import { getCycleReportData } from "@/app/actions/report";
 import {
   exportExpensesToXlsx,
@@ -97,6 +98,24 @@ export default function CycleTab() {
     `${URLS.subCyclesTable}?cycleId=${selectedCycleId}`,
     "subcyclesTable"
   );
+
+  const loadedSubcycles = data?.data?.subcycles;
+
+  // Auto-open the current week if nothing is open yet
+  useEffect(() => {
+    if (!loadedSubcycles || selectedSubcycleId) return;
+    const today = new Date();
+    const current = loadedSubcycles.find((s) => {
+      if (!s.fullDate) return false;
+      const parts = s.fullDate.split(" - ");
+      if (parts.length !== 2) return false;
+      const from = parse(parts[0], "dd.MM.yyyy", new Date());
+      const to = parse(parts[1], "dd.MM.yyyy", new Date());
+      return isWithinInterval(today, { start: from, end: to });
+    });
+    if (current) updateSubcycleId(current.id);
+  }, [loadedSubcycles]);
+
   if (!cycles) return null;
 
   if (!cycle) return null;
@@ -108,6 +127,16 @@ export default function CycleTab() {
   if (!subcyclesTable) return null;
 
   const { subcycles, monthlyCategories } = subcyclesTable;
+
+  const today = new Date();
+  const currentSubcycleId = subcycles.find((s) => {
+    if (!s.fullDate) return false;
+    const parts = s.fullDate.split(" - ");
+    if (parts.length !== 2) return false;
+    const from = parse(parts[0], "dd.MM.yyyy", new Date());
+    const to = parse(parts[1], "dd.MM.yyyy", new Date());
+    return isWithinInterval(today, { start: from, end: to });
+  })?.id;
 
   const leftInWeeklyCategories = subcycles.reduce(
     (acc, subcycle) =>
@@ -133,16 +162,15 @@ export default function CycleTab() {
         value={selectedSubcycleId}
         onValueChange={updateSubcycleId}
       >
-        {subcycles.map((subcycle) => {
-          return (
-            <SubcycleAccordionItem
-              categories={subcycle.categories}
-              key={subcycle.id}
-              subcycle={subcycle}
-              monthly={false}
-            />
-          );
-        })}
+        {subcycles.map((subcycle) => (
+          <SubcycleAccordionItem
+            categories={subcycle.categories}
+            key={subcycle.id}
+            subcycle={subcycle}
+            monthly={false}
+            isCurrent={subcycle.id === currentSubcycleId}
+          />
+        ))}
         {monthlyCategories.length > 0 && (
           <SubcycleAccordionItem
             monthly={true}
