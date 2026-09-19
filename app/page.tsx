@@ -31,9 +31,11 @@ export default async function Home() {
       debug: false,
     };
     return (
-      <SWRProvider>
-        <MainTable cycles={[]} user={newUserWithCycles} />
-      </SWRProvider>
+      <Suspense fallback={<div>Loading...</div>}>
+        <SWRProvider>
+          <MainTable cycles={[]} user={newUserWithCycles} />
+        </SWRProvider>
+      </Suspense>
     );
   }
 
