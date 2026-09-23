@@ -3,7 +3,7 @@
 import { db } from "@/db";
 import { type InsertVault, vaultSnapshotsTable, vaultTable } from "@/db/schema";
 import { auth } from "@clerk/nextjs/server";
-import { and, eq, lt } from "drizzle-orm";
+import { and, eq, sql } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { cache } from "react";
 
@@ -55,17 +55,24 @@ async function saveSnapshot(
     totalUsd: usdTotal,
   });
 
-  // prune snapshots older than 90 days
+  // Compact snapshots older than 90 days: keep only the last one per day so
+  // long-range history stays available without unbounded row growth.
   const cutoff = new Date();
   cutoff.setDate(cutoff.getDate() - 90);
-  await db
-    .delete(vaultSnapshotsTable)
-    .where(
-      and(
-        eq(vaultSnapshotsTable.userId, userId),
-        lt(vaultSnapshotsTable.createdAt, cutoff.toISOString())
+  const cutoffIso = cutoff.toISOString();
+  await db.run(sql`
+    DELETE FROM vault_snapshots
+    WHERE user_id = ${userId}
+      AND created_at < ${cutoffIso}
+      AND id NOT IN (
+        SELECT id FROM (
+          SELECT id, MAX(created_at) AS created_at
+          FROM vault_snapshots
+          WHERE user_id = ${userId} AND created_at < ${cutoffIso}
+          GROUP BY date(created_at)
+        )
       )
-    );
+  `);
 }
 
 const getExchangeRates = async () => {
